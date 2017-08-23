@@ -1,1 +1,1 @@
-Resources\Python27\python.exe Resources\game.py
+Python\python.exe Python\game.py
