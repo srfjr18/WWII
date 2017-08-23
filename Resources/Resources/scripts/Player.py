@@ -1,5 +1,6 @@
 import pygame, os, math, sys
 from Resources.scripts.Maps import *
+from Resources.scripts.Creator import *
 from random import randint
 
 if __name__ == "__main__":
@@ -8,7 +9,11 @@ if __name__ == "__main__":
 path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-1]), 'images', '')
 soundpath = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-1]), 'sounds', '')
 class Player(object):
-    def __init__(self):
+    def __init__(self, custom_map=False):
+        if custom_map != False:
+            self.custom_map = Play_Maps(custom_map)
+        else:
+            self.custom_map = False
         self.mainx = 300
         self.mainy = 240
         self.imagesx = 0
@@ -29,9 +34,18 @@ class Player(object):
     def spawn(self, spawnarea_x, spawnarea_y, map_choice):
         self.imagesx = randint(spawnarea_x[0], spawnarea_x[1]) #- imagesx
         self.imagesy = randint(spawnarea_y[0], spawnarea_y[1]) #- imagesy
-        collision_list = map_collisions_update(self.imagesx, self.imagesy, map_choice)
+        
+        if self.custom_map == False:
+            collision_list = map_collisions_update(self.imagesx, self.imagesy, map_choice) 
+        else:
+            collision_list = self.custom_map.map_collisions_update(self.imagesx, self.imagesy)
+
+
         while True:
-            collision_list = map_collisions_update(self.imagesx, self.imagesy, map_choice)
+            if self.custom_map == False:
+                collision_list = map_collisions_update(self.imagesx, self.imagesy, map_choice) 
+            else:
+                collision_list = self.custom_map.map_collisions_update(self.imagesx, self.imagesy)
             if self.proper_spawn(collision_list):
                 self.imagesx = randint(spawnarea_x[0], spawnarea_x[1]) #(spawnarea)
                 self.imagesy = randint(spawnarea_y[0], spawnarea_y[1]) #(spawnarea)
@@ -49,7 +63,7 @@ class Player(object):
             
         self.rank = int((int(rank) + kills) / 25)
         
-    def ui(self, kills, deaths, weapon, mag, shot, reloading):
+    def ui(self, kills, deaths, weapon, mag, shot, reloading, max_kills):
         kd_bg = pygame.Surface((100,30), pygame.SRCALPHA)
         kd_bg.fill((211,211,211,180))
         screen.blit(kd_bg, (540,0))
@@ -70,6 +84,14 @@ class Player(object):
             else:
                 text = self.font.render(str(weapon) + "  AMMO: " + str(mag - shot),1,(0,0,0))
         screen.blit(text, (440, 445))
+        
+        if max_kills < 1000:
+            playto_bg = pygame.Surface((200,30), pygame.SRCALPHA)
+            playto_bg.fill((211,211,211,180))
+            screen.blit(playto_bg, (0,450))
+            pygame.draw.rect(screen, (0, 0, 0), (0, 450, 200, 30), 3)    
+            text = self.font.render("PLAYING TO "+str(max_kills)+" K/Ds",1,(0,0,0))
+            screen.blit(text, (5, 455))
         
     def red_screen(self, medic, enemy_stk, enemy_hit):
         if medic:
@@ -122,12 +144,28 @@ class Player(object):
 
         self.imagesy += self.moveY
         self.imagesx += self.moveX 
-        self.fix_go_thru_corners(map_collisions_update(self.imagesx, self.imagesy, map_choice))                 
-        #updating our collision value after we modified imagesx and y            
-        if self.collision(map_collisions_update(self.imagesx, self.imagesy, map_choice)):
+        
+        if self.custom_map == False:
+            self.fix_go_thru_corners(map_collisions_update(self.imagesx, self.imagesy, map_choice)) 
+        else:
+            self.fix_go_thru_corners(self.custom_map.map_collisions_update(self.imagesx, self.imagesy))              
+        #updating our collision value after we modified imagesx and y
+        
+        if self.custom_map == False:
+            collision = map_collisions_update(self.imagesx, self.imagesy, map_choice) 
+        else:
+            collision = self.custom_map.map_collisions_update(self.imagesx, self.imagesy)
+                    
+        if self.collision(collision):
             self.imagesy += self.moveY
-            self.imagesx -= self.moveX     
-            if self.collision(map_collisions_update(self.imagesx, self.imagesy, map_choice)):
+            self.imagesx -= self.moveX 
+            
+            if self.custom_map == False:
+                collision = map_collisions_update(self.imagesx, self.imagesy, map_choice)
+            else:
+                collision = self.custom_map.map_collisions_update(self.imagesx, self.imagesy)
+                
+            if self.collision(collision):
                 self.imagesy -= self.moveY * 2
                 self.imagesx += self.moveX * 2
                 

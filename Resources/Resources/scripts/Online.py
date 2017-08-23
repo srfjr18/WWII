@@ -11,7 +11,9 @@ if __name__ == "__main__":
     sys.exit()
 
 class online_mode(Enemy, Enemy_Gun):
-    def __init__(self):
+    def __init__(self, map_choice=None, max_kills=10000):
+        self.online_max_kills = max_kills
+        self.map_choice = map_choice
         self.eo = 3
         self.mainx = 300
         self.mainy = 240
@@ -20,17 +22,29 @@ class online_mode(Enemy, Enemy_Gun):
         self.background.fill((0,0,0))
         self.background = self.background.convert()
         self.font = {"big": pygame.font.SysFont("monospace", 50), "medium": pygame.font.SysFont("monospace", 35), "small": pygame.font.SysFont("monospace", 25), "smallish": pygame.font.SysFont("monospace", 20), "extrasmall": pygame.font.SysFont("monospace", 15)}
-        self.option = Menu(["START SERVER", "JOIN SERVER"]).GameSetup()
-        
+        self.option = Menu(["START SERVER", "JOIN SERVER", "BACK"]).GameSetup()
+        self.back = False
         while True:
-            if self.option == "START SERVER":
-                try: 
-                    self.server()
-                    break
-                except: 
-                    print("Error when creating server:")
-                    traceback.print_exc()
-                    continue
+            if self.option == "BACK":
+                self.back = True
+                break
+            elif self.option == "START SERVER":
+                if self.map_choice == None:
+                    font = pygame.font.SysFont("monospace", 25)
+                    text = font.render("NO MAP SELECTED",1,(255,0,0))
+                    screen.blit(text, (25, 300))
+                    pygame.display.flip()
+                    pygame.time.delay(2000)
+                    self.option = Menu(["START SERVER", "JOIN SERVER", "BACK"]).GameSetup()
+                else:  
+                    try:
+                        self.server()
+                        break
+                    except: 
+                        self.kill_thread = True
+                        print("Error when creating server:")
+                        traceback.print_exc()
+                        continue
             elif self.option == "JOIN SERVER":
                 choice = Menu([]).yes_no("   CHOOSE IP FROM:", "", "PREVIOUS IPS", "  NEW IP")
                 if choice == "no":
@@ -52,6 +66,7 @@ class online_mode(Enemy, Enemy_Gun):
                 except UnboundLocalError:
                     pass
                 except:
+                    self.kill_thread = True
                     print("Error when joining server:")
                     traceback.print_exc()
         Enemy.__init__(self, 1, 1, 1, 1)
@@ -150,8 +165,11 @@ class online_mode(Enemy, Enemy_Gun):
                         
                         return name
                     else: 
-                        pygame.mixer.Sound.play(self.key)                               
-                        name = name + str(chr(event.key))
+                        pygame.mixer.Sound.play(self.key) 
+                        try:                              
+                            name = name + str(chr(event.key))
+                        except ValueError:
+                            pass
                 if pygame.mouse.get_pressed()[0] and name != "":
                     pygame.mixer.Sound.play(self.key) 
                     return name
@@ -179,10 +197,18 @@ class online_mode(Enemy, Enemy_Gun):
         
         self.kill_thread = True
         
+        
+        self.map_choice = self.s.recv(1024)
+        
         if self.s.recv(1024) == "True":
             self.lan = True
         else:
             self.lan = False
+        
+        pygame.time.delay(300)
+            
+        self.online_max_kills = int(self.s.recv(1024))
+        print(str(self.online_max_kills))
         
         #self.s.recv(1024) 
         #self.s.send(raw_input("Client please type: "))
@@ -209,7 +235,8 @@ class online_mode(Enemy, Enemy_Gun):
         self.c, self.addr = self.s.accept()
         
         self.kill_thread = True
-            
+         
+        self.c.send(str(self.map_choice))    
         self.lan = Menu([]).yes_no("ARE YOU ON LAN OR HAVE", "A STRONG CONNECTION?")
         if self.lan == "yes":
             self.lan = True
@@ -217,6 +244,11 @@ class online_mode(Enemy, Enemy_Gun):
             self.lan = False
             
         self.c.send(str(self.lan))
+        
+        pygame.time.delay(300)
+        
+        print(str(self.online_max_kills))
+        self.c.send(str(self.online_max_kills))
          
               
         #self.c.send(raw_input("Server please type: "))

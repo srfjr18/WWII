@@ -758,4 +758,6 @@ def map_collisions_update(imagesx, imagesy, map_choice):
         return maps.barren_collisions()
     elif map_choice == "TOWN":
         return maps.town_collisions()  
+    else:
+        raise ValueError("You are using a custom map")
 

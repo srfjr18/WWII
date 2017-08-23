@@ -1,6 +1,7 @@
 import os, pygame, sys, socket
 from random import randint
 from Resources.scripts.Guns import *
+from Resources.scripts.Creator import *
 
 if __name__ == "__main__":
     sys.exit()
@@ -9,6 +10,7 @@ pygame.init()
 screen =  pygame.display.set_mode((640,480))
 path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', '')
 soundpath = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-1]), 'sounds', '')
+
 class Menu(object):
     def __init__(self, words):
         pygame.display.set_caption("WWII")
@@ -44,7 +46,7 @@ class Menu(object):
             pygame.display.flip()
         
 
-    def name(self):
+    def name(self, different=False, diftext=None):
         name = ""
         screen.blit(self.background, (0, 0))
         text = self.font["small"].render("NAME:",1,(255,255,255))
@@ -53,8 +55,12 @@ class Menu(object):
         while True:
             screen.blit(self.background, (0, 0))
             pygame.draw.rect(screen, (255, 255, 255), (210, 225, screen.get_size()[0] / 3, 50), 2)
-            text = self.font["big"].render("NAME:",1,(255,255,255))
-            screen.blit(text, (250, 150))
+            if not different:
+                text = self.font["big"].render("NAME:",1,(255,255,255))
+                screen.blit(text, (250, 150))
+            else:
+                text = self.font["big"].render(str(diftext),1,(255,255,255))
+                screen.blit(text, (200, 150))
             if len(name) < 10:
                 text = self.font["smallish"].render(name+"_",1,(255,255,255))
             else:
@@ -72,18 +78,27 @@ class Menu(object):
                     elif event.key == pygame.K_RSHIFT or event.key == pygame.K_LSHIFT:
                         pass
                     elif event.key == pygame.K_RETURN and name != "":
-                        pygame.mixer.Sound.play(self.key) 
+                        pygame.mixer.Sound.play(self.key)
+                        if not different: 
+                            with open (path+'data', 'w+') as file:
+                                file.write(name+'\n'+'25')
+                                return
+                        else:
+                            return name
+                    elif len(name) < 10:  
+                        pygame.mixer.Sound.play(self.key)
+                        try:  
+                            name = name + str(chr(event.key))
+                        except ValueError:
+                            pass
+                if pygame.mouse.get_pressed()[0] and name != "":
+                    pygame.mixer.Sound.play(self.key)
+                    if not different: 
                         with open (path+'data', 'w+') as file:
                             file.write(name+'\n'+'25')
                             return
-                    elif len(name) < 10:  
-                        pygame.mixer.Sound.play(self.key)  
-                        name = name + str(chr(event.key))
-                if pygame.mouse.get_pressed()[0] and name != "":
-                    pygame.mixer.Sound.play(self.key) 
-                    with open (path+'data', 'w+') as file:
-                        file.write(name+'\n'+'25')
-                        return
+                    else:
+                        return name
             pygame.display.flip()
                 
                 
@@ -350,7 +365,7 @@ class Loadouts(object):
 
 class Setup(object):
     def __init__(self):
-        screen
+        self.max_kills = 1000000
         self.online = False
         self.background = pygame.Surface(screen.get_size())
         self.background.fill((0,0,0))
@@ -362,24 +377,118 @@ class Setup(object):
         pygame.mixer.music.play(-1)
     
         go_back_once = False
+        self.custom = False
         while True:
-            choice = Menu(words = ["LOADOUTS", "MAPS", "OPTIONS", "ONLINE GAME", "OFFLINE GAME"]).GameSetup("name", "", "", "", "", "PLEASE ENSURE YOU HAVE THE SAME MAP SELECTED AS YOUR OPPONENT")
+            choice = Menu(words = ["LOADOUTS", "MAPS", "CREATE", "OPTIONS", "ONLINE GAME", "OFFLINE GAME"]).GameSetup("name", "", "", "", "", "", "PLEASE ENSURE YOU HAVE THE SAME MAP SELECTED AS YOUR OPPONENT")
             if choice == "MAPS":
-                try:
-                    map_choice_backup = self.map_choice
-                except:
-                    pass
-                self.map_choice = Menu(["SHIP", "PACIFIC", "BARREN", "TOWN", "BACK"]).GameSetup()
-                if self.map_choice == "BACK":
+                go_back_once = True
+                while True:
                     try:
-                        self.map_choice = map_choice_backup
+                        map_choice_backup = self.map_choice
                     except:
-                        del(self.map_choice)
+                        pass
+                    if go_back_once:
+                        self.map_choice = Menu(["CUSTOM", "SHIP", "PACIFIC", "BARREN", "TOWN", "BACK"]).GameSetup()
+                    else:
+                        break
+                
+                    if self.map_choice == "CUSTOM":
+                        go_back_once = True
+                        self.custom = True
+                        custom_maps = os.listdir(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', 'Creations', 'Maps'))
+                        custom_maps = [s for s in custom_maps if s.endswith('.py')]
+                        custom_maps = [maps[:-3] for maps in custom_maps]
+                        custom_maps.remove("__init__")
+                        custom_maps.append("BACK")
+                        self.map_choice = Menu(custom_maps).GameSetup()
+                        if self.map_choice == "BACK":
+                            self.custom = False
+                    else:
+                        go_back_once = False
+                    
+                    if self.map_choice == "BACK":
+                        try:
+                            self.map_choice = map_choice_backup
+                        except:
+                            del(self.map_choice)
+            if choice == "CREATE":
+                go_back_once = True
+                while True:
+                    if go_back_once:
+                        create_choice = Menu(["GUN", "MAP", "DELETE GUN", "DELETE MAP", "BACK"]).GameSetup("rank", [20, 25, 20, 25])
+                    else:
+                        break
+                    go_back_once = False
+                    creator = Creator()
+                    if create_choice == "GUN":
+                        creator.gun_builder()
+                    elif create_choice == "MAP":
+                        creator.map_builder()
+                    elif create_choice == "DELETE GUN":
+                        custom_guns = os.listdir(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', 'Creations', 'Guns'))
+                        custom_guns = [s for s in custom_guns if s.endswith('.py')]
+                        custom_guns = [guns[:-3] for guns in custom_guns]
+                        custom_guns.remove("__init__")
+                        custom_guns.append("BACK")
+                        delete = Menu(custom_guns).GameSetup()
+                        go_back_once = True
+                        if delete != "BACK":
+                            os.remove(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', 'Creations', 'Guns', '')+delete+".py")
+                            try:
+                                os.remove(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', 'Creations', 'Guns', '')+delete+".pyc")
+                            except OSError:
+                                pass
+                            
+                            """remove now non existent guns from loadouts"""
+                            for loadout in ["LOADOUT 1", "LOADOUT 2", "LOADOUT 3", "LOADOUT 4", "LOADOUT 5"]:
+                                loadoutpath = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', loadout)    
+                                rewrite_file = False
+                                with open(loadoutpath, 'r') as file:
+                                    if delete in file.read():
+                                        rewrite_file = True
+                                        num = 0
+                                        new = []
+                                        file.seek(0)
+                                        for lines in file.readlines():
+                                            num += 1
+                                            if num == 1:
+                                                new.append("M1 GARAND")
+                                                new.append("\n")
+                                            else:
+                                                new.append(lines)
+                                if rewrite_file:
+                                    os.remove(loadoutpath)
+                                    with open(loadoutpath, 'w+') as file:
+                                        file.write(''.join(new))
+                    
+                    
+                    elif create_choice == "DELETE MAP":
+                        custom_maps = os.listdir(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', 'Creations', 'Maps'))
+                        custom_maps = [s for s in custom_maps if s.endswith('.py')]
+                        custom_maps = [maps[:-3] for maps in custom_maps]
+                        custom_maps.remove("__init__")
+                        custom_maps.append("BACK")
+                        delete = Menu(custom_maps).GameSetup()
+                        go_back_once = True
+                        if delete != "BACK":
+                            os.remove(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', 'Creations', 'Maps', '')+delete+".py")
+                            try:
+                                os.remove(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', 'Creations', 'Maps', '')+delete+".pyc")
+                            except OSError:
+                                pass
             
             if choice == "OPTIONS":
                 while True:
-                    option_choice = Menu(["FULLSCREEN", "WINDOWED", "BACK"]).GameSetup()
-                    if option_choice == "FULLSCREEN": 
+                    option_choice = Menu(["FULLSCREEN", "WINDOWED", "GAME OPTIONS", "BACK"]).GameSetup("", "", "", "", "PLAY TO CUSTOM KILLS/DEATHS FOR YOUR GAME")
+                    if option_choice == "GAME OPTIONS":
+                        while True:
+                            self.max_kills = Menu([]).name(True, "MAX K/Ds:")
+                            try:
+                                self.max_kills = int(self.max_kills)
+                                break
+                            except:
+                                pass
+                    elif option_choice == "FULLSCREEN": 
                         pygame.display.set_mode((640,480), pygame.FULLSCREEN)
                     elif option_choice == "WINDOWED":
                         pygame.display.set_mode((640,480))
@@ -396,7 +505,7 @@ class Setup(object):
                         loadoutchoice = Menu(["WEAPON", "PERK 1", "PERK 2", "PERK 3", "BACK"]).GameSetup()
                     if loadoutchoice == "WEAPON":
                         while True:
-                            weapon_type = Menu(["RIFLES", "SMGs", "LMGs", "SNIPERS", "BACK"]).GameSetup()                    
+                            weapon_type = Menu(["RIFLES", "SMGs", "LMGs", "SNIPERS", "CUSTOM", "BACK"]).GameSetup()                    
                             if weapon_type == "RIFLES":                    
                                 weapon = Menu(["M1 GARAND", "GEWEHR 43", "M1A1", "FG42", "STG44", "BACK"]).GameSetup("rank", [1, 5, 10, 16, 18], "SEMI-AUTO, HIGHEST DAMAGE ASSAULT RIFLE", "SEMI-AUTO, MODERATE POWER", "SEMI-AUTO, SHORT DELAY BETWEEN SHOTS", "FULL-AUTO, HIGH FIRERATE", "FULL-AUTO, HIGH POWER")
                             elif weapon_type == "SMGs":
@@ -405,11 +514,20 @@ class Setup(object):
                                 weapon = Menu(["M1919", "BAR", "TYPE 99", "BACK"]).GameSetup("rank", [1, 5, 13], "FULL-AUTO, 250 ROUND MAG", "FULL-AUTO, MODERATE FIRERATE", "FULL-AUTO, BALANCE BETWEEN POWER AND FIRERATE")
                             elif weapon_type == "SNIPERS":
                                 weapon = Menu(["SVT40", "MOSIN NAGANT", "ARIASKA", "SPRINGFIELD", "BACK"]).GameSetup("rank", [1, 6, 7, 12], "BOLT ACTION", "BOLT ACTION", "BOLT ACTION", "BOLT ACTION")
+                            elif weapon_type == "CUSTOM":
+                                custom_guns = os.listdir(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', 'Creations', 'Guns'))
+                                custom_guns = [s for s in custom_guns if s.endswith('.py')]
+                                custom_guns = [guns[:-3] for guns in custom_guns]
+                                custom_guns.remove("__init__")
+                                custom_guns.append("BACK")
+                                weapon = Menu(custom_guns).GameSetup()
+                            
+                            
+                            
                             elif weapon_type == "BACK":
                                 break
-                            else:
-                                #just to stop crashes with nonexistent types of gun classes
-                                weapon = "BACK"
+                                
+                            """writing our weapon choice to file"""
                             if weapon != "BACK":
                                 num = 0
                                 new = []
@@ -498,20 +616,21 @@ class Setup(object):
                     elif loadoutchoice == "BACK":
                         go_back_once = False
                                      
-            elif choice == "OFFLINE GAME" or choice == "ONLINE GAME":
+            elif choice == "ONLINE GAME":
+                if not self.online_check():
+                    self.online = False
+                    screen.blit(self.background, (0, 0))
+                    text = self.font["medium"].render("NO CONNECTION",1,(255,0,0))
+                    screen.blit(text, (180, 150))
+                    pygame.display.flip()
+                    pygame.time.delay(2000)
+                    continue
+                else:
+                    self.online = True
+                    return
+            elif choice == "OFFLINE GAME":
                 try:
                     self.map_choice
-                    if choice == "ONLINE GAME":
-                        if not self.online_check():
-                            screen.blit(self.background, (0, 0))
-                            text = self.font["medium"].render("NO CONNECTION",1,(255,0,0))
-                            screen.blit(text, (180, 150))
-                            pygame.display.flip()
-                            pygame.time.delay(2000)
-                            continue
-                        self.online = True
-                    else:
-                        self.online = False
                     return
                 except:
                     font = pygame.font.SysFont("monospace", 25)
@@ -566,6 +685,8 @@ class Setup(object):
             self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().ariaska()
         elif self.weapon == "SPRINGFIELD":
             self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().springfield()
+        else: #custom gun
+            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Custom_Gun(self.weapon).return_gun()
         
         perk1 = open(path+loadout_number, 'r').readlines()[1].rstrip()    
         if perk1 == "QUICK HANDS":

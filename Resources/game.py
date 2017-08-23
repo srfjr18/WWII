@@ -9,6 +9,7 @@ from Resources.scripts.Guns import *
 from Resources.scripts.Player import *
 from Resources.scripts.Enemy import *
 from Resources.scripts.Online import *
+from Resources.scripts.Creator import *
 
 #fix __file__ error when compiled into exe
 if getattr(sys, 'frozen', False):
@@ -25,43 +26,64 @@ running = True
 screen = pygame.display.set_mode((640,480))
 clock = pygame.time.Clock()
 FPS = 60
-reloading = semiauto = False
-enemy_hit = kills = deaths = hit = shot = internalclock = 0 
-setup = Setup()
-maps = Maps(0, 0)
-loadouts = Loadouts(False)
-player = Player()
-player_gun = Gun()
 
-#titlescreen and main menu
-Menu([]).TitleScreen()
-player.update_rank(kills)
-setup.MainMenu()
+"""sorry for using global variables, just call this so much that it makes it easier"""
+def titlescreen_menu(start=False):
+    global reloading, semiauto
+    global enemy_hit, kills, deaths, hit, shot, internalclock
+    global setup, maps, loadouts, player, player_gun
+    global enemy_gun, enemy_player, loadout_number
+    global background, in_between_shots
+    reloading = semiauto = False
+    enemy_hit = kills = deaths = hit = shot = internalclock = 0 
+    setup = Setup()
+    maps = Maps(0, 0)
+    loadouts = Loadouts(False)
+    player = Player()
+    player_gun = Gun()
+    if start:
+        Menu([]).TitleScreen()
+    player.update_rank(kills)
+    setup.MainMenu()
+
+    if setup.online:
+        try:
+            enemy_player = enemy_gun = online_mode(setup.map_choice, setup.max_kills) #host
+        except:
+            enemy_player = enemy_gun = online_mode() #client
+            
+        setup.map_choice = enemy_player.map_choice
+        setup.max_kills = enemy_gun.online_max_kills
+        if enemy_player.back:
+            titlescreen_menu()
+    
+    if setup.custom:
+        maps = Play_Maps(setup.map_choice)
+        player = Player(setup.map_choice)
+    
+    loadout_number = Loadouts(False).display_loadout()
+    setup.guns(loadout_number)
+    setup.perks(loadout_number)
+    maps.spawn_area(setup.map_choice)
+
+    if not setup.online:
+        enemy_gun = Enemy_Gun()
+        enemy_player = Enemy(maps.spawnX, maps.spawnY, loadout_number, enemy_gun)
+
+    background = pygame.Surface(screen.get_size())
+    background.fill(maps.background_color(setup.map_choice))
+    background = background.convert()
+
+    player.spawn(maps.spawnX, maps.spawnY, setup.map_choice)
+
+    in_between_shots = False
+
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Resources', 'sounds', '')+'gamemusic.wav')
+    pygame.mixer.music.play(-1)
 
 
-if setup.online:
-    enemy_player = enemy_gun = online_mode()
-
-loadout_number = Loadouts(False).display_loadout()
-setup.guns(loadout_number)
-setup.perks(loadout_number)
-maps.spawn_area(setup.map_choice)
-
-if not setup.online:
-    enemy_gun = Enemy_Gun()
-    enemy_player = Enemy(maps.spawnX, maps.spawnY, loadout_number, enemy_gun)
-
-background = pygame.Surface(screen.get_size())
-background.fill(maps.background_color(setup.map_choice))
-background = background.convert()
-
-player.spawn(maps.spawnX, maps.spawnY, setup.map_choice)
-
-in_between_shots = False
-
-pygame.mixer.music.stop()
-pygame.mixer.music.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Resources', 'sounds', '')+'gamemusic.wav')
-pygame.mixer.music.play(-1)
+titlescreen_menu(True)
 while running:
   
     mousepos = pygame.mouse.get_pos()
@@ -71,7 +93,10 @@ while running:
     player.set_angle(mousepos)
     
     #updating collisions based on our position
-    collision_list = map_collisions_update(player.imagesx, player.imagesy, setup.map_choice)    
+    if setup.custom:
+        collision_list = maps.map_collisions_update(player.imagesx, player.imagesy) 
+    else:
+        collision_list = map_collisions_update(player.imagesx, player.imagesy, setup.map_choice)    
   
     #player gun
     hit_enemy = player_gun.enemy_collide(collision_list, pygame.Rect((enemy_player.enemyposX - player.imagesx, enemy_player.enemyposY - player.imagesy), enemy_player.backup.get_size()))   
@@ -85,6 +110,13 @@ while running:
                 player.shotrise_list = player.shotrun_list = player.backup_shotrise = player.backup_shotrun = []"""
             hit = 0
             kills += 1
+            if kills >= setup.max_kills:
+                if setup.online:
+                    try:
+                        enemy_player.c.close
+                    except:
+                        enemy_player.s.close
+                titlescreen_menu()
     
     #Checking for our shot's collisions with the wall
     player_gun.wall_collide(collision_list)
@@ -94,12 +126,22 @@ while running:
         enemy_hit += 1
         if enemy_hit >= enemy_player.enemy_stk:
             enemy_hit = 0
-            player = Player()
+            if setup.custom:
+                player = Player(setup.map_choice)
+            else:
+                player = Player()
             player.spawn(maps.spawnX, maps.spawnY, setup.map_choice)
             if not setup.online:
                 enemy_gun = Enemy_Gun()
                 enemy_player = Enemy(maps.spawnX, maps.spawnY, loadout_number, enemy_gun)
             deaths += 1
+            if deaths >= setup.max_kills:
+                if setup.online:
+                    try:
+                        enemy_player.c.close
+                    except:
+                        enemy_player.s.close
+                titlescreen_menu()
             
             #updating our loadout if we changed it at the pause menu
             try:
@@ -125,41 +167,7 @@ while running:
             except:
                 pass 
             endcheck = None
-            #updating our xp
-            player.update_rank(kills)                
-            #reset all needed variables
-            reloading = semiauto = False
-            enemy_hit = kills = deaths = hit = shot = internalclock = 0 
-            setup = Setup()
-            setup.online = False
-            maps = Maps(0, 0)
-            loadouts = Loadouts(False)
-            player = Player()
-            player_gun = Gun()
-            enemy_gun = Enemy_Gun()
-            #pulling up the menu again
-            player.update_rank(kills)
-            setup.MainMenu()
-            
-
-            if setup.online:
-                enemy_player = enemy_gun = online_mode()
-
-            loadout_number = Loadouts(False).display_loadout()
-            setup.guns(loadout_number)
-            setup.perks(loadout_number)
-            maps.spawn_area(setup.map_choice)
-
-            if not setup.online:
-                enemy_gun = Enemy_Gun()
-                enemy_player = Enemy(maps.spawnX, maps.spawnY, loadout_number, enemy_gun)
-
-            background = pygame.Surface(screen.get_size())
-            background.fill(maps.background_color(setup.map_choice))
-            background = background.convert()
-            pygame.mixer.music.stop()
-            pygame.mixer.music.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Resources', 'sounds', '')+'gamemusic.wav')
-            pygame.mixer.music.play(-1)
+            titlescreen_menu()
     else:
         enemy_player.AI(player.imagesx, player.imagesy, collision_list, loadout_number, internalclock)         
     enemy_gun.wall_collide(collision_list)
@@ -223,47 +231,16 @@ while running:
                             enemy_player.c.close
                         except:
                             enemy_player.s.close
-                    #updating our xp
-                    player.update_rank(kills)                
-                    #reset all needed variables
-                    reloading = semiauto = False
-                    enemy_hit = kills = deaths = hit = shot = internalclock = 0 
-                    setup = Setup()
-                    maps = Maps(0, 0)
-                    loadouts = Loadouts(False)
-                    player = Player()
-                    player_gun = Gun()
-                    enemy_gun = Enemy_Gun()
-                    #pulling up the menu again
-                    player.update_rank(kills)
-                    setup.MainMenu()
-                    
-
-                    if setup.online:
-                        enemy_player = enemy_gun = online_mode()
-
-                    loadout_number = Loadouts(False).display_loadout()
-                    setup.guns(loadout_number)
-                    setup.perks(loadout_number)
-                    maps.spawn_area(setup.map_choice)
-
-                    if not setup.online:
-                        enemy_gun = Enemy_Gun()
-                        enemy_player = Enemy(maps.spawnX, maps.spawnY, loadout_number, enemy_gun)
-
-                    background = pygame.Surface(screen.get_size())
-                    background.fill(maps.background_color(setup.map_choice))
-                    background = background.convert()
-                    
-                    pygame.mixer.music.stop()
-                    pygame.mixer.music.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Resources', 'sounds', '')+'gamemusic.wav')
-                    pygame.mixer.music.play(-1)
+                    titlescreen_menu()
                     break
                         
     #images/rendering
     pygame.display.set_caption("WWII  FPS: " + str(int(clock.get_fps()))) #+ " " + str((player.imagesx + player.mainx, player.imagesy + player.mainy)))
     screen.blit(background, (0, 0))
-    Maps(player.imagesx, player.imagesy).blit_map(setup.map_choice)
+    if setup.custom:
+        Play_Maps(setup.map_choice).blit_map(player.imagesx, player.imagesy)
+    else:
+        Maps(player.imagesx, player.imagesy).blit_map(setup.map_choice)
     player_gun.blit_shot()
     enemy_gun.blit_shot()
     if setup.online:
@@ -272,7 +249,7 @@ while running:
          enemy_player.blit_enemy(hit_enemy, player.imagesx, player.imagesy)             
     screen.blit(player.maincharacter, (player.mainx, player.mainy))   
     player.red_screen(setup.medic, enemy_player.enemy_stk, enemy_hit)
-    player.ui(kills, deaths, setup.weapon, setup.mag, shot, reloading)    
+    player.ui(kills, deaths, setup.weapon, setup.mag, shot, reloading, setup.max_kills)    
     pygame.display.flip()
     
 pygame.quit()
