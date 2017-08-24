@@ -55,9 +55,13 @@ class Creator(object):
                 self.points = 30
             else:
                 self.points = 25
-                
-            for key, value in self.slider_dict.iteritems():
-                self.points -= value
+            
+            try:    
+                for key, value in self.slider_dict.iteritems():
+                    self.points -= value
+            except: #python 3
+                for key, value in self.slider_dict.items():
+                    self.points -= value
                 
             if self.points < 0:
                 self.slider_dict = {"damage": 0, "recoil": 0, "firerate": 0, "mag size": 0, "reload time": 0}
