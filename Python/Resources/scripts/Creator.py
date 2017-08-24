@@ -154,8 +154,6 @@ class Creator(object):
                         elif semiauto or firerate > 50:
                             damage = damage = str(50 - int(self.slider_dict["damage"] * 4.9))
                         
-                        
-                        firerate = str(firerate)
                                
                         mag = self.slider_dict["mag size"] * 5
                         if mag == 0:
