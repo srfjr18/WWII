@@ -152,8 +152,10 @@ class Creator(object):
                         elif firerate < 51 and not semiauto:
                             damage = str(50 - (self.slider_dict["damage"] * 4))
                         elif semiauto or firerate > 50:
-                            damage = damage = str(50 - int(self.slider_dict["damage"] * 4.9))
+                            damage = str(50 - int(self.slider_dict["damage"] * 4.9))
                         
+                        if semiauto and int(damage) < 5:
+                            firerate += 120
                                
                         mag = self.slider_dict["mag size"] * 5
                         if mag == 0:
@@ -197,8 +199,10 @@ class Creator(object):
                         if pygame.key.get_pressed()[pygame.K_RETURN]:
                             break
                         pygame.display.flip()
-
-                    os.execv(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'game.py'), sys.argv)
+                    try:
+                        os.execv(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'game.py'), sys.argv)
+                    except OSError: #using embedded python 3 windows version
+                        os.execv(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-3]), 'WWII.bat'), sys.argv)
                     
             for event in pygame.event.get():  
                 if event.type == pygame.QUIT: 
@@ -561,7 +565,10 @@ class Creator(object):
                             pygame.display.flip()
                                 
                             
-                        os.execv(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'game.py'), sys.argv)
+                        try:
+                            os.execv(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'game.py'), sys.argv)
+                        except OSError: #using embedded python 3 windows version
+                            os.execv(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-3]), 'WWII.bat'), sys.argv)
                         
                         
             pygame.display.set_caption("x: " + str(x[number_of_images]) + " y: " + str(y[number_of_images]) + " width: " + str(width[number_of_images]) + " height: " + str(height[number_of_images]))       
