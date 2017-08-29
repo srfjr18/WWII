@@ -38,11 +38,11 @@ def titlescreen_menu(start=False):
     enemy_hit = kills = deaths = hit = shot = internalclock = 0 
     setup = Setup()
     maps = Maps(0, 0)
+    if start:
+        Menu([]).TitleScreen()
     loadouts = Loadouts(False)
     player = Player()
     player_gun = Gun()
-    if start:
-        Menu([]).TitleScreen()
     player.update_rank(kills)
     setup.MainMenu()
 
@@ -106,8 +106,8 @@ while running:
             if not setup.online:
                 enemy_gun = Enemy_Gun()
                 enemy_player = Enemy(maps.spawnX, maps.spawnY, loadout_number, enemy_gun)
-            """else:
-                player.shotrise_list = player.shotrun_list = player.backup_shotrise = player.backup_shotrun = []"""
+            else:
+                player.shotrise_list = player.shotrun_list = player.backup_shotrise = player.backup_shotrun = []
             hit = 0
             kills += 1
             if kills >= setup.max_kills:

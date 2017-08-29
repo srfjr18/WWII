@@ -51,10 +51,13 @@ class online_mode(Enemy, Enemy_Gun):
                     ip = self.ip_enter()
                 else:
                     path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', '')
-                    with open(path+"ips", "r") as file:
+                    """with open(path+"ips", "r") as file:
                         ip_options = []
                         for lines in file.readlines():
-                            ip_options.append(lines.rstrip())
+                            ip_options.append(lines.rstrip())"""
+                    with open(path+"userdata", "r") as file:
+                        data = pickle.load(file)
+                    ip_options = data["IP"]
                     ip_options.append("BACK")        
                     ip = Menu(ip_options).GameSetup("long")
                     if ip == "BACK":
@@ -136,7 +139,7 @@ class online_mode(Enemy, Enemy_Gun):
                         pygame.display.flip()
                         
                         path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', '')
-                        deletefirstline = False
+                        """deletefirstline = False
                         
                         if not os.path.isfile(path+'ips'):
                             create = open(path+'ips', 'w+')
@@ -161,8 +164,22 @@ class online_mode(Enemy, Enemy_Gun):
                         
                         
                         with open(path+'ips', 'a') as file:
-                            file.write(name+"\n")
+                            file.write(name+"\n")"""
                         
+                        with open(path+"userdata", "r") as file:    
+                            data = pickle.load(file)
+                        ip = data["IP"]
+                        if len(ip) == 5:
+                            for num in range(5):
+                                if num < 5:
+                                    ip[num - 1] = ip[num]
+                            ip[5] = name
+                        else:
+                            ip.append(name)
+                        data["IP"] = ip
+                        with open(path+"userdata", "w+") as file:
+                            pickle.dump(data, file, protocol=2)
+                                    
                         return name
                     else: 
                         pygame.mixer.Sound.play(self.key) 

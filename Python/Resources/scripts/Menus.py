@@ -1,4 +1,4 @@
-import os, pygame, sys, socket
+import os, pygame, sys, socket, pickle
 from random import randint
 from Resources.scripts.Guns import *
 from Resources.scripts.Creator import *
@@ -80,9 +80,14 @@ class Menu(object):
                     elif event.key == pygame.K_RETURN and name != "":
                         pygame.mixer.Sound.play(self.key)
                         if not different: 
-                            with open (path+'data', 'w+') as file:
-                                file.write(name+'\n'+'25')
-                                return
+                            with open(path+"userdata", "r") as file:
+                                data = pickle.load(file)
+                            data["name"] = name
+                            with open(path+"userdata", "w+") as file:
+                                pickle.dump(data, file, protocol=2) 
+                            """with open (path+'data', 'w+') as file:
+                                file.write(name+'\n'+'25')"""
+                            return
                         else:
                             return name
                     elif len(name) < 10:  
@@ -93,10 +98,16 @@ class Menu(object):
                             pass
                 if pygame.mouse.get_pressed()[0] and name != "":
                     pygame.mixer.Sound.play(self.key)
-                    if not different: 
-                        with open (path+'data', 'w+') as file:
-                            file.write(name+'\n'+'25')
-                            return
+                    if not different:
+                        with open(path+"userdata", "r") as file:
+                            data = pickle.load(file)
+                        data["name"] = name
+                        data["rank"] = 25
+                        with open(path+"userdata", "w+") as file:
+                            pickle.dump(data, file, protocol=2) 
+                        """with open (path+'data', 'w+') as file:
+                            file.write(name+'\n'+'25')"""
+                        return
                     else:
                         return name
             pygame.display.flip()
@@ -120,7 +131,11 @@ class Menu(object):
             if pygame.mouse.get_pressed()[0]:
                 pygame.mixer.Sound.play(self.click)
                 break
-        if not os.path.isfile(path+'data'):
+        if not os.path.isfile(path+'userdata'):
+            default_class = ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"]
+            new = {"name": "NONE", "rank": 25, "LOADOUT 1": default_class, "LOADOUT 2": default_class, "LOADOUT 3": default_class, "LOADOUT 4": default_class, "LOADOUT 5": default_class, "IP": []}
+            with open(path+"userdata", "w+") as file:
+                pickle.dump(new, file, protocol=2)
             self.name()
         return False
                 
@@ -160,10 +175,15 @@ class Menu(object):
                         sys.exit()
             try:
                 if description[0] == "name":
-                    with open(path+"data", "r") as file:
+                    """"with open(path+"data", "r") as file:
                         name, self.rank = file.readlines()
                         name = name.rstrip()
-                        self.rank = self.rank.rstrip()
+                        self.rank = self.rank.rstrip()"""
+                    with open(path+"userdata", "r") as file:
+                        data = pickle.load(file)
+                    name = data["name"]
+                    self.rank = data["rank"]
+                    
                     self.rank = int(int(self.rank) / 25)
                     pygame.draw.rect(screen, (255, 255, 255), (480 - 55, 0, screen.get_size()[0] / 3, 50), 2)
                     text = self.font["small"].render(name,1,(255,255,255))
@@ -181,10 +201,14 @@ class Menu(object):
                 description = (None,) #fixes errors with index being out of range
             
             if description[0] == "rank":
-                with open(path+"data", "r") as file:
+                """with open(path+"userdata", "r") as file:
                     name, self.rank = file.readlines()
                     name = name.rstrip()
-                    self.rank = self.rank.rstrip()
+                    self.rank = self.rank.rstrip()"""
+                with open(path+"userdata", "r") as file:
+                    data = pickle.load(file)
+                
+                self.rank = data["rank"]
                 self.rank = int(int(self.rank) / 25)
                 self.required_ranks = description[1]
                        
@@ -276,18 +300,27 @@ class Menu(object):
 
 class Loadouts(object):
     def __init__(self, ifback):
-        self.loadout_one = []
+        with open(path+"userdata", "r") as file:
+            data = pickle.load(file)
+        """self.loadout_one = []
         self.loadout_two = []
         self.loadout_three = []
         self.loadout_four = []
-        self.loadout_five = []
+        self.loadout_five = []"""
+        
+        self.loadout_one = data["LOADOUT 1"]
+        self.loadout_two = data["LOADOUT 2"]
+        self.loadout_three = data["LOADOUT 3"]
+        self.loadout_four = data["LOADOUT 4"]
+        self.loadout_five = data["LOADOUT 5"]
+        
         self.click = pygame.mixer.Sound(soundpath+"click.wav")
         if ifback:
             self.words = ["LOADOUT 1", "LOADOUT 2", "LOADOUT 3", "LOADOUT 4", "LOADOUT 5", "BACK"]
         else:
             self.words = ["LOADOUT 1", "LOADOUT 2", "LOADOUT 3", "LOADOUT 4", "LOADOUT 5"]
          
-        for lines in open(path+'LOADOUT 1', 'r').readlines():
+        """for lines in open(path+'LOADOUT 1', 'r').readlines():
             self.loadout_one.append(lines.rstrip())
         for lines in open(path+'LOADOUT 2', 'r').readlines():
             self.loadout_two.append(lines.rstrip())
@@ -296,7 +329,8 @@ class Loadouts(object):
         for lines in open(path+'LOADOUT 4', 'r').readlines():
             self.loadout_four.append(lines.rstrip())
         for lines in open(path+'LOADOUT 5', 'r').readlines():
-            self.loadout_five.append(lines.rstrip())
+            self.loadout_five.append(lines.rstrip())"""
+            
             
         self.background = pygame.Surface(screen.get_size())
         self.background.fill((0,0,0))
@@ -370,7 +404,17 @@ class Setup(object):
         self.background = pygame.Surface(screen.get_size())
         self.background.fill((0,0,0))
         self.background = self.background.convert()
+        self.custom = False
         self.font = {"big": pygame.font.SysFont("monospace", 50), "medium": pygame.font.SysFont("monospace", 35), "small": pygame.font.SysFont("monospace", 25), "smallish": pygame.font.SysFont("monospace", 20), "extrasmall": pygame.font.SysFont("monospace", 15)}
+    
+    def update_data(self, number, loadout_number, new):
+        with open(path+"userdata", "r") as file:
+            data = pickle.load(file)
+        loadout = data[loadout_number]
+        loadout[number] = new
+        data[loadout_number] = loadout
+        with open(path+"userdata", "w+") as file:
+            pickle.dump(data, file, protocol=2) 
         
     def MainMenu(self):
         pygame.mixer.music.load(soundpath+'music.wav')
@@ -438,6 +482,9 @@ class Setup(object):
                                 os.remove(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', 'Creations', 'Guns', '')+delete+".pyc")
                             except OSError:
                                 pass
+                            
+                            
+                            #LOAD IN PICKLE FILE AND REWRITE IT
                             
                             """remove now non existent guns from loadouts"""
                             for loadout in ["LOADOUT 1", "LOADOUT 2", "LOADOUT 3", "LOADOUT 4", "LOADOUT 5"]:
@@ -529,7 +576,8 @@ class Setup(object):
                                 
                             """writing our weapon choice to file"""
                             if weapon != "BACK":
-                                num = 0
+                                self.update_data(0, loadout_number, weapon)
+                                """num = 0
                                 new = []
                                 with open(path+loadout_number, 'r') as file:
                                     for lines in file.readlines():
@@ -542,14 +590,15 @@ class Setup(object):
                 
                                 os.remove(path+loadout_number)
                                 with open(path+loadout_number, 'w') as file:
-                                    file.write(''.join(new))
+                                    file.write(''.join(new))"""
                             go_back_once = True
                             del(weapon)
                     elif loadoutchoice == "PERK 1":
                         perk1 = Menu(["RATIONS", "QUICK HANDS", "RAPID FIRE", "BACK"]).GameSetup("rank", [1, 3, 6], "MOVE FASTER", "RELOAD FASTER", "FIRE RATE INCREASED BY 50%")
                 
                         if perk1 != "BACK":
-                            num = 0
+                            self.update_data(1, loadout_number, perk1)
+                            """num = 0
                             new = []
                             with open(path+loadout_number, 'r') as file:
                                 for lines in file.readlines():
@@ -562,7 +611,7 @@ class Setup(object):
                 
                             os.remove(path+loadout_number)
                             with open(path+loadout_number, 'w') as file:
-                                file.write(''.join(new))
+                                file.write(''.join(new))"""
                             
                         go_back_once = True                       
                 
@@ -572,7 +621,8 @@ class Setup(object):
                         perk2 = Menu(["HOLLOW POINTS", "SELECT FIRE", "EXT MAGS", "BACK"]).GameSetup("rank", [1, 5, 9], "HIGHER DAMAGE", "SEMI-AUTO GUNS ARE FULL-AUTO", "50% MORE AMMO")
                 
                         if perk2 != "BACK":
-                            num = 0
+                            self.update_data(2, loadout_number, perk2)
+                            """num = 0
                             new = []
                             with open(path+loadout_number, 'r') as file:
                                 for lines in file.readlines():
@@ -585,7 +635,7 @@ class Setup(object):
                 
                             os.remove(path+loadout_number)
                             with open(path+loadout_number, 'w') as file:
-                                file.write(''.join(new))
+                                file.write(''.join(new))"""
                             
                         go_back_once = True                       
                 
@@ -595,7 +645,8 @@ class Setup(object):
                         perk3 = Menu(["MEDIC", "ALPHA MALE", "DISTRACTION", "BACK"]).GameSetup("rank", [1, 5, 11], "MORE HEALTH", "ENEMIES MOVE SLOWER TOWARDS YOU", "ENEMIES ARE LESS ACCURATE")
                 
                         if perk3 != "BACK":
-                            num = 0
+                            self.update_data(3, loadout_number, perk3)
+                            """num = 0
                             new = []
                             with open(path+loadout_number, 'r') as file:
                                 for lines in file.readlines():
@@ -608,7 +659,7 @@ class Setup(object):
                 
                             os.remove(path+loadout_number)
                             with open(path+loadout_number, 'w') as file:
-                                file.write(''.join(new))
+                                file.write(''.join(new))"""
                             
                         go_back_once = True
                 
@@ -657,8 +708,12 @@ class Setup(object):
             return False
                 
     def guns(self, loadout_number):  
-        self.weapon = open(path+loadout_number, 'r').readlines()[0].rstrip()
-        #open(path+loadout_number, 'r').close()
+        """self.weapon = open(path+loadout_number, 'r').readlines()[0].rstrip()
+        #open(path+loadout_number, 'r').close()"""
+        with open(path+"userdata", "r") as file:
+            data = pickle.load(file)
+        loadout = data[str(loadout_number)]
+        self.weapon = loadout[0]
         if self.weapon == "M1 GARAND":
             self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_one_garand()
         elif self.weapon == "MP40":
@@ -694,14 +749,16 @@ class Setup(object):
         else: #custom gun
             self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Custom_Gun(self.weapon).return_gun()
         
-        perk1 = open(path+loadout_number, 'r').readlines()[1].rstrip()    
+        """perk1 = open(path+loadout_number, 'r').readlines()[1].rstrip() """
+        perk1 = loadout[1]   
         if perk1 == "QUICK HANDS":
             self.reloadtime *= 0.75
         elif perk1 == "RAPID FIRE":
             if self.firerate > 1:
                 self.firerate = int(self.firerate * 0.5)
     
-        perk2 = open(path+loadout_number, 'r').readlines()[2].rstrip()    
+        """perk2 = open(path+loadout_number, 'r').readlines()[2].rstrip() """
+        perk2 = loadout[2]   
         if perk2 == "HOLLOW POINTS":
             self.stk *= 0.75
         elif perk2 == "SELECT FIRE":
@@ -715,13 +772,18 @@ class Setup(object):
             self.mag = int(self.mag * 1.5)    
     
     def perks(self, loadout_number):
-        perk1 = open(path+loadout_number, 'r').readlines()[1].rstrip()
+        with open(path+"userdata", "r") as file:
+            data = pickle.load(file)
+        loadout = data[str(loadout_number)]
+        """perk1 = open(path+loadout_number, 'r').readlines()[1].rstrip()"""
+        perk1 = loadout[1]
         if perk1 == "RATIONS":
             self.rations = True
         else: 
             self.rations = False
    
-        perk3 = open(path+loadout_number, 'r').readlines()[3].rstrip()    
+        """perk3 = open(path+loadout_number, 'r').readlines()[3].rstrip()"""
+        perk3 = loadout[3]    
         if perk3 == "MEDIC":
             self.medic = True
         else:

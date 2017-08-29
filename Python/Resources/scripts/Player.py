@@ -2,6 +2,7 @@ import pygame, os, math, sys
 from Resources.scripts.Maps import *
 from Resources.scripts.Creator import *
 from random import randint
+import pickle
 
 if __name__ == "__main__":
     sys.exit()
@@ -55,11 +56,14 @@ class Player(object):
     
     def update_rank(self, kills):
         path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', '')
-        with open(path+'data', 'r+') as file:
+        """with open(path+'data', 'r+') as file:
             name, rank = file.readlines()
         os.remove(path+'data')
         with open(path+'data', 'w+') as file:
-            file.write(name+str(int(rank) + kills))
+            file.write(name+str(int(rank) + kills))"""
+        with open(path+"userdata", "r") as file:
+            data = pickle.load(file)
+        rank = data["rank"] 
             
         self.rank = int((int(rank) + kills) / 25)
         
