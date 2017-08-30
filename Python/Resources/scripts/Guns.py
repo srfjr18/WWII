@@ -144,13 +144,13 @@ class Gun_Types(object):
             pygame.draw.rect(bg, (0, 0, 0), (67, 2, 12, 1))
             pygame.draw.rect(bg, (26, 29, 29), (61, 17, 25, 8))
             pygame.draw.rect(bg, (131, 70, 29), (67, 25, 13, 24))
-            pygame.draw.rect(bg, (131, 70, 29), (69, 10, 10, 1))
-            pygame.draw.rect(bg, (131, 70, 29), (73, 1, 1, 15))
+            pygame.draw.rect(bg, (0, 0, 0), (69, 10, 10, 1))
+            pygame.draw.rect(bg, (0, 0, 0), (73, 1, 1, 15))
             pygame.draw.rect(bg, (0, 2, 1), (67, 17, 12, 11))
             backup_bg = bg
             bg = pygame.transform.rotate(bg, angle)
             screen.blit(bg, (mainx - 25, mainy - 25))
-            return [(None, (0, 0, 0), (69, 2, 0, 21)), (None, (0, 0, 0), (78, 3, 0, 21)), (None, (0, 0, 0), (67, 2, 12, 1)), (None, (26, 29, 29), (61, 17, 25, 8)), (None, (131, 70, 29), (67, 25, 13, 24)), (None, (131, 70, 29), (69, 10, 10, 1)), (None, (131, 70, 29), (73, 1, 1, 15)), (None, (0, 2, 1), (67, 17, 12, 11))]
+            return [(None, (0, 0, 0), (69, 2, 0, 21)), (None, (0, 0, 0), (78, 3, 0, 21)), (None, (0, 0, 0), (67, 2, 12, 1)), (None, (26, 29, 29), (61, 17, 25, 8)), (None, (131, 70, 29), (67, 25, 13, 24)), (None, (0, 0, 0), (69, 10, 10, 1)), (None, (0, 0, 0), (73, 1, 1, 15)), (None, (0, 2, 1), (67, 17, 12, 11))]
         return 1, "full-auto", 45, 71, 150, 8
     def m_three(self, angle=None, mainx=300, mainy=240):
         if angle != None:
