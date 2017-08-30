@@ -33,7 +33,8 @@ def titlescreen_menu(start=False):
     global enemy_hit, kills, deaths, hit, shot, internalclock
     global setup, maps, loadouts, player, player_gun
     global enemy_gun, enemy_player, loadout_number
-    global background, in_between_shots
+    global background, in_between_shots, first_run
+    first_run = True
     reloading = semiauto = False
     enemy_hit = kills = deaths = hit = shot = internalclock = 0 
     setup = Setup()
@@ -85,7 +86,7 @@ def titlescreen_menu(start=False):
 
 titlescreen_menu(True)
 while running:
-  
+    
     mousepos = pygame.mouse.get_pos()
     clock.tick(FPS)
     internalclock += 1
@@ -148,6 +149,12 @@ while running:
                 online = setup.online
                 setup = new_setup
                 setup.online = online
+                del(new_setup)
+                loadout_number = setup.loadout_number
+                gun = setup.gun
+  
+                if setup.online:
+                    enemy_player.send_receive(setup.stk, player.angle, player.imagesx, player.imagesy, player_gun.shotrise_list, player_gun.shotrun_list, gun)
             except:
                 pass
             reloading = False
@@ -156,6 +163,13 @@ while running:
                 Menu([]).killed()
 
     if setup.online:
+        #sending gun model to other player if online and on first run
+        if first_run:
+            setup.guns(loadout_number, player.angle)
+            first_run = False
+            gun = setup.gun
+            enemy_player.send_receive(setup.stk, player.angle, player.imagesx, player.imagesy,  player_gun.shotrise_list, player_gun.shotrun_list, gun)
+            
         endcheck = enemy_player.send_receive(setup.stk, player.angle, player.imagesx, player.imagesy,  player_gun.shotrise_list, player_gun.shotrun_list) #means we are playing online
         if endcheck:
             try:
@@ -179,7 +193,7 @@ while running:
 
     if pygame.mouse.get_pressed()[2] and not semiauto and not reloading and in_between_shots:
         recoil = randint(-1 * setup.recoil, setup.recoil)
-        player_gun.create_shot(mousepos, recoil)
+        player_gun.create_shot(mousepos, recoil, player.angle)
         in_between_shots = False
         if setup.action == "semi-auto":
             semiauto = True
@@ -244,10 +258,11 @@ while running:
     player_gun.blit_shot()
     enemy_gun.blit_shot()
     if setup.online:
-        enemy_player.blit_enemy(hit_enemy, player.imagesx, player.imagesy, enemy_player.angle) 
+        enemy_player.blit_enemy(hit_enemy, player.imagesx, player.imagesy, enemy_player.angle, enemy_player.enemy_gun) 
     else:
          enemy_player.blit_enemy(hit_enemy, player.imagesx, player.imagesy)             
-    screen.blit(player.maincharacter, (player.mainx, player.mainy))   
+    screen.blit(player.maincharacter, (player.mainx, player.mainy))
+    setup.guns(loadout_number, player.angle) #blitting our gun   
     player.red_screen(setup.medic, enemy_player.enemy_stk, enemy_hit)
     player.ui(kills, deaths, setup.weapon, setup.mag, shot, reloading, setup.max_kills)    
     pygame.display.flip()

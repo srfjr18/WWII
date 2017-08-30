@@ -2,6 +2,7 @@ import os, pygame, sys, socket, pickle
 from random import randint
 from Resources.scripts.Guns import *
 from Resources.scripts.Creator import *
+from uuid import getnode
 
 if __name__ == "__main__":
     sys.exit()
@@ -21,6 +22,17 @@ class Menu(object):
         self.background = self.background.convert()
         self.words = words
         self.font = {"big": pygame.font.SysFont("monospace", 50), "medium": pygame.font.SysFont("monospace", 35), "small": pygame.font.SysFont("monospace", 25), "smallish": pygame.font.SysFont("monospace", 20), "extrasmall": pygame.font.SysFont("monospace", 15)}
+        
+        """checking if mac matches up with the mac in userdata.
+        I call this frequently so I figured why not check here"""
+        try:
+            mac = ':'.join(("%012X" % getnode())[i:i+2] for i in range(0, 12, 2))
+            with open(path+"userdata", "r") as file:
+                data = pickle.load(file)
+            if mac != data["MAC"]:
+                raise ValueError("Userdata file is from another system! (MAC does not match)")
+        except IOError: #file hasn't been made yet
+            pass
     
     def killed(self):
         pygame.time.delay(300)
@@ -132,8 +144,8 @@ class Menu(object):
                 pygame.mixer.Sound.play(self.click)
                 break
         if not os.path.isfile(path+'userdata'):
-            default_class = ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"]
-            new = {"name": "NONE", "rank": 25, "LOADOUT 1": default_class, "LOADOUT 2": default_class, "LOADOUT 3": default_class, "LOADOUT 4": default_class, "LOADOUT 5": default_class, "IP": []}
+            mac = ':'.join(("%012X" % getnode())[i:i+2] for i in range(0, 12, 2))
+            new = {"name": "NONE", "rank": 25, "LOADOUT 1": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 2": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 3": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 4": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 5": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "IP": [], "MAC": mac}
             with open(path+"userdata", "w+") as file:
                 pickle.dump(new, file, protocol=2)
             self.name()
@@ -410,9 +422,7 @@ class Setup(object):
     def update_data(self, number, loadout_number, new):
         with open(path+"userdata", "r") as file:
             data = pickle.load(file)
-        loadout = data[loadout_number]
-        loadout[number] = new
-        data[loadout_number] = loadout
+        data[loadout_number][number] = new
         with open(path+"userdata", "w+") as file:
             pickle.dump(data, file, protocol=2) 
         
@@ -487,9 +497,17 @@ class Setup(object):
                             #LOAD IN PICKLE FILE AND REWRITE IT
                             
                             """remove now non existent guns from loadouts"""
+                            loadoutpath = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', '')    
+                            with open(loadoutpath+"userdata", "r") as file:
+                                data = pickle.load(file)
                             for loadout in ["LOADOUT 1", "LOADOUT 2", "LOADOUT 3", "LOADOUT 4", "LOADOUT 5"]:
-                                loadoutpath = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', loadout)    
-                                rewrite_file = False
+                                if delete == data[loadout][0]:
+                                    data[loadout][0] = "M1 GARAND"
+                                    
+                            with open(loadoutpath+"userdata", "w+") as file:
+                                pickle.dump(data, file, protocol=2)
+                                
+                                """rewrite_file = False
                                 with open(loadoutpath, 'r') as file:
                                     if delete in file.read():
                                         rewrite_file = True
@@ -506,7 +524,7 @@ class Setup(object):
                                 if rewrite_file:
                                     os.remove(loadoutpath)
                                     with open(loadoutpath, 'w+') as file:
-                                        file.write(''.join(new))
+                                        file.write(''.join(new))"""
                     
                     
                     elif create_choice == "DELETE MAP":
@@ -707,48 +725,126 @@ class Setup(object):
         except:
             return False
                 
-    def guns(self, loadout_number):  
+    def guns(self, loadout_number, angle=None):  
         """self.weapon = open(path+loadout_number, 'r').readlines()[0].rstrip()
         #open(path+loadout_number, 'r').close()"""
         with open(path+"userdata", "r") as file:
             data = pickle.load(file)
-        loadout = data[str(loadout_number)]
-        self.weapon = loadout[0]
+            
+        try:
+            loadout = data[str(loadout_number)]
+            self.weapon = loadout[0]
+        except: #enemy option
+            self.weapon = loadout_number
         if self.weapon == "M1 GARAND":
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_one_garand()
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_one_garand(angle)
+            except (TypeError, ValueError):
+                self.gun = Gun_Types().m_one_garand(angle)
+                return
         elif self.weapon == "MP40":
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().mp40()
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().mp40(angle)
+            except (TypeError, ValueError):
+                self.gun = Gun_Types().mp40(angle)
+                return
         elif self.weapon == "THOMPSON":
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().thompson()
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().thompson(angle)
+            except (TypeError, ValueError):
+                self.gun = Gun_Types().thompson(angle)
+                return
         elif self.weapon == "STG44":
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().stg()
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().stg(angle)
+            except (TypeError, ValueError):
+                self.gun = Gun_Types().stg(angle)
+                return
         elif self.weapon == "M1A1":
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_one_a_one()
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_one_a_one(angle)
+            except (TypeError, ValueError):
+                self.gun = Gun_Types().m_one_a_one(angle)
+                return
         elif self.weapon == "FG42":
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().fg_forty_two()
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().fg_forty_two(angle)
+            except (TypeError, ValueError):
+                self.gun = Gun_Types().fg_forty_two(angle)
+                return
         elif self.weapon == "PPSH41":
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().ppsh()
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().ppsh(angle)
+            except (TypeError, ValueError):
+                self.gun = Gun_Types().ppsh(angle)
+                return
+        elif self.weapon == "GEWEHR 43":
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().gewehr_forty_three(angle)
+            except (TypeError, ValueError):
+                self.gun = Gun_Types().gewehr_forty_three(angle)
+                return  
         elif self.weapon == "M3":
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_three()
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_three(angle)
+            except (TypeError, ValueError):
+                self.gun = Gun_Types().m_three(angle)
+                return
         elif self.weapon == "OWEN GUN":
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().owen()
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().owen(angle)
+            except (TypeError, ValueError):
+                self.gun = Gun_Types().owen(angle)
+                return
         elif self.weapon == "M1919":
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_nineteen_nineteen()
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_nineteen_nineteen(angle)
+            except (TypeError, ValueError):
+                self.gun = Gun_Types().m_nineteen_nineteen(angle)
+                return
         elif self.weapon == "BAR":
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().bar()
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().bar(angle)
+            except (TypeError, ValueError):
+                self.gun = Gun_Types().bar(angle)
+                return
         elif self.weapon == "TYPE 99":
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().type_ninety_nine()
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().type_ninety_nine(angle)
+            except (TypeError, ValueError):
+                self.gun = Gun_Types().type_ninety_nine(angle)
+                return
         elif self.weapon == "SVT40":
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().svt_forty()
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().svt_forty(angle)
+            except (TypeError, ValueError):
+                self.gun = Gun_Types().svt_forty(angle)
+                return
         elif self.weapon == "MOSIN NAGANT":
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().mosin_nagant()
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().mosin_nagant(angle)
+            except (TypeError, ValueError):
+                self.gun = Gun_Types().mosin_nagant(angle)
+                return
         elif self.weapon == "ARIASKA":
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().ariaska()
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().ariaska(angle)
+            except (TypeError, ValueError):
+                self.gun = Gun_Types().ariaska(angle)
+                return
         elif self.weapon == "SPRINGFIELD":
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().springfield()
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().springfield(angle)
+            except ((TypeError, ValueError), ValueError):
+                self.gun = Gun_Types().springfield(angle)
+                return
         else: #custom gun
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Custom_Gun(self.weapon).return_gun()
-        
+            if angle == None:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Custom_Gun(self.weapon).return_gun()
+            else:
+                self.gun = Custom_Gun(self.weapon).blit_gun(angle)
+                return
+                
         """perk1 = open(path+loadout_number, 'r').readlines()[1].rstrip() """
         perk1 = loadout[1]   
         if perk1 == "QUICK HANDS":
@@ -762,12 +858,13 @@ class Setup(object):
         if perk2 == "HOLLOW POINTS":
             self.stk *= 0.75
         elif perk2 == "SELECT FIRE":
-            if self.action == "semi-auto":
-                self.action = "full-auto"
-                self.firerate = 15
-            else:
-                self.action = "semi-auto"
-                self.firerate = 1
+            if self.stk > 5:
+                if self.action == "semi-auto":
+                    self.action = "full-auto"
+                    self.firerate = 15
+                else:
+                    self.action = "semi-auto"
+                    self.firerate = 1
         elif perk2 == "EXT MAGS":
             self.mag = int(self.mag * 1.5)    
     
@@ -810,8 +907,10 @@ class Setup(object):
                 if loadout_number != "BACK":
                     new_setup = Setup()
                     new_setup.guns(loadout_number)
+                    new_setup.guns(loadout_number, 0)
                     new_setup.perks(loadout_number)
                     new_setup.map_choice = setup.map_choice
+                    new_setup.loadout_number = loadout_number
             elif pause == "OPTIONS":
                 while True:
                     option_choice = Menu(["FULLSCREEN", "WINDOWED", "BACK"]).GameSetup()

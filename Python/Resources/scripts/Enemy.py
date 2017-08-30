@@ -27,14 +27,24 @@ class Enemy(Setup, Gun_Types):
         Setup.__init__(self)
         self.backup = self.enemy = pygame.image.load(path+'enemy.png')
         self.hitmarker = pygame.image.load(path+'hitmarker.png')
-        self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime, recoil = self.getrand_gun()
+        self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime, recoil = self.getrand_gun_or_blit()
         if self.enemy_action == "semi-auto":
             self.enemy_firerate = 30
     
-    def blit_enemy(self, collision, imagesx, imagesy, angle = None):
-        if angle != None:
+    def blit_enemy(self, collision, imagesx, imagesy, angle=None, gun=None):
+        if angle != None and gun != None:
             self.enemy = pygame.transform.rotate(self.backup, angle)
-        screen.blit(self.enemy, (self.enemyposX - imagesx, self.enemyposY - imagesy))
+            gun = pygame.transform.rotate(gun, angle)
+
+            screen.blit(gun, (self.enemyposX - imagesx - 25, self.enemyposY - imagesy - 25))
+            screen.blit(self.enemy, (self.enemyposX - imagesx, self.enemyposY - imagesy))
+        else: # AI enemy
+            try:
+                self.enemy_angle
+            except:
+                self.enemy_angle = 0
+            screen.blit(self.enemy, (self.enemyposX - imagesx, self.enemyposY - imagesy))
+            self.getrand_gun_or_blit(self.rand_num, self.enemy_angle, self.enemyposX - imagesx, self.enemyposY - imagesy)
         if collision:
             screen.blit(self.hitmarker, (self.enemyposX - imagesx + (self.backup.get_size()[0] / 2.5), self.enemyposY - imagesy + (self.backup.get_size()[1] / 2.5)))
     
@@ -50,7 +60,7 @@ class Enemy(Setup, Gun_Types):
         if randint(1, 1) == 1 and not 640 > self.enemyposX - imagesx > 0 and not 480 > self.enemyposY - imagesy > 0 or self.proper_spawn(self.enemyposX - imagesx, self.enemyposY - imagesy, collision_list):
     
             #choose random gun for enemy
-            self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime, recoil = self.getrand_gun() #recoil is just neglected because badaim usually makes up for it or more
+            self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime, recoil = self.getrand_gun_or_blit() #recoil is just neglected because badaim usually makes up for it or more
             if self.enemy_action == "semi-auto":
                 self.enemy_firerate = 30
         
@@ -157,6 +167,9 @@ class Enemy(Setup, Gun_Types):
         elif enemy_angle <= 0:
             enemy_angle += 360           
         self.enemy = pygame.transform.rotate(self.backup, enemy_angle)
+        
+        self.enemy_angle = enemy_angle
+        
 
            
 class Enemy_Gun(object):

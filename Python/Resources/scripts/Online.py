@@ -12,6 +12,7 @@ if __name__ == "__main__":
 
 class online_mode(Enemy, Enemy_Gun):
     def __init__(self, map_choice=None, max_kills=10000):
+        self.enemy_gun = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
         self.online_max_kills = max_kills
         self.map_choice = map_choice
         self.eo = 3
@@ -281,7 +282,7 @@ class online_mode(Enemy, Enemy_Gun):
                 if pygame.Rect((run,rise), self.bullet.get_size()).colliderect(main_collision):
                     return True
         
-    def send_receive(self, stk, angle, imagesx, imagesy, shotrise_list, shotrun_list):
+    def send_receive(self, stk, angle, imagesx, imagesy, shotrise_list, shotrun_list, gun=None):
     
         """experimental to speed up user side of game on slow server"""
         self.eo += 1
@@ -328,7 +329,10 @@ class online_mode(Enemy, Enemy_Gun):
         if self.option == "JOIN SERVER":
             data = pickle.dumps([stk, angle, imagesx, imagesy, shotrise_list, shotrun_list], protocol=2)
             try:
-                self.s.send(data)
+                if gun != None:
+                    self.s.send(pickle.dumps(gun, protocol=2))
+                else:
+                    self.s.send(data)
             except:
                 return True
             
@@ -339,11 +343,24 @@ class online_mode(Enemy, Enemy_Gun):
             except:
                 beckup_shot_len = []
                 
+            
+            
                 
             try:
-                self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list = pickle.loads(self.s.recv(1024))
+                new = pickle.loads(self.s.recv(1024))
             except:
                 return True
+                
+            try:
+                self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list = new
+            except (TypeError, ValueError): #gun model was sent instead
+                bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
+                for i in new:
+                    pygame.draw.rect(bg, i[1], i[2])
+                self.enemy_gun = bg
+                
+                
+                
             
             self.enemyposX += self.mainx
             self.enemyposY += self.mainy
@@ -366,9 +383,18 @@ class online_mode(Enemy, Enemy_Gun):
         
         
             try:
-                self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list = pickle.loads(self.c.recv(1024))
+                new = pickle.loads(self.c.recv(1024))
             except:
                 return True
+                
+            try:
+                self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list = new
+            except (TypeError, ValueError): #gun model was sent instead
+                bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
+                for i in new:
+                    pygame.draw.rect(bg, i[1], i[2])
+                self.enemy_gun = bg
+                
             
             self.enemyposX += self.mainx
             self.enemyposY += self.mainy
@@ -378,7 +404,10 @@ class online_mode(Enemy, Enemy_Gun):
             
             data = pickle.dumps([stk, angle, imagesx, imagesy, shotrise_list, shotrun_list], protocol=2)
             try:
-                self.c.send(data)
+                if gun != None:
+                    self.c.send(pickle.dumps(gun, protocol=2))
+                else:
+                    self.c.send(data)
             except:
                 return True
                 

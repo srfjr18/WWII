@@ -128,7 +128,10 @@ class Creator(object):
                     semiauto = False
                     fullauto = True
                 elif mouse_collision.colliderect(pygame.Rect((screen.get_size()[0] / 3, 400), (screen.get_size()[0] / 3, 50))):
+                    self.map_builder(size=(50,50), build_gun=True, map_name=str(gun_name))
                     with open(gun_path+str(gun_name)+".py", 'w+') as gun:
+                        gun.write("import pygame\n")
+                        gun.write("screen =  pygame.display.set_mode((640,480))\n")
                         gun.write("def gun():"+"\n")
                         if semiauto:
                             action = "semi-auto"
@@ -181,7 +184,20 @@ class Creator(object):
                         firerate = str(firerate)
                                 
                         gun.write('    return '+firerate+', "'+action+'", '+damage+', '+mag+', '+reloadtime+', '+recoil+'\n')
-                            
+                        gun.write('def blit_gun(angle, mainx=300, mainy=240):\n')
+                        gun.write('    bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)\n')
+                        for i in self.rects:
+                            gun.write('    pygame.draw.rect(bg, '+str(i[1])+', '+str(i[2])+')\n')
+                        gun.write('    bg = pygame.transform.rotate(bg, angle)\n')
+                        gun.write('    screen.blit(bg, (mainx - 25, mainy - 25))\n')
+                        
+                        gun.write("    return [")
+                        for i in self.rects:
+                            gun.write("(None, "+str(i[1])+", "+str(i[2])+"), ")
+                        gun.seek(-2, os.SEEK_END)
+                        gun.truncate()
+                        gun.write("]")
+       
                     pygame.time.delay(300)    
                     while True:
                         screen.blit(background, (0, 0))
@@ -218,12 +234,15 @@ class Creator(object):
                     
             
     
-    def map_builder(self):
+    def map_builder(self, size=(640,480), build_gun=False, map_name=None):
         pygame.init()
 
         screen =  pygame.display.set_mode((640,480))
         clock = pygame.time.Clock()
-        FPS = 80
+        if build_gun:
+            FPS = 30
+        else:
+            FPS = 80
 
         collision_list = []
 
@@ -286,12 +305,20 @@ class Creator(object):
                 break
            
         pygame.time.delay(300)
-        map_name = self.menu.name(True, "MAP NAME:")
+        if not build_gun:
+            map_name = self.menu.name(True, "MAP NAME:")
         
         bred = bgreen = bblue = 0
         
         pygame.time.delay(300)
         while True:
+            if build_gun:
+                bred = bgreen = bblue = 255
+                tempbackground = pygame.Surface(size)
+                tempbackground.fill((bred,bgreen,bblue))
+                tempbackground = tempbackground.convert()
+                screen.blit(tempbackground, (0, 0))
+                break
             tempbackground = pygame.Surface(screen.get_size())
             tempbackground.fill((bred,bgreen,bblue))
             tempbackground = tempbackground.convert()
@@ -323,8 +350,18 @@ class Creator(object):
                 break
             pygame.display.flip()
         
-        background = tempbackground
-        change = "pos"        
+        
+        
+        
+        background = pygame.Surface(screen.get_size())
+        background.fill((100,100,100))
+        background = background.convert()
+        if not build_gun:
+            background = tempbackground
+
+        change = "pos"
+            
+                   
         while True:
             milliseconds = clock.tick(FPS)
             screen.blit(background, (0, 0))
@@ -335,14 +372,23 @@ class Creator(object):
             text = font.render(str((mousepos[0] + scrollscreenx, mousepos[1] + scrollscreeny)),1,(0,0,0))
             screen.blit(text, (mousepos[0] + 10, mousepos[1]))
             
+            if build_gun:
+                buildscreen = pygame.Surface((size))
+                buildscreen.blit(tempbackground, (0, 0))
             """blitting the rects"""
             for images in range(number_of_images):
-                pygame.draw.rect(screen, (red[images], green[images], blue[images]), (x[images] - scrollscreenx, y[images] - scrollscreeny, width[images], height[images]))
-                pygame.draw.rect(screen, (0, 0, 0), (x[images] - scrollscreenx, y[images] - scrollscreeny, width[images], height[images]), 3)  
+                if build_gun:
+                    pygame.draw.rect(buildscreen, (red[images], green[images], blue[images]), (x[images] - scrollscreenx, y[images] - scrollscreeny, width[images], height[images]))
+                else:
+                    pygame.draw.rect(screen, (red[images], green[images], blue[images]), (x[images] - scrollscreenx, y[images] - scrollscreeny, width[images], height[images]))
+                    pygame.draw.rect(screen, (0, 0, 0), (x[images] - scrollscreenx, y[images] - scrollscreeny, width[images], height[images]), 3)  
     
-            pygame.draw.rect(screen, (red[number_of_images], green[number_of_images], blue[number_of_images]), (x[number_of_images] - scrollscreenx, y[number_of_images] - scrollscreeny, width[number_of_images], height[number_of_images]))
+            if build_gun:
+                pygame.draw.rect(buildscreen, (red[number_of_images], green[number_of_images], blue[number_of_images]), (x[number_of_images] - scrollscreenx, y[number_of_images] - scrollscreeny, width[number_of_images], height[number_of_images]))
+            else:
+                pygame.draw.rect(screen, (red[number_of_images], green[number_of_images], blue[number_of_images]), (x[number_of_images] - scrollscreenx, y[number_of_images] - scrollscreeny, width[number_of_images], height[number_of_images]))
     
-            pygame.draw.rect(screen, (0, 0, 0), (x[number_of_images] - scrollscreenx, y[number_of_images] - scrollscreeny, width[number_of_images], height[number_of_images]), 3)
+                pygame.draw.rect(screen, (0, 0, 0), (x[number_of_images] - scrollscreenx, y[number_of_images] - scrollscreeny, width[number_of_images], height[number_of_images]), 3)
             
             
             """color ui"""
@@ -364,8 +410,9 @@ class Creator(object):
             
             """change between changing screenpos, pos, and size"""
             
-            text = font.render("SCREEN POSITION",1,(0,0,0))
-            screen.blit(text, (50, 5))
+            if not build_gun:
+                text = font.render("SCREEN POSITION",1,(0,0,0))
+                screen.blit(text, (50, 5))
             
             text = font.render("BLOCK POSITION",1,(0,0,0))
             screen.blit(text, (50, 50))
@@ -373,7 +420,7 @@ class Creator(object):
             text = font.render("BLOCK SIZE",1,(0,0,0))
             screen.blit(text, (50, 100))
             
-            if change == "screenpos":
+            if change == "screenpos" and not build_gun:
                 text = font.render("SCREEN POSITION",1,(255,255,255))
                 screen.blit(text, (50, 5))
             elif change == "pos":
@@ -382,11 +429,12 @@ class Creator(object):
             elif change == "size":
                 text = font.render("BLOCK SIZE",1,(255,255,255))
                 screen.blit(text, (50, 100))
-                
-            text = font.render("COLLISION="+str(collision[number_of_images]),1,(0,0,0))
-            screen.blit(text, (50, 400))
             
-            if mouse_collision.colliderect(pygame.Rect((50, 5), (150, 20))):
+            if not build_gun:    
+                text = font.render("COLLISION="+str(collision[number_of_images]),1,(0,0,0))
+                screen.blit(text, (50, 400))
+            
+            if mouse_collision.colliderect(pygame.Rect((50, 5), (150, 20))) and not build_gun:
                 text = font.render("SCREEN POSITION",1,(255,255,255))
                 screen.blit(text, (50, 5))
                 if pygame.mouse.get_pressed()[0]:
@@ -456,15 +504,15 @@ class Creator(object):
             if pygame.key.get_pressed()[pygame.K_l]:
                 width[number_of_images] += 1
     
-    
-            if pygame.key.get_pressed()[pygame.K_w]:
-                scrollscreeny -= 1
-            if pygame.key.get_pressed()[pygame.K_s]:
-                scrollscreeny += 1
-            if pygame.key.get_pressed()[pygame.K_a]:
-                scrollscreenx -= 1
-            if pygame.key.get_pressed()[pygame.K_d]:
-                scrollscreenx += 1
+            if not build_gun:
+                if pygame.key.get_pressed()[pygame.K_w]:
+                    scrollscreeny -= 1
+                if pygame.key.get_pressed()[pygame.K_s]:
+                    scrollscreeny += 1
+                if pygame.key.get_pressed()[pygame.K_a]:
+                    scrollscreenx -= 1
+                if pygame.key.get_pressed()[pygame.K_d]:
+                    scrollscreenx += 1
     
             if pygame.key.get_pressed()[pygame.K_r]:
                 red[number_of_images] += 1
@@ -479,7 +527,8 @@ class Creator(object):
                 if blue[number_of_images] > 255:
                     blue[number_of_images] = 0
             
-    
+            if build_gun:
+                screen.blit(buildscreen, (300, 220))
             for event in pygame.event.get():  
                 if event.type == pygame.QUIT: 
                     pygame.quit()
@@ -490,7 +539,7 @@ class Creator(object):
                         sys.exit()
                     elif event.key == pygame.K_RETURN:
                         number_of_images += 1
-                        if x[number_of_images] == 1:    
+                        if x[number_of_images] == 1 and not build_gun:    
                             x[number_of_images] = mousepos[0] + scrollscreenx 
                             y[number_of_images] = mousepos[1] + scrollscreeny
                         red[number_of_images] = red[number_of_images - 1]
@@ -521,12 +570,19 @@ class Creator(object):
                             randint(spawn_area_x[0], spawn_area_x[1])
                             randint(spawn_area_y[0], spawn_area_y[1])
                         except:
-                            print("This map is too small and will crash!")
-                            sys.exit()
+                            if not build_gun:
+                                print("This map is too small and will crash!")
+                                sys.exit()
                         
                         for images in range(number_of_images):
                             collision_list.append(pygame.Rect((x[images], y[images]), (width[images], height[images])))
-                            
+                        
+                        if build_gun:
+                            self.rects = []
+                            for images in range(number_of_images + 1):
+                                self.rects.append((None, (red[images], green[images], blue[images]), (x[images] + 50, y[images], width[images], height[images])))
+                            return
+                                
                         with open(path+str(map_name)+".py", 'w+') as maps:
                             maps.write("import pygame"+"\n")
                             maps.write("screen =  pygame.display.set_mode((640,480))"+"\n")
@@ -581,6 +637,8 @@ class Custom_Gun(object):
         self.guns = importlib.import_module("Data.Creations.Guns."+gun_choice)
     def return_gun(self):
         return self.guns.gun()
+    def blit_gun(self, angle):
+        return self.guns.blit_gun(angle)
         
            
 class Play_Maps(object):

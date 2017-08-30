@@ -1,5 +1,5 @@
 import pygame, sys
-screen =  pygame.display.set_mode((640,480))
+screen = pygame.display.set_mode((640,480))
 
 if __name__ == "__main__":
     sys.exit()

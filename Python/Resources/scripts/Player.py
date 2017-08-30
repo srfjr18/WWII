@@ -6,7 +6,7 @@ import pickle
 
 if __name__ == "__main__":
     sys.exit()
-
+screen =  pygame.display.set_mode((640,480))
 path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-1]), 'images', '')
 soundpath = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-1]), 'sounds', '')
 class Player(object):
@@ -184,7 +184,7 @@ class Gun(object):
         self.backup_shotrise = []
         self.backup_shotrun = []
         self.bullet = pygame.image.load(path+'bullet.png')     
-        
+       
     def blit_shot(self):
         for rise, run, brise, brun in zip(self.shotrise_list, self.shotrun_list, self.backup_shotrise, self.backup_shotrun):
             self.shotrise_list.remove(rise)
@@ -212,12 +212,35 @@ class Gun(object):
                 if pygame.Rect((run,rise), self.bullet.get_size()).colliderect(enemy_rect):
                     return True
                    
-    def create_shot(self, mousepos, recoil):
-        self.shot_moveY = (mousepos[1] - self.mainy + recoil) / 10
-        self.shot_moveX = (mousepos[0] - self.mainx + recoil) / 10
+    def create_shot(self, mousepos, recoil, angle):
+        sizeX, sizeY = Player().backup.get_size()
+        gun_pos = 4 - (angle / 90)
         
-        self.shotrun_list.append(self.shot_moveX + self.mainx)
-        self.shotrise_list.append(self.shot_moveY + self.mainy)
+        sizeX -= 10
+        
+        if gun_pos <= 1:
+            blitX = sizeX
+            blitY = sizeY * gun_pos
+        elif gun_pos <= 2:
+            blitX = (sizeX * 2) - (sizeX * gun_pos)
+            blitY = (sizeY * (2 - gun_pos)) / 4 + 50
+        elif gun_pos <= 3:
+            blitX = (sizeX * 2) - (sizeX * gun_pos)
+            if blitX < 0:
+                blitX = 0
+            blitY = sizeY * (3 - gun_pos)
+        elif gun_pos <= 4:
+            blitY = 0
+            blitX = sizeX - ((sizeX * 4) - (sizeX * gun_pos))
+            
+        mouseposX = mousepos[0] - blitX
+        mouseposY = mousepos[1] - blitY
+        
+        self.shot_moveY = (mouseposY - self.mainy + recoil) / 10
+        self.shot_moveX = (mouseposX - self.mainx + recoil) / 10
+        
+        self.shotrun_list.append(self.shot_moveX + self.mainx + blitX)
+        self.shotrise_list.append(self.shot_moveY + self.mainy + blitY)
         self.backup_shotrun.append(self.shot_moveX)
         self.backup_shotrise.append(self.shot_moveY)
         
