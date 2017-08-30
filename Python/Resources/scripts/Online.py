@@ -9,6 +9,8 @@ except ImportError:
 
 if __name__ == "__main__":
     sys.exit()
+    
+screen = pygame.display.set_mode((640,480))
 
 class online_mode(Enemy, Enemy_Gun):
     def __init__(self, map_choice=None, max_kills=10000):
@@ -330,7 +332,7 @@ class online_mode(Enemy, Enemy_Gun):
             data = pickle.dumps([stk, angle, imagesx, imagesy, shotrise_list, shotrun_list], protocol=2)
             try:
                 if gun != None:
-                    self.s.send(pickle.dumps(gun, protocol=2))
+                    self.s.send(pickle.dumps([gun], protocol=2))
                 else:
                     self.s.send(data)
             except:
@@ -355,7 +357,7 @@ class online_mode(Enemy, Enemy_Gun):
                 self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list = new
             except (TypeError, ValueError): #gun model was sent instead
                 bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
-                for i in new:
+                for i in new[0]:
                     pygame.draw.rect(bg, i[1], i[2])
                 self.enemy_gun = bg
                 
@@ -391,7 +393,7 @@ class online_mode(Enemy, Enemy_Gun):
                 self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list = new
             except (TypeError, ValueError): #gun model was sent instead
                 bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
-                for i in new:
+                for i in new[0]:
                     pygame.draw.rect(bg, i[1], i[2])
                 self.enemy_gun = bg
                 
@@ -405,7 +407,7 @@ class online_mode(Enemy, Enemy_Gun):
             data = pickle.dumps([stk, angle, imagesx, imagesy, shotrise_list, shotrun_list], protocol=2)
             try:
                 if gun != None:
-                    self.c.send(pickle.dumps(gun, protocol=2))
+                    self.c.send(pickle.dumps([gun], protocol=2))
                 else:
                     self.c.send(data)
             except:

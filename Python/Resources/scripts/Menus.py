@@ -34,6 +34,38 @@ class Menu(object):
         except IOError: #file hasn't been made yet
             pass
     
+    def end_screen(self, kills, deaths):
+        pygame.time.delay(300)
+        pressed = True
+        while True:
+            screen.blit(self.background, (0, 0))
+            if kills > deaths:
+                text = self.font["big"].render("YOU WIN",1,(255,255,255))
+                screen.blit(text, (200, 200))
+            elif deaths > kills:
+                text = self.font["big"].render("YOU LOSE",1,(255,255,255))
+                screen.blit(text, (190, 200))
+            else:
+                text = self.font["big"].render("DRAW",1,(255,255,255))
+                screen.blit(text, (245, 200))
+            
+            text = self.font["medium"].render(str(kills)+" - "+str(deaths),1,(255,255,255))
+            screen.blit(text, (250, 250))
+            
+            text = self.font["small"].render("left click to continue",1,(255,255,255))
+            screen.blit(text, (150, 300))
+            for event in pygame.event.get():  
+                if event.type == pygame.QUIT: 
+                    sys.exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        sys.exit()
+            if pygame.mouse.get_pressed()[0] and not pressed:
+                break
+            elif not pygame.mouse.get_pressed()[0]:
+                pressed = False #used so you cant hold the button without even seeing the killed screen
+            pygame.display.flip()
+    
     def killed(self):
         pygame.time.delay(300)
         pressed = True
@@ -410,7 +442,8 @@ class Loadouts(object):
             pygame.display.flip()
 
 class Setup(object):
-    def __init__(self):
+    def __init__(self, map_choice="SHIP"):
+        self.map_choice = map_choice
         self.max_kills = 1000000
         self.online = False
         self.background = pygame.Surface(screen.get_size())
@@ -433,7 +466,7 @@ class Setup(object):
         go_back_once = False
         self.custom = False
         while True:
-            choice = Menu(words = ["LOADOUTS", "MAPS", "CREATE", "OPTIONS", "ONLINE GAME", "OFFLINE GAME"]).GameSetup("name")
+            choice = Menu(words = ["LOADOUTS", "MAPS", "CREATE", "OPTIONS", "ONLINE GAME", "OFFLINE GAME"]).GameSetup("name", "", "", "CURRENT MAP: "+str(self.map_choice))
             if choice == "MAPS":
                 go_back_once = True
                 while True:

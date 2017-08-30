@@ -111,7 +111,7 @@ class Enemy(Setup, Gun_Types):
         
             if self.counter > self.before_sees_you and self.counter < self.before_accurate and internalclock % self.enemy_firerate == 0 and self.enemy_shot <= self.enemy_mag:
                 self.enemy_shot += 1
-                self.gun.shoot_you(self.enemyposX, self.enemyposY, imagesx, imagesy, self.badaim)
+                self.gun.shoot_you(self.enemyposX, self.enemyposY, imagesx, imagesy, self.badaim, self.enemy_angle)
             if self.counter > self.before_accurate and internalclock % self.enemy_firerate == 0:
                 #makes enemy firerate more accurate if the gun is semi-auto
                 if self.enemy_firerate >= 30  and self.enemy_shot <= self.enemy_mag:
@@ -119,18 +119,18 @@ class Enemy(Setup, Gun_Types):
                 
                     # distraction perk making shots slightly less accurate
                     if self.distraction:
-                        self.gun.shoot_you(self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-2,2))
+                        self.gun.shoot_you(self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-2,2), self.enemy_angle)
                     else:
-                        self.gun.shoot_you(self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-1,1))
+                        self.gun.shoot_you(self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-1,1), self.enemy_angle)
                     
                 elif not self.enemy_firerate >= 30 and self.enemy_shot <= self.enemy_mag:
                     self.enemy_shot += 1
                 
                     #same for full auto with the distraction perk
                     if self.distraction:
-                        self.gun.shoot_you(self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-4,4))
+                        self.gun.shoot_you(self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-4,4), self.enemy_angle)
                     else:
-                        self.gun.shoot_you(self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-3,3))
+                        self.gun.shoot_you(self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-3,3), self.enemy_angle)
                     
                     
         # enemy reloads        
@@ -212,12 +212,37 @@ class Enemy_Gun(object):
             self.enemy_shotrun_list.append(run + brun)
             screen.blit(self.bullet, (run, rise))
             
-    def shoot_you(self, enemy_posX, enemy_posY, imagesx, imagesy, badaim):    
-        enemy_shot_angley = -1 * ((enemy_posY - imagesy - self.mainy) / 10 + badaim)
-        enemy_shot_anglex = -1 * ((enemy_posX - imagesx - self.mainx) / 10 + badaim)
+    def shoot_you(self, enemy_posX, enemy_posY, imagesx, imagesy, badaim, angle):
+            
+        sizeX, sizeY = self.backup.get_size()
+        gun_pos = 4 - (angle / 90)
+        
+        sizeX -= 10
+        
+        if gun_pos <= 1:
+            blitX = sizeX
+            blitY = sizeY * gun_pos
+        elif gun_pos <= 2:
+            blitX = (sizeX * 2) - (sizeX * gun_pos)
+            blitY = (sizeY * (2 - gun_pos)) / 4 + 50
+        elif gun_pos <= 3:
+            blitX = (sizeX * 2) - (sizeX * gun_pos)
+            if blitX < 0:
+                blitX = 0
+            blitY = sizeY * (3 - gun_pos)
+        elif gun_pos <= 4:
+            blitY = 0
+            blitX = sizeX - ((sizeX * 4) - (sizeX * gun_pos))
+            
+        mainy = self.mainy - blitY
+        mainx = self.mainx - blitX
+        
+        
+        enemy_shot_angley = -1 * ((enemy_posY - imagesy - mainy) / 10 + badaim)
+        enemy_shot_anglex = -1 * ((enemy_posX - imagesx - mainx) / 10 + badaim)
     
-        self.enemy_shotrun_list.append(enemy_shot_anglex + (enemy_posX - imagesx))
-        self.enemy_shotrise_list.append(enemy_shot_angley + (enemy_posY - imagesy))
+        self.enemy_shotrun_list.append(enemy_shot_anglex + (enemy_posX - imagesx) + blitX)
+        self.enemy_shotrise_list.append(enemy_shot_angley + (enemy_posY - imagesy) + blitY)
         self.enemy_backup_shotrun.append(enemy_shot_anglex)
         self.enemy_backup_shotrise.append(enemy_shot_angley) 
         

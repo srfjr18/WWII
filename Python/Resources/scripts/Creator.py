@@ -4,6 +4,8 @@ from random import randint
 path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', 'Creations', 'Maps', '')
 gun_path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', 'Creations', 'Guns', '')
 
+screen =  pygame.display.set_mode((640,480))
+
 class Creator(object):
     def __init__(self):
         from Resources.scripts.Menus import Menu 
@@ -40,7 +42,6 @@ class Creator(object):
         pygame.draw.rect(screen, (255, 255, 255), (x + 200 * 0.1 * self.slider_dict[name], y, 1, 30), 3)  
         
     def gun_builder(self):
-        screen = pygame.display.set_mode((640,480))
         background = pygame.Surface(screen.get_size())
         background.fill((0,0,0))
         background = background.convert()
@@ -235,9 +236,7 @@ class Creator(object):
             
     
     def map_builder(self, size=(640,480), build_gun=False, map_name=None):
-        pygame.init()
 
-        screen =  pygame.display.set_mode((640,480))
         clock = pygame.time.Clock()
         if build_gun:
             FPS = 30
