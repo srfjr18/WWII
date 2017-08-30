@@ -73,8 +73,8 @@ class online_mode(Enemy, Enemy_Gun):
                     self.kill_thread = True
                     print("Error when joining server:")
                     traceback.print_exc()
-        Enemy.__init__(self, 1, 1, 1, 1)
         Enemy_Gun.__init__(self)
+        Enemy.__init__(self, 1, 1, 1, 1)
     
     def exit_script(self, l):
         self.kill_thread = False

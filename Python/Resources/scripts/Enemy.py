@@ -35,9 +35,9 @@ class Enemy(Setup, Gun_Types):
         if angle != None and gun != None:
             self.enemy = pygame.transform.rotate(self.backup, angle)
             gun = pygame.transform.rotate(gun, angle)
-
-            screen.blit(gun, (self.enemyposX - imagesx - 25, self.enemyposY - imagesy - 25))
+            
             screen.blit(self.enemy, (self.enemyposX - imagesx, self.enemyposY - imagesy))
+            screen.blit(gun, (self.enemyposX - imagesx - 25, self.enemyposY - imagesy - 25))
         else: # AI enemy
             try:
                 self.enemy_angle
