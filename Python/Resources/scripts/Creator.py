@@ -238,7 +238,6 @@ class Creator(object):
             
     
     def map_builder(self, size=(640,480), build_gun=False, map_name=None):
-        from Data.Creations.Maps.base import blit_map
         clock = pygame.time.Clock()
         if build_gun:
             FPS = 30
@@ -367,7 +366,6 @@ class Creator(object):
             milliseconds = clock.tick(FPS)
             screen.blit(background, (0, 0))
     
-            blit_map(scrollscreenx, scrollscreeny)
     
             mousepos = pygame.mouse.get_pos()
             mouse_collision = pygame.Rect((mousepos[0], mousepos[1]), (1, 1))
