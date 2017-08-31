@@ -52,13 +52,16 @@ def titlescreen_menu(start=False):
     setup.MainMenu()
 
     if setup.online:
-        try:
-            enemy_player = enemy_gun = online_mode(setup.map_choice, setup.max_kills) #host
-        except:
-            enemy_player = enemy_gun = online_mode() #client
+        enemy_player = enemy_gun = online_mode(setup.map_choice, setup.max_kills)
             
-        setup.map_choice = enemy_player.map_choice
+        setup.map_choice = enemy_player.online_map_choice
         setup.max_kills = enemy_gun.online_max_kills
+        
+        try:
+            maps.background_color(setup.map_choice)
+        except ValueError: #host is using custom map
+            setup.custom = True
+        
         if enemy_player.back:
             titlescreen_menu()
     
@@ -155,8 +158,10 @@ while running:
             #updating our loadout if we changed it at the pause menu
             try:
                 online = setup.online
+                custom = setup.custom
                 setup = new_setup
                 setup.online = online
+                setup.custom = custom
                 del(new_setup)
                 loadout_number = setup.loadout_number
                 gun = setup.gun
@@ -244,6 +249,7 @@ while running:
                 except:
                     pass
             elif event.key == pygame.K_RSHIFT:
+                print("paused")
                 new_setup = setup.pause(setup) #resume w/ changing loadout
                 
                 if new_setup == None: #resume w/o changing loadout

@@ -36,6 +36,8 @@ class Maps(object):
             self.town()
         elif map_choice == "BASE":
             self.base()
+        else:
+            raise ValueError("You are using a custom map")
         
     def spawn_area(self, map_choice):
         if map_choice == "SHIP":
@@ -48,6 +50,8 @@ class Maps(object):
             self.spawnX, self.spawnY = self.town_spawnarea_x, self.town_spawnarea_y
         elif map_choice == "BASE":
             self.spawnX, self.spawnY = self.base_spawnarea_x, self.base_spawnarea_y
+        else:
+            raise ValueError("You are using a custom map")
         
     def background_color(self, map_choice): 
         if map_choice == "SHIP":
@@ -60,6 +64,8 @@ class Maps(object):
             return (100,100,100)
         elif map_choice == "BASE":
             return (55, 70, 0)
+        else:
+            raise ValueError("You are using a custom map")
        
     
     def pacific(self):

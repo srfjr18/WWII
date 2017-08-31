@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from Resources.scripts.Enemy import *
 from Resources.scripts.Menus import *   
-import pygame, socket, pickle, sys, math, traceback, os
+import pygame, socket, pickle, sys, math, traceback, os, struct
 try:
     from thread import start_new_thread #python 2
 except ImportError:
@@ -198,22 +198,28 @@ class online_mode(Enemy, Enemy_Gun):
                     pygame.mixer.Sound.play(self.key) 
                     return name
             pygame.display.flip()
+
         
-    
-    def recvall(self, sock):
-        #this seems to work?
-        data = sock.recv(1024)
-        while True:
-            try:
-                data.decode()
-                return data
-            except:
-                pass
-            try:
-                data = pickle.loads(data)
-                return data
-            except:
-                data += sock.recv(1024)    
+    def send(self, sock, data):
+        length = len(data)
+        sock.sendall(struct.pack('!I', length))
+        sock.sendall(data)
+
+    def receive(self, sock):
+        lengthbuf = self.receive_everything(sock, 4)
+        length, = struct.unpack('!I', lengthbuf)
+        return self.receive_everything(sock, length)
+
+    def receive_everything(self, sock, count):
+        buf = b''
+        while count:
+            newbuf = sock.recv(count)
+            if not newbuf: 
+                return None
+            buf += newbuf
+            count -= len(newbuf)
+        return buf        
+ 
         
     def client(self, ip):
         
@@ -236,19 +242,19 @@ class online_mode(Enemy, Enemy_Gun):
         self.kill_thread = True
         
         
-        self.online_map_choice = self.recvall(self.s).decode()
+        self.online_map_choice = self.receive(self.s).decode()
         
-        if self.recvall(self.s).decode() == "True":
+        if self.receive(self.s).decode() == "True":
             self.lan = True
         else:
             self.lan = False
         
         pygame.time.delay(300)
             
-        self.online_max_kills = int(self.recvall(self.s).decode())
+        self.online_max_kills = int(self.receive(self.s).decode())
         
-        #self.recvall(self.s) 
-        #self.s.send(raw_input("Client please type: "))
+        #self.receive(self.s) 
+        #self.send(self.s, raw_input("Client please type: "))
         #s.close()
 
     def server(self):
@@ -273,21 +279,21 @@ class online_mode(Enemy, Enemy_Gun):
         
         self.kill_thread = True
          
-        self.c.send(str(self.online_map_choice).encode())    
+        self.send(self.c, str(self.online_map_choice).encode())    
         self.lan = Menu([]).yes_no("ARE YOU ON LAN OR HAVE", "A STRONG CONNECTION?")
         if self.lan == "yes":
             self.lan = True
         else:
             self.lan = False
             
-        self.c.send(str(self.lan).encode())
+        self.send(self.c, str(self.lan).encode())
         
         pygame.time.delay(300)
         
-        self.c.send(str(self.online_max_kills).encode())
+        self.send(self.c, str(self.online_max_kills).encode())
          
               
-        #self.c.send(raw_input("Server please type: "))
+        #send(self.c, raw_input("Server please type: "))
 
         #c.close()
     
@@ -301,6 +307,7 @@ class online_mode(Enemy, Enemy_Gun):
             for collisions in collision_list[:]:
                 if pygame.Rect((run,rise), self.bullet.get_size()).colliderect(main_collision):
                     return True
+ 
         
     def send_receive(self, stk, angle, imagesx, imagesy, shotrise_list, shotrun_list, gun=None):
     
@@ -350,9 +357,9 @@ class online_mode(Enemy, Enemy_Gun):
             data = pickle.dumps([stk, angle, imagesx, imagesy, shotrise_list, shotrun_list], protocol=2)
             try:
                 if gun != None:
-                    self.s.send(pickle.dumps([gun], protocol=2))
+                    self.send(self.s, pickle.dumps([gun], protocol=2))
                 else:
-                    self.s.send(data)
+                    self.send(self.s, data)
             except:
                 return True
             
@@ -367,13 +374,9 @@ class online_mode(Enemy, Enemy_Gun):
             
                 
             try:
-                new = self.recvall(self.s)
-            except: #bullshit pickle error
-                self.s.recv(4096) # discard next data
-                traceback.print_exc()
-                new = [self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list]
-            """except ImportError:
-                return True"""
+                new = pickle.loads(self.receive(self.s))
+            except:
+                return True
                 
             try:
                 self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list = new
@@ -407,13 +410,9 @@ class online_mode(Enemy, Enemy_Gun):
         
         
             try:
-                new = self.recvall(self.c)
-            except: #bullshit pickle error
-                self.c.recv(4096) # discard next data
-                traceback.print_exc()
-                new = [self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list]
-            """except ImportError:
-                return True"""
+                new = pickle.loads(self.receive(self.c))
+            except:
+                return True
                 
             try:
                 self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list = new
@@ -433,9 +432,9 @@ class online_mode(Enemy, Enemy_Gun):
             data = pickle.dumps([stk, angle, imagesx, imagesy, shotrise_list, shotrun_list], protocol=2)
             try:
                 if gun != None:
-                    self.c.send(pickle.dumps([gun], protocol=2))
+                    self.send(self.c, pickle.dumps([gun], protocol=2))
                 else:
-                    self.c.send(data)
+                    self.send(self.c, data)
             except:
                 return True
                 

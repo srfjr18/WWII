@@ -144,6 +144,9 @@ class Menu(object):
                         try: 
                             if int_only:
                                 int(chr(event.key))
+                                
+                            if str(chr(event.key)) == '.':
+                                raise ValueError
                                  
                             if shift:
                                 name = name + str(chr(event.key)).upper()
