@@ -186,7 +186,9 @@ class online_mode(Enemy, Enemy_Gun):
                         return name
                     else: 
                         pygame.mixer.Sound.play(self.key) 
-                        try:                              
+                        try:
+                            if str(chr(event.key)) != ".":
+                                int(chr(event.key))                              
                             name = name + str(chr(event.key))
                         except ValueError:
                             pass

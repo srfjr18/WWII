@@ -90,7 +90,7 @@ class Menu(object):
             pygame.display.flip()
         
 
-    def name(self, different=False, diftext=None):
+    def name(self, different=False, diftext=None, int_only=False):
         name = ""
         shift = False
         screen.blit(self.background, (0, 0))
@@ -141,7 +141,10 @@ class Menu(object):
                             return name
                     elif len(name) < 10:  
                         pygame.mixer.Sound.play(self.key)
-                        try:  
+                        try: 
+                            if int_only:
+                                int(chr(event.key))
+                                 
                             if shift:
                                 name = name + str(chr(event.key)).upper()
                             else:
@@ -588,7 +591,7 @@ class Setup(object):
                     option_choice = Menu(["FULLSCREEN", "WINDOWED", "GAME OPTIONS", "BACK"]).GameSetup("", "", "", "", "PLAY TO CUSTOM KILLS/DEATHS FOR YOUR GAME")
                     if option_choice == "GAME OPTIONS":
                         while True:
-                            self.max_kills = Menu([]).name(True, "MAX K/Ds:")
+                            self.max_kills = Menu([]).name(True, "MAX K/Ds:", True)
                             try:
                                 self.max_kills = int(self.max_kills)
                                 break
