@@ -92,6 +92,7 @@ class Menu(object):
 
     def name(self, different=False, diftext=None):
         name = ""
+        shift = False
         screen.blit(self.background, (0, 0))
         text = self.font["small"].render("NAME:",1,(255,255,255))
         screen.blit(text, (250, 150))
@@ -110,6 +111,12 @@ class Menu(object):
             else:
                 text = self.font["smallish"].render(name,1,(255,255,255))
             screen.blit(text, (250, 250))
+            
+            if pygame.key.get_pressed()[pygame.K_RSHIFT] or pygame.key.get_pressed()[pygame.K_LSHIFT]:
+                shift = True
+            elif not pygame.key.get_pressed()[pygame.K_RSHIFT] and not pygame.key.get_pressed()[pygame.K_LSHIFT]:
+                shift = False
+            
             for event in pygame.event.get():  
                 if event.type == pygame.QUIT: 
                     sys.exit()
@@ -119,8 +126,6 @@ class Menu(object):
                     elif event.key == pygame.K_BACKSPACE:
                         pygame.mixer.Sound.play(self.key) 
                         name = name[:-1]
-                    elif event.key == pygame.K_RSHIFT or event.key == pygame.K_LSHIFT:
-                        pass
                     elif event.key == pygame.K_RETURN and name != "":
                         pygame.mixer.Sound.play(self.key)
                         if not different: 
@@ -137,7 +142,10 @@ class Menu(object):
                     elif len(name) < 10:  
                         pygame.mixer.Sound.play(self.key)
                         try:  
-                            name = name + str(chr(event.key))
+                            if shift:
+                                name = name + str(chr(event.key)).upper()
+                            else:
+                                name = name + str(chr(event.key))
                         except ValueError:
                             pass
                 if pygame.mouse.get_pressed()[0] and name != "":

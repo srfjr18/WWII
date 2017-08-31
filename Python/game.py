@@ -122,6 +122,7 @@ while running:
                     except:
                         enemy_player.s.close
                 Menu([]).end_screen(kills, deaths)
+                player.update_rank(kills)
                 titlescreen_menu()
     
     #Checking for our shot's collisions with the wall
@@ -148,6 +149,7 @@ while running:
                     except:
                         enemy_player.s.close
                 Menu([]).end_screen(kills, deaths)
+                player.update_rank(kills)
                 titlescreen_menu()
             
             #updating our loadout if we changed it at the pause menu
@@ -188,6 +190,7 @@ while running:
                 pass 
             endcheck = None
             Menu([]).end_screen(kills, deaths)
+            player.update_rank(kills)
             titlescreen_menu()
     else:
         enemy_player.AI(player.imagesx, player.imagesy, collision_list, loadout_number, internalclock)         
@@ -253,6 +256,7 @@ while running:
                         except:
                             enemy_player.s.close
                     Menu([]).end_screen(kills, deaths)
+                    player.update_rank(kills)
                     titlescreen_menu()
                     break
                         

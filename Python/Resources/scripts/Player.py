@@ -63,7 +63,13 @@ class Player(object):
             file.write(name+str(int(rank) + kills))"""
         with open(path+"userdata", "r") as file:
             data = pickle.load(file)
-        rank = data["rank"] 
+            
+        rank = data["rank"]
+        
+        data["rank"] = int(rank) + kills
+        with open(path+"userdata", "w+") as file:
+            pickle.dump(data, file, protocol=2)
+         
             
         self.rank = int((int(rank) + kills) / 25)
         
