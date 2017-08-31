@@ -217,6 +217,8 @@ class Creator(object):
                         if pygame.key.get_pressed()[pygame.K_RETURN]:
                             break
                         pygame.display.flip()
+                        
+                    pygame.display.set_mode((640,480))
                     try:
                         os.execv(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'game.py'), sys.argv)
                     except OSError: #using embedded python 3 windows version
@@ -236,7 +238,7 @@ class Creator(object):
             
     
     def map_builder(self, size=(640,480), build_gun=False, map_name=None):
-
+        from Data.Creations.Maps.base import blit_map
         clock = pygame.time.Clock()
         if build_gun:
             FPS = 30
@@ -364,6 +366,8 @@ class Creator(object):
         while True:
             milliseconds = clock.tick(FPS)
             screen.blit(background, (0, 0))
+    
+            blit_map(scrollscreenx, scrollscreeny)
     
             mousepos = pygame.mouse.get_pos()
             mouse_collision = pygame.Rect((mousepos[0], mousepos[1]), (1, 1))
@@ -560,8 +564,8 @@ class Creator(object):
                         number_of_images -= 1
                     
                     elif event.key == pygame.K_RSHIFT:
-                        
-                        
+                        if self.menu.yes_no("    ARE YOU SURE?") == "no":
+                            continue
                         """might need a +- 300 here!!!!!"""
                         spawn_area_x = (min(x) - 300, max(x) - 300)
                         spawn_area_y = (min(y) - 300, max(y) - 300)
@@ -620,7 +624,7 @@ class Creator(object):
                                 break
                             pygame.display.flip()
                                 
-                            
+                        pygame.display.set_mode((640,480))   
                         try:
                             os.execv(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'game.py'), sys.argv)
                         except OSError: #using embedded python 3 windows version

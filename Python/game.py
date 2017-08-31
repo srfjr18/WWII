@@ -27,6 +27,7 @@ screen = pygame.display.set_mode((640,480))
 clock = pygame.time.Clock()
 FPS = 60
 
+
 """sorry for using global variables, just call this so much that it makes it easier"""
 def titlescreen_menu(start=False):
     global reloading, semiauto
@@ -38,7 +39,7 @@ def titlescreen_menu(start=False):
     reloading = semiauto = False
     enemy_hit = kills = deaths = hit = shot = internalclock = 0 
     try:
-        setup = Setup(setup.map_choice)
+        setup = Setup(setup.map_choice, setup.custom)
     except:
         setup = Setup()
     maps = Maps(0, 0)

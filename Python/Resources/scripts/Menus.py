@@ -41,7 +41,7 @@ class Menu(object):
             screen.blit(self.background, (0, 0))
             if kills > deaths:
                 text = self.font["big"].render("YOU WIN",1,(255,255,255))
-                screen.blit(text, (200, 200))
+                screen.blit(text, (220, 200))
             elif deaths > kills:
                 text = self.font["big"].render("YOU LOSE",1,(255,255,255))
                 screen.blit(text, (190, 200))
@@ -442,14 +442,14 @@ class Loadouts(object):
             pygame.display.flip()
 
 class Setup(object):
-    def __init__(self, map_choice="SHIP"):
+    def __init__(self, map_choice="SHIP", custom=False):
         self.map_choice = map_choice
+        self.custom = custom
         self.max_kills = 1000000
         self.online = False
         self.background = pygame.Surface(screen.get_size())
         self.background.fill((0,0,0))
         self.background = self.background.convert()
-        self.custom = False
         self.font = {"big": pygame.font.SysFont("monospace", 50), "medium": pygame.font.SysFont("monospace", 35), "small": pygame.font.SysFont("monospace", 25), "smallish": pygame.font.SysFont("monospace", 20), "extrasmall": pygame.font.SysFont("monospace", 15)}
     
     def update_data(self, number, loadout_number, new):
@@ -464,7 +464,7 @@ class Setup(object):
         pygame.mixer.music.play(-1)
     
         go_back_once = False
-        self.custom = False
+        #self.custom = False
         while True:
             choice = Menu(words = ["LOADOUTS", "MAPS", "CREATE", "OPTIONS", "ONLINE GAME", "OFFLINE GAME"]).GameSetup("name", "", "", "CURRENT MAP: "+str(self.map_choice))
             if choice == "MAPS":
@@ -475,7 +475,7 @@ class Setup(object):
                     except:
                         pass
                     if go_back_once:
-                        self.map_choice = Menu(["CUSTOM", "SHIP", "PACIFIC", "BARREN", "TOWN", "BACK"]).GameSetup()
+                        self.map_choice = Menu(["CUSTOM", "SHIP", "PACIFIC", "BARREN", "TOWN", "BASE", "BACK"]).GameSetup()
                     else:
                         break
                 
