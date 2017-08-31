@@ -149,8 +149,8 @@ class Enemy(Setup, Gun_Types):
                 return True
 
     def spawn(self, imagesx, imagesy, collision_list):
-        spawnpointX = randint(self.spawnarea_x[0] + 100, self.spawnarea_x[1]) #- imagesx
-        spawnpointY = randint(self.spawnarea_y[0] + 100, self.spawnarea_y[1]) #- imagesy
+        spawnpointX = randint(self.spawnarea_x[0], self.spawnarea_x[1]) #- imagesx
+        spawnpointY = randint(self.spawnarea_y[0], self.spawnarea_y[1]) #- imagesy
         while True:
             if self.proper_spawn(spawnpointX - imagesx, spawnpointY - imagesy, collision_list) or 640 > spawnpointX - imagesx > 0 and 480 > spawnpointY - imagesy > 0:
                 spawnpointX = randint(self.spawnarea_x[0], self.spawnarea_x[1]) #(spawnarea)
