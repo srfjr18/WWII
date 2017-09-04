@@ -236,21 +236,6 @@ while running:
     if pygame.mouse.get_pressed()[0]:     
         player.move(mousepos, setup.rations, setup.map_choice)
     
-    #wasd controls
-    if str(sys.argv[1]) == "-d": 
-        if pygame.key.get_pressed()[pygame.K_w]:
-            mousepos = (screen.get_size()[0] / 2, 50)
-            player.move(mousepos, setup.rations, setup.map_choice)
-        if pygame.key.get_pressed()[pygame.K_s]:
-            mousepos = (screen.get_size()[0] / 2, screen.get_size()[1] - 50)
-            player.move(mousepos, setup.rations, setup.map_choice)
-        if pygame.key.get_pressed()[pygame.K_a]:
-            mousepos = (50, screen.get_size()[1] / 2)
-            player.move(mousepos, setup.rations, setup.map_choice)
-        if pygame.key.get_pressed()[pygame.K_d]:
-            mousepos = (screen.get_size()[0] - 50, screen.get_size()[1] / 2)
-            player.move(mousepos, setup.rations, setup.map_choice)
-    
     
     for event in pygame.event.get():  
         if event.type == pygame.QUIT: 
@@ -265,7 +250,6 @@ while running:
                 except:
                     pass
             elif event.key == pygame.K_RSHIFT:
-                print("paused")
                 new_setup = setup.pause(setup) #resume w/ changing loadout
                 
                 if new_setup == None: #resume w/o changing loadout

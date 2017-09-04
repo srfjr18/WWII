@@ -227,7 +227,6 @@ class online_mode(Enemy, Enemy_Gun):
         text = self.font["smallish"].render("WAITING FOR CONNECTION...",1,(255,255,255))
         screen.blit(text, (170, 200))
         pygame.display.flip()
-        print("connecting..")
         self.s.connect((host, port))
         
         self.kill_thread = True
@@ -243,6 +242,8 @@ class online_mode(Enemy, Enemy_Gun):
         pygame.time.delay(300)
             
         self.online_max_kills = int(self.recvall(self.s).decode())
+        
+        self.s.settimeout(3)
         
         #self.recvall(self.s) 
         #self.s.send(raw_input("Client please type: "))
@@ -263,7 +264,6 @@ class online_mode(Enemy, Enemy_Gun):
         text = self.font["smallish"].render("WAITING FOR CONNECTION...",1,(255,255,255))
         screen.blit(text, (170, 200))
         pygame.display.flip()
-        print("connecting..")
         
         self.s.listen(5)  
         self.c, self.addr = self.s.accept()
@@ -283,6 +283,7 @@ class online_mode(Enemy, Enemy_Gun):
         
         self.c.send(str(self.online_max_kills).encode())
          
+        self.c.settimeout(3)
               
         #self.c.send(raw_input("Server please type: "))
 
@@ -372,9 +373,12 @@ class online_mode(Enemy, Enemy_Gun):
                 self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list = new
             except (TypeError, ValueError): #gun model was sent instead
                 bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
-                for i in new[0]:
-                    pygame.draw.rect(bg, i[1], i[2])
-                self.enemy_gun = bg
+                try:
+                    for i in new[0]:
+                        pygame.draw.rect(bg, i[1], i[2])
+                    self.enemy_gun = bg
+                except:
+                    return True
                 
                 
                 
@@ -408,10 +412,12 @@ class online_mode(Enemy, Enemy_Gun):
                 self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list = new
             except (TypeError, ValueError): #gun model was sent instead
                 bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
-                for i in new[0]:
-                    pygame.draw.rect(bg, i[1], i[2])
-                self.enemy_gun = bg
-                
+                try:
+                    for i in new[0]:
+                        pygame.draw.rect(bg, i[1], i[2])
+                    self.enemy_gun = bg
+                except:
+                    return True
             
             self.enemyposX += self.mainx
             self.enemyposY += self.mainy
