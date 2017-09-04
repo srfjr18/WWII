@@ -57,7 +57,7 @@ class online_mode(Enemy, Enemy_Gun):
                         ip_options = []
                         for lines in file.readlines():
                             ip_options.append(lines.rstrip())"""
-                    with open(path+"userdata", "r") as file:
+                    with open(path+"userdata", "rb") as file:
                         data = pickle.load(file)
                     ip_options = data["IP"]
                     ip_options.append("BACK")        
@@ -168,7 +168,7 @@ class online_mode(Enemy, Enemy_Gun):
                         with open(path+'ips', 'a') as file:
                             file.write(name+"\n")"""
                         
-                        with open(path+"userdata", "r") as file:    
+                        with open(path+"userdata", "rb") as file:    
                             data = pickle.load(file)
                         ip = data["IP"]
                         if len(ip) == 5:
@@ -179,7 +179,7 @@ class online_mode(Enemy, Enemy_Gun):
                         else:
                             ip.append(name)
                         data["IP"] = ip
-                        with open(path+"userdata", "w+") as file:
+                        with open(path+"userdata", "wb+") as file:
                             pickle.dump(data, file, protocol=2)
                                     
                         return name

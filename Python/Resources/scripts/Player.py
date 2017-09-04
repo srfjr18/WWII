@@ -61,13 +61,13 @@ class Player(object):
         os.remove(path+'data')
         with open(path+'data', 'w+') as file:
             file.write(name+str(int(rank) + kills))"""
-        with open(path+"userdata", "r") as file:
+        with open(path+"userdata", "rb") as file:
             data = pickle.load(file)
             
         rank = data["rank"]
         
         data["rank"] = int(rank) + kills
-        with open(path+"userdata", "w+") as file:
+        with open(path+"userdata", "wb+") as file:
             pickle.dump(data, file, protocol=2)
          
             

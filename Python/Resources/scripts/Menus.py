@@ -27,7 +27,7 @@ class Menu(object):
         I call this frequently so I figured why not check here"""
         try:
             mac = ':'.join(("%012X" % getnode())[i:i+2] for i in range(0, 12, 2))
-            with open(path+"userdata", "r") as file:
+            with open(path+"userdata", "rb") as file:
                 data = pickle.load(file)
             if mac != data["MAC"]:
                 raise ValueError("Userdata file is from another system! (MAC does not match)")
@@ -129,10 +129,10 @@ class Menu(object):
                     elif event.key == pygame.K_RETURN and name != "":
                         pygame.mixer.Sound.play(self.key)
                         if not different: 
-                            with open(path+"userdata", "r") as file:
+                            with open(path+"userdata", "rb") as file:
                                 data = pickle.load(file)
                             data["name"] = name
-                            with open(path+"userdata", "w+") as file:
+                            with open(path+"userdata", "wb+") as file:
                                 pickle.dump(data, file, protocol=2) 
                             """with open (path+'data', 'w+') as file:
                                 file.write(name+'\n'+'25')"""
@@ -157,11 +157,11 @@ class Menu(object):
                 if pygame.mouse.get_pressed()[0] and name != "":
                     pygame.mixer.Sound.play(self.key)
                     if not different:
-                        with open(path+"userdata", "r") as file:
+                        with open(path+"userdata", "rb") as file:
                             data = pickle.load(file)
                         data["name"] = name
                         data["rank"] = 25
-                        with open(path+"userdata", "w+") as file:
+                        with open(path+"userdata", "wb+") as file:
                             pickle.dump(data, file, protocol=2) 
                         """with open (path+'data', 'w+') as file:
                             file.write(name+'\n'+'25')"""
@@ -192,7 +192,7 @@ class Menu(object):
         if not os.path.isfile(path+'userdata'):
             mac = ':'.join(("%012X" % getnode())[i:i+2] for i in range(0, 12, 2))
             new = {"name": "NONE", "rank": 25, "LOADOUT 1": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 2": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 3": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 4": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 5": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "IP": [], "MAC": mac}
-            with open(path+"userdata", "w+") as file:
+            with open(path+"userdata", "wb+") as file:
                 pickle.dump(new, file, protocol=2)
             self.name()
         return False
@@ -237,7 +237,7 @@ class Menu(object):
                         name, self.rank = file.readlines()
                         name = name.rstrip()
                         self.rank = self.rank.rstrip()"""
-                    with open(path+"userdata", "r") as file:
+                    with open(path+"userdata", "rb") as file:
                         data = pickle.load(file)
                     name = data["name"]
                     self.rank = data["rank"]
@@ -259,11 +259,11 @@ class Menu(object):
                 description = (None,) #fixes errors with index being out of range
             
             if description[0] == "rank":
-                """with open(path+"userdata", "r") as file:
+                """with open(path+"userdata", "rb") as file:
                     name, self.rank = file.readlines()
                     name = name.rstrip()
                     self.rank = self.rank.rstrip()"""
-                with open(path+"userdata", "r") as file:
+                with open(path+"userdata", "rb") as file:
                     data = pickle.load(file)
                 
                 self.rank = data["rank"]
@@ -358,7 +358,7 @@ class Menu(object):
 
 class Loadouts(object):
     def __init__(self, ifback):
-        with open(path+"userdata", "r") as file:
+        with open(path+"userdata", "rb") as file:
             data = pickle.load(file)
         """self.loadout_one = []
         self.loadout_two = []
@@ -467,10 +467,10 @@ class Setup(object):
         self.font = {"big": pygame.font.SysFont("monospace", 50), "medium": pygame.font.SysFont("monospace", 35), "small": pygame.font.SysFont("monospace", 25), "smallish": pygame.font.SysFont("monospace", 20), "extrasmall": pygame.font.SysFont("monospace", 15)}
     
     def update_data(self, number, loadout_number, new):
-        with open(path+"userdata", "r") as file:
+        with open(path+"userdata", "rb") as file:
             data = pickle.load(file)
         data[loadout_number][number] = new
-        with open(path+"userdata", "w+") as file:
+        with open(path+"userdata", "wb+") as file:
             pickle.dump(data, file, protocol=2) 
         
     def MainMenu(self):
@@ -716,7 +716,7 @@ class Setup(object):
     def guns(self, loadout_number, angle=None):  
         """self.weapon = open(path+loadout_number, 'r').readlines()[0].rstrip()
         #open(path+loadout_number, 'r').close()"""
-        with open(path+"userdata", "r") as file:
+        with open(path+"userdata", "rb") as file:
             data = pickle.load(file)
             
         try:
@@ -857,7 +857,7 @@ class Setup(object):
             self.mag = int(self.mag * 1.5)    
     
     def perks(self, loadout_number):
-        with open(path+"userdata", "r") as file:
+        with open(path+"userdata", "rb") as file:
             data = pickle.load(file)
         loadout = data[str(loadout_number)]
         """perk1 = open(path+loadout_number, 'r').readlines()[1].rstrip()"""
