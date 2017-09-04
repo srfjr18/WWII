@@ -132,7 +132,7 @@ class Creator(object):
                     self.map_builder(size=(50,50), build_gun=True, map_name=str(gun_name))
                     with open(gun_path+str(gun_name)+".py", 'w+') as gun:
                         gun.write("import pygame\n")
-                        gun.write("screen =  pygame.display.set_mode((640,480))\n")
+                        gun.write("from Resources.scripts.Menus import screen #so if display (full/windowed) stays the same\n")
                         gun.write("def gun():"+"\n")
                         if semiauto:
                             action = "semi-auto"
@@ -589,7 +589,7 @@ class Creator(object):
                                 
                         with open(path+str(map_name)+".py", 'w+') as maps:
                             maps.write("import pygame"+"\n")
-                            maps.write("screen =  pygame.display.set_mode((640,480))"+"\n")
+                            maps.write("from Resources.scripts.Menus import screen #so if display (full/windowed) stays the same\n")
                             maps.write("spawnarea_x = "+str(spawn_area_x)+"\n")
                             maps.write("spawnarea_y = "+str(spawn_area_y)+"\n")
                             maps.write("background_color = "+str((bred, bgreen, bblue))+"\n")

@@ -4,7 +4,7 @@ import math, pygame, sys
 
 if __name__ == "__main__":
     sys.exit()
-
+screen =  pygame.display.set_mode((640,480))
 path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-1]), 'images', '')
 soundpath = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-1]), 'sounds', '')
 class Enemy(Setup, Gun_Types):
