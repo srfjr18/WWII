@@ -225,7 +225,7 @@ class Creator(object):
                     try:
                         os.execv(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'game.py'), sys.argv)
                     except OSError: #using embedded python 3 windows version
-                        os.execv(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-3]), 'WWII.bat'), sys.argv)
+                        sys.exit()
                     
             for event in pygame.event.get():  
                 if event.type == pygame.QUIT: 
@@ -632,7 +632,7 @@ class Creator(object):
                         try:
                             os.execv(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'game.py'), sys.argv)
                         except OSError: #using embedded python 3 windows version
-                            os.execv(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-3]), 'WWII.bat'), sys.argv)
+                            sys.exit()
                         
                         
             pygame.display.set_caption("x: " + str(x[number_of_images]) + " y: " + str(y[number_of_images]) + " width: " + str(width[number_of_images]) + " height: " + str(height[number_of_images]))       
