@@ -2,10 +2,7 @@
 from Resources.scripts.Enemy import *
 from Resources.scripts.Menus import *   
 import pygame, socket, pickle, sys, math, traceback, os
-try:
-    from thread import start_new_thread #python 2
-except ImportError:
-    from _thread import start_new_thread #python 3
+from threading import Thread
 
 if __name__ == "__main__":
     sys.exit()
@@ -217,7 +214,7 @@ class online_mode(Enemy, Enemy_Gun):
         
     def client(self, ip):
         
-        start_new_thread(self.exit_script, (None,))
+        Thread(target=self.exit_script, args=(0,)).start()
     
         self.s = socket.socket()        
         host = str(ip) #'50.33.202.123' #ip
@@ -253,7 +250,7 @@ class online_mode(Enemy, Enemy_Gun):
 
     def server(self):
     
-        start_new_thread(self.exit_script, (None,))
+        Thread(target=self.exit_script, args=(0,)).start()
     
         self.s = socket.socket()
         host = "" #ip #str(ip) #'192.168.254.29' #computer ip

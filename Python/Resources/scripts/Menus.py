@@ -642,20 +642,6 @@ class Setup(object):
                             """writing our weapon choice to file"""
                             if weapon != "BACK":
                                 self.update_data(0, loadout_number, weapon)
-                                """num = 0
-                                new = []
-                                with open(path+loadout_number, 'r') as file:
-                                    for lines in file.readlines():
-                                        num += 1
-                                        if num == 1:
-                                            new.append(weapon)
-                                            new.append("\n")
-                                        else:
-                                            new.append(lines)
-                
-                                os.remove(path+loadout_number)
-                                with open(path+loadout_number, 'w') as file:
-                                    file.write(''.join(new))"""
                             go_back_once = True
                             del(weapon)
                     elif loadoutchoice == "PERK 1":
@@ -663,21 +649,6 @@ class Setup(object):
                 
                         if perk1 != "BACK":
                             self.update_data(1, loadout_number, perk1)
-                            """num = 0
-                            new = []
-                            with open(path+loadout_number, 'r') as file:
-                                for lines in file.readlines():
-                                    num += 1
-                                    if num == 2:
-                                        new.append(perk1)
-                                        new.append("\n")
-                                    else:
-                                        new.append(lines)
-                
-                            os.remove(path+loadout_number)
-                            with open(path+loadout_number, 'w') as file:
-                                file.write(''.join(new))"""
-                            
                         go_back_once = True                       
                 
                         del(perk1)
@@ -687,21 +658,6 @@ class Setup(object):
                 
                         if perk2 != "BACK":
                             self.update_data(2, loadout_number, perk2)
-                            """num = 0
-                            new = []
-                            with open(path+loadout_number, 'r') as file:
-                                for lines in file.readlines():
-                                    num += 1
-                                    if num == 3:
-                                        new.append(perk2)
-                                        new.append("\n")
-                                    else:
-                                        new.append(lines)
-                
-                            os.remove(path+loadout_number)
-                            with open(path+loadout_number, 'w') as file:
-                                file.write(''.join(new))"""
-                            
                         go_back_once = True                       
                 
                         del(perk2)
@@ -711,21 +667,6 @@ class Setup(object):
                 
                         if perk3 != "BACK":
                             self.update_data(3, loadout_number, perk3)
-                            """num = 0
-                            new = []
-                            with open(path+loadout_number, 'r') as file:
-                                for lines in file.readlines():
-                                    num += 1
-                                    if num == 4:
-                                        new.append(perk3)
-                                        new.append("\n")
-                                    else:
-                                        new.append(lines)
-                
-                            os.remove(path+loadout_number)
-                            with open(path+loadout_number, 'w') as file:
-                                file.write(''.join(new))"""
-                            
                         go_back_once = True
                 
                         del(perk3)
