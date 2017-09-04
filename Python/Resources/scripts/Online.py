@@ -365,12 +365,8 @@ class online_mode(Enemy, Enemy_Gun):
                 
             try:
                 new = self.recvall(self.s)
-            except: #bullshit pickle error
-                self.s.recv(4096) # discard next data
-                traceback.print_exc()
-                new = [self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list]
-            """except ImportError:
-                return True"""
+            except:
+                return True
                 
             try:
                 self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list = new
@@ -405,12 +401,8 @@ class online_mode(Enemy, Enemy_Gun):
         
             try:
                 new = self.recvall(self.c)
-            except: #bullshit pickle error
-                self.c.recv(4096) # discard next data
-                traceback.print_exc()
-                new = [self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list]
-            """except ImportError:
-                return True"""
+            except:
+                return True
                 
             try:
                 self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list = new
