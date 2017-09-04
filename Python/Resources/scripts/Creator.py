@@ -195,8 +195,11 @@ class Creator(object):
                         gun.write("    return [")
                         for i in self.rects:
                             gun.write("(None, "+str(i[1])+", "+str(i[2])+"), ")
+                            
+                    with open(gun_path+str(gun_name)+".py", 'rb+') as gun:
                         gun.seek(-2, os.SEEK_END)
                         gun.truncate()
+                    with open(gun_path+str(gun_name)+".py", 'a') as gun:
                         gun.write("]")
        
                     pygame.time.delay(300)    
@@ -600,8 +603,11 @@ class Creator(object):
                             for images in range(number_of_images):
                                 if collision[images]:
                                     maps.write("pygame.Rect(("+str(x[images])+" - imagesx, "+str(y[images])+" - imagesy), ("+str(width[images])+", "+str(height[images])+")), ")
+                            
+                        with open(path+str(map_name)+".py", 'rb+') as maps:
                             maps.seek(-2, os.SEEK_END)
                             maps.truncate()
+                        with open(path+str(map_name)+".py", 'a') as maps:
                             maps.write("]")
                             
                         pygame.time.delay(300)    

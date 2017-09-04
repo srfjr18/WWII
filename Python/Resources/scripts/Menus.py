@@ -142,6 +142,8 @@ class Menu(object):
                     elif len(name) < 10:  
                         pygame.mixer.Sound.play(self.key)
                         try: 
+                            if event.key == pygame.K_RSHIFT or event.key == pygame.K_LSHIFT:
+                                raise ValueError
                             if int_only:
                                 int(chr(event.key))
                                 
