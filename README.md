@@ -2,7 +2,7 @@
 WWII pygame
 
 
-**Features**
+**Features:**
 
 
 * 5 custom, fully featured loadouts, complete with 17 default guns and 9 perks
