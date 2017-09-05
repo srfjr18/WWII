@@ -3,6 +3,7 @@ from random import randint
 from Resources.scripts.Guns import *
 from Resources.scripts.Creator import *
 from uuid import getnode
+from threading import Thread
 
 if __name__ == "__main__":
     sys.exit()
@@ -883,11 +884,27 @@ class Setup(object):
             self.distraction = True
         else:
             self.distraction = False
+    
+    def send_while_pause(self, socket, socktype, l):
+        #prevents timeouts
+        self.kill_thread = False
+        while True:
+            if self.kill_thread:
+                sys.exit()
+            if socktype == "server":
+                socket.send("pause".encode())
+                socket.recv(1024)
+            else:
+                socket.recv(1024)
+                socket.send("pause".encode())
             
-    def pause(self, setup):
+    def pause(self, setup, socket=None, socktype=None):
+        if socket != None:
+            Thread(target=self.send_while_pause, args=(socket,socktype,0,)).start()
         while True:
             pause = Menu(["RESUME", "LOADOUTS     UPDATES AT NEXT SPAWN", "OPTIONS", "END GAME"]).GameSetup()
             if pause == "RESUME":
+                self.kill_thread = True
                 try:
                     return new_setup
                 except:
@@ -911,4 +928,5 @@ class Setup(object):
                     else:
                         break
             elif pause == "END GAME":
+                self.kill_thread = True
                 return "end"          

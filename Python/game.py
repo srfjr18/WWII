@@ -250,7 +250,13 @@ while running:
                 except:
                     pass
             elif event.key == pygame.K_RSHIFT:
-                new_setup = setup.pause(setup) #resume w/ changing loadout
+                if setup.online:
+                    try:
+                        new_setup = setup.pause(setup, enemy_player.c, "client")
+                    except:
+                        new_setup = setup.pause(setup, enemy_player.s, "server")
+                else:
+                    new_setup = setup.pause(setup) #resume w/ changing loadout
                 
                 if new_setup == None: #resume w/o changing loadout
                     del(new_setup)          
