@@ -37,7 +37,7 @@ Fully featured WWII pygame, written 100% in python.
 
 **Please Note:**
 
-If you want to play online on something other than lan, you have to point forward everything coming in at port 5006 to port 5006. The client then must use your public (not private!!) IP address to connect.
+If you want to play online on something other than lan, you have to port forward everything coming in at port 5006 to port 5006. The client then must use your public (not private!!) IP address to connect.
 
 
 
