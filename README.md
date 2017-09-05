@@ -49,4 +49,4 @@ This version comes packaged with the python 3.6 interperter for Windows. If you 
 
 **Lastly:**
 
-If you are lazy like me and don't want/have the time to rank up to level 25 to unlock everything, there is a file located in Python\Data called max_rank.py. Run the file to instantly get rank 40.
+If you are lazy like me and don't want/have the time to rank up to level 25 to unlock everything, there is a file located in Python\Data called max\_rank.py. Run the file to instantly get rank 40 (if using packaged interperter run \path\to\python.exe \path\to\max\_rank.py).
