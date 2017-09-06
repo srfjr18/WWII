@@ -184,6 +184,10 @@ class online_mode(Enemy, Enemy_Gun):
                 print("Error when joining server:")
                 traceback.print_exc()
                 self.raise_error = True
+                try:
+                    self.c.close
+                except:
+                    self.s.close
                 sys.exit()
                 
             self.break_waitscreen = True
@@ -238,6 +242,10 @@ class online_mode(Enemy, Enemy_Gun):
                 print("Error when joining server:")
                 traceback.print_exc()
                 self.raise_error = True
+                try:
+                    self.c.close
+                except:
+                    self.s.close
                 sys.exit()
             
             self.break_waitscreen = True
