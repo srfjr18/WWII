@@ -231,8 +231,6 @@ class online_mode(Enemy, Enemy_Gun):
         pygame.display.flip()
         self.s.connect((host, port))
         
-        self.kill_thread = True
-        
         
         self.online_map_choice = self.recvall(self.s).decode()
         
@@ -241,6 +239,7 @@ class online_mode(Enemy, Enemy_Gun):
         else:
             self.lan = False
         
+        self.kill_thread = True
         pygame.time.delay(300)
             
         self.online_max_kills = int(self.recvall(self.s).decode())
