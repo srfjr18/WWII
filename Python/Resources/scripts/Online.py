@@ -40,10 +40,10 @@ class online_mode(Enemy, Enemy_Gun):
                     self.option = Menu(["START SERVER", "JOIN SERVER", "BACK"]).GameSetup()
                 else:  
                     try:
-                        self.server()
+                        Thread(target=self.server, args=(0,)).start()
+                        self.exit_script()
                         break
                     except: 
-                        self.kill_thread = True
                         print("Error when creating server:")
                         traceback.print_exc()
                         continue
@@ -66,41 +66,36 @@ class online_mode(Enemy, Enemy_Gun):
                         del(ip)
                             
                 try:
-                    self.client(ip)
+                    Thread(target=self.client, args=(ip,0,)).start()
+                    self.exit_script()
                     break
                 except UnboundLocalError:
                     pass
                 except:
-                    self.kill_thread = True
                     print("Error when joining server:")
                     traceback.print_exc()
         Enemy_Gun.__init__(self)
         Enemy.__init__(self, 1, 1, 1, 1)
     
-    def exit_script(self, l):
-        self.kill_thread = False
-        while True:
-            if self.kill_thread:
-                sys.exit() 
-        
+    def exit_script(self):
+        self.kill_exiter = False
+        while True:      
+            if self.kill_exiter:
+                break  
             for event in pygame.event.get():  
                 if event.type == pygame.QUIT: 
-                    pygame.display.set_mode((640,480))
                     try:
                         self.c.close
                     except:
                         self.s.close
-                    os._exit(1)
+                    sys.exit()
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RSHIFT:
-                        print("wtf")
                     if event.key == pygame.K_ESCAPE:
-                        pygame.display.set_mode((640,480))
                         try:
                             self.c.close
                         except:
                             self.s.close
-                        os._exit(1)
+                        sys.exit()
         
     def ip_enter(self):
         soundpath = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-1]), 'sounds', '')
@@ -214,9 +209,7 @@ class online_mode(Enemy, Enemy_Gun):
             except:
                 data += sock.recv(1024)    
         
-    def client(self, ip):
-        
-        Thread(target=self.exit_script, args=(0,)).start()
+    def client(self, ip, l):
     
         self.s = socket.socket()        
         host = str(ip) #'50.33.202.123' #ip
@@ -239,20 +232,20 @@ class online_mode(Enemy, Enemy_Gun):
         else:
             self.lan = False
         
-        self.kill_thread = True
+        self.kill_exiter = True
+        
         pygame.time.delay(300)
             
         self.online_max_kills = int(self.recvall(self.s).decode())
         
         self.s.settimeout(3)
         
+        
         #self.recvall(self.s) 
         #self.s.send(raw_input("Client please type: "))
         #s.close()
 
-    def server(self):
-    
-        Thread(target=self.exit_script, args=(0,)).start()
+    def server(self, l):
     
         self.s = socket.socket()
         host = "" #ip #str(ip) #'192.168.254.29' #computer ip
@@ -269,7 +262,6 @@ class online_mode(Enemy, Enemy_Gun):
         self.s.listen(5)  
         self.c, self.addr = self.s.accept()
         
-        self.kill_thread = True
          
         self.c.send(str(self.online_map_choice).encode())    
         self.lan = Menu([]).yes_no("ARE YOU ON LAN OR HAVE", "A STRONG CONNECTION?")
@@ -279,6 +271,8 @@ class online_mode(Enemy, Enemy_Gun):
             self.lan = False
             
         self.c.send(str(self.lan).encode())
+        
+        self.kill_exiter = True
         
         pygame.time.delay(300)
         
