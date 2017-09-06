@@ -15,6 +15,8 @@ class online_mode(Enemy, Enemy_Gun):
         self.online_max_kills = max_kills
         self.online_map_choice = map_choice
         self.eo = 3
+        self.break_waitscreen = False
+        self.raise_error = False
         self.mainx = 300
         self.mainy = 240
         self.angle = 0 
@@ -22,11 +24,11 @@ class online_mode(Enemy, Enemy_Gun):
         self.background.fill((0,0,0))
         self.background = self.background.convert()
         self.font = {"big": pygame.font.SysFont("monospace", 50), "medium": pygame.font.SysFont("monospace", 35), "small": pygame.font.SysFont("monospace", 25), "smallish": pygame.font.SysFont("monospace", 20), "extrasmall": pygame.font.SysFont("monospace", 15)}
-        self.option = Menu(["START SERVER", "JOIN SERVER", "BACK"]).GameSetup()
         
         
         self.back = False
         while True:
+            self.option = Menu(["START SERVER", "JOIN SERVER", "BACK"]).GameSetup()
             if self.option == "BACK":
                 self.back = True
                 break
@@ -39,24 +41,18 @@ class online_mode(Enemy, Enemy_Gun):
                     pygame.time.delay(2000)
                     self.option = Menu(["START SERVER", "JOIN SERVER", "BACK"]).GameSetup()
                 else:  
+                    Thread(target=self.server_connector, args=(0,)).start()
                     try:
-                        Thread(target=self.server, args=(0,)).start()
-                        self.exit_script()
-                        break
-                    except: 
-                        print("Error when creating server:")
-                        traceback.print_exc()
+                        self.server_main()
+                    except:
                         continue
+                    break
             elif self.option == "JOIN SERVER":
                 choice = Menu([]).yes_no("   CHOOSE IP FROM:", "", "PREVIOUS IPS", "  NEW IP")
                 if choice == "no":
                     ip = self.ip_enter()
                 else:
                     path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', '')
-                    """with open(path+"ips", "r") as file:
-                        ip_options = []
-                        for lines in file.readlines():
-                            ip_options.append(lines.rstrip())"""
                     with open(path+"userdata", "rb") as file:
                         data = pickle.load(file)
                     ip_options = data["IP"]
@@ -65,37 +61,15 @@ class online_mode(Enemy, Enemy_Gun):
                     if ip == "BACK":
                         del(ip)
                             
+                Thread(target=self.client_connector, args=(ip,0,)).start()
                 try:
-                    Thread(target=self.client, args=(ip,0,)).start()
-                    self.exit_script()
-                    break
-                except UnboundLocalError:
-                    pass
+                    self.client_main()
                 except:
-                    print("Error when joining server:")
-                    traceback.print_exc()
+                    continue
+                break
         Enemy_Gun.__init__(self)
         Enemy.__init__(self, 1, 1, 1, 1)
     
-    def exit_script(self):
-        self.kill_exiter = False
-        while True:      
-            if self.kill_exiter:
-                break  
-            for event in pygame.event.get():  
-                if event.type == pygame.QUIT: 
-                    try:
-                        self.c.close
-                    except:
-                        self.s.close
-                    sys.exit()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        try:
-                            self.c.close
-                        except:
-                            self.s.close
-                        sys.exit()
         
     def ip_enter(self):
         soundpath = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-1]), 'sounds', '')
@@ -138,32 +112,6 @@ class online_mode(Enemy, Enemy_Gun):
                         pygame.display.flip()
                         
                         path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', '')
-                        """deletefirstline = False
-                        
-                        if not os.path.isfile(path+'ips'):
-                            create = open(path+'ips', 'w+')
-                            create.close()
-                        
-                        with open(path+'ips', 'r') as file:
-                            deletefirstline = len(file.readlines()) >= 5
-                            
-                            
-                        new = ""    
-                        if deletefirstline:
-                            with open(path+'ips', 'r+') as file:
-                                num = 0
-                                for lines in file.readlines():
-                                    num += 1
-                                    if num > 1:
-                                        new += str(lines)
-                                        
-                        if deletefirstline:
-                            with open(path+"ips", "w") as file:               
-                                file.write(new)
-                        
-                        
-                        with open(path+'ips', 'a') as file:
-                            file.write(name+"\n")"""
                         
                         with open(path+"userdata", "rb") as file:    
                             data = pickle.load(file)
@@ -209,58 +157,123 @@ class online_mode(Enemy, Enemy_Gun):
             except:
                 data += sock.recv(1024)    
         
-    def client(self, ip, l):
-    
-        self.s = socket.socket()        
-        host = str(ip) #'50.33.202.123' #ip
-        port = 5006               
-        
-        
-        screen.blit(self.background, (0, 0))
-        text = self.font["smallish"].render("SEARCHING FOR SERVER...",1,(255,255,255))
-        screen.blit(text, (170, 150))
-        text = self.font["smallish"].render("WAITING FOR CONNECTION...",1,(255,255,255))
-        screen.blit(text, (170, 200))
-        pygame.display.flip()
-        self.s.connect((host, port))
-        
-        
-        self.online_map_choice = self.recvall(self.s).decode()
-        
-        if self.recvall(self.s).decode() == "True":
-            self.lan = True
-        else:
-            self.lan = False
-        
-        self.kill_exiter = True
-        
-        pygame.time.delay(300)
-            
-        self.online_max_kills = int(self.recvall(self.s).decode())
-        
-        self.s.settimeout(3)
-        
-        
-        #self.recvall(self.s) 
-        #self.s.send(raw_input("Client please type: "))
-        #s.close()
+    def client_connector(self, ip, l):
+        self.break_waitscreen = False
+        while True:
+            try:
+                self.s = socket.socket()        
+                host = str(ip) #'50.33.202.123' #ip
+                port = 5006               
 
-    def server(self, l):
-    
-        self.s = socket.socket()
-        host = "" #ip #str(ip) #'192.168.254.29' #computer ip
-        port = 5006                
-        self.s.bind((host, port))       
+                self.s.connect((host, port))
+                
+                
+                self.online_map_choice = self.recvall(self.s).decode()
         
-        screen.blit(self.background, (0, 0))
-        text = self.font["smallish"].render("STARTING SERVER...",1,(255,255,255))
-        screen.blit(text, (170, 150))
-        text = self.font["smallish"].render("WAITING FOR CONNECTION...",1,(255,255,255))
-        screen.blit(text, (170, 200))
-        pygame.display.flip()
+                if self.recvall(self.s).decode() == "True":
+                    self.lan = True
+                else:
+                    self.lan = False
+
+                pygame.time.delay(300)
+            
+                self.online_max_kills = int(self.recvall(self.s).decode())
         
-        self.s.listen(5)  
-        self.c, self.addr = self.s.accept()
+                self.s.settimeout(3)
+            except:
+                print("Error when joining server:")
+                traceback.print_exc()
+                self.raise_error = True
+                sys.exit()
+                
+            self.break_waitscreen = True
+            break
+        
+        
+    def client_main(self):
+        while True:
+            screen.blit(self.background, (0, 0))
+            text = self.font["smallish"].render("SEARCHING FOR SERVER...",1,(255,255,255))
+            screen.blit(text, (170, 150))
+            text = self.font["smallish"].render("WAITING FOR CONNECTION...",1,(255,255,255))
+            screen.blit(text, (170, 200))
+            pygame.display.flip()
+            
+            if self.raise_error:
+                self.raise_error = False
+                raise Exception
+            
+            for event in pygame.event.get():  
+                if event.type == pygame.QUIT: 
+                    pygame.display.set_mode((640,480))
+                    try:
+                        self.c.close
+                    except:
+                        self.s.close
+                    os._exit(1)
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        pygame.display.set_mode((640,480))
+                        try:
+                            self.c.close
+                        except:
+                            self.s.close
+                        os._exit(1)
+            if self.break_waitscreen:
+                break
+        
+
+    def server_connector(self, l):
+        self.break_waitscreen = False
+        while True:
+            try:
+                self.s = socket.socket()
+                host = "" #ip #str(ip) #'192.168.254.29' #computer ip
+                port = 5006                
+                self.s.bind((host, port))       
+        
+                self.s.listen(5)  
+                self.c, self.addr = self.s.accept()
+            except:
+                print("Error when joining server:")
+                traceback.print_exc()
+                self.raise_error = True
+                sys.exit()
+            
+            self.break_waitscreen = True
+            break
+        
+    def server_main(self):
+        while True:
+            screen.blit(self.background, (0, 0))
+            text = self.font["smallish"].render("STARTING SERVER...",1,(255,255,255))
+            screen.blit(text, (170, 150))
+            text = self.font["smallish"].render("WAITING FOR CONNECTION...",1,(255,255,255))
+            screen.blit(text, (170, 200))
+            pygame.display.flip()
+            
+            if self.raise_error:
+                self.raise_error = False
+                raise Exception
+            
+            for event in pygame.event.get():  
+                if event.type == pygame.QUIT: 
+                    pygame.display.set_mode((640,480))
+                    try:
+                        self.c.close
+                    except:
+                        self.s.close
+                    os._exit(1)
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        pygame.display.set_mode((640,480))
+                        try:
+                            self.c.close
+                        except:
+                            self.s.close
+                        os._exit(1)
+            if self.break_waitscreen:
+                break
         
          
         self.c.send(str(self.online_map_choice).encode())    
@@ -272,17 +285,12 @@ class online_mode(Enemy, Enemy_Gun):
             
         self.c.send(str(self.lan).encode())
         
-        self.kill_exiter = True
-        
         pygame.time.delay(300)
         
         self.c.send(str(self.online_max_kills).encode())
          
         self.c.settimeout(3)
               
-        #self.c.send(raw_input("Server please type: "))
-
-        #c.close()
     
     def blit_shot(self):
         for rise, run in zip(self.enemy_shotrise_list, self.enemy_shotrun_list):
