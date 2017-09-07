@@ -700,18 +700,14 @@ class Setup(object):
                     pygame.time.delay(2000) 
     
     def online_check(self):
-        try:
-            import urllib.request
-            return True #python 3 embedded zip won't let me actually check
-        except ImportError: #python 2
-            import urllib
-            
+        import httplib
         screen.blit(self.background, (0, 0))
         text = self.font["smallish"].render("CHECKING INTERNET CONNECTION...",1,(255,255,255))
         screen.blit(text, (140, 150))
         pygame.display.flip()
+        test = httplib.HTTPConnection("www.google.com")
         try:
-            urllib.urlopen("https://www.google.com")
+            test.request("HEAD", "/")
             return True
         except:
             return False
