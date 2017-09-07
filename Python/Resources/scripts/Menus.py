@@ -700,7 +700,10 @@ class Setup(object):
                     pygame.time.delay(2000) 
     
     def online_check(self):
-        import httplib
+        try:
+            import httplib
+        except ImportError:
+            import http.client as httplib
         screen.blit(self.background, (0, 0))
         text = self.font["smallish"].render("CHECKING INTERNET CONNECTION...",1,(255,255,255))
         screen.blit(text, (140, 150))
@@ -708,6 +711,8 @@ class Setup(object):
         test = httplib.HTTPConnection("www.google.com")
         try:
             test.request("HEAD", "/")
+            return True
+        except LookupError: #broken encoding.idna problem when on 64 bit computer, so I just return True
             return True
         except:
             return False
