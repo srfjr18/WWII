@@ -69,7 +69,13 @@ def titlescreen_menu(start=False):
         maps = Play_Maps(setup.map_choice)
         player = Player(setup.map_choice)
     
-    loadout_number = Loadouts(False).display_loadout()
+    if setup.online:
+        try:
+            loadout_number = Loadouts(False).display_loadout(enemy_player.c, "client")
+        except:
+            loadout_number = Loadouts(False).display_loadout(enemy_player.s, "server")
+    else:
+        loadout_number = Loadouts(False).display_loadout()
     setup.guns(loadout_number)
     setup.perks(loadout_number)
     maps.spawn_area(setup.map_choice)

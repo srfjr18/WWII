@@ -399,8 +399,13 @@ class Loadouts(object):
         
         self.font = {"big": pygame.font.SysFont("monospace", 50), "small": pygame.font.SysFont("monospace", 25)}
             
-    def display_loadout(self):
+    def display_loadout(self, socket=None, socktype=None):
         pygame.time.delay(300)
+        
+        if socket != None:
+            setup = Setup()
+            Thread(target=setup.send_while_pause, args=(socket,socktype,0,)).start()
+        
         while True:
             screen.blit(self.background, (0, 0))
 
@@ -455,6 +460,8 @@ class Loadouts(object):
                 for num in range(0, len(self.words)):
                     if mouse_collision.colliderect(pygame.Rect((0, 50 * num), (screen.get_size()[0] / 3, 50))):
                         pygame.mixer.Sound.play(self.click)
+                        if socket != None:
+                            setup.kill_thread = True
                         return self.words[num]
             pygame.display.flip()
 
