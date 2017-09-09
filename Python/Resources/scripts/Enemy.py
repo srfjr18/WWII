@@ -11,8 +11,8 @@ class Enemy(Setup, Gun_Types):
     def __init__(self, spawnarea_x, spawnarea_y, loadout_number, enemy_gun):
         self.spawnarea_x = spawnarea_x
         self.spawnarea_y = spawnarea_y
-        self.mainx = 300
-        self.mainy = 240
+        self.mainx = 295
+        self.mainy = 215
         self.enemyposX = 0
         self.enemyposY = 0
         self.enemy_shot = 0
@@ -212,8 +212,7 @@ class Enemy_Gun(object):
             self.enemy_shotrun_list.append(run + brun)
             screen.blit(self.bullet, (run, rise))
             
-    def shoot_you(self, enemy_posX, enemy_posY, imagesx, imagesy, badaim, angle):
-            
+    def shoot_you(self, enemy_posX, enemy_posY, imagesx, imagesy, badaim, angle):        
         sizeX, sizeY = self.backup.get_size()
         gun_pos = 4 - (angle / 90)
         

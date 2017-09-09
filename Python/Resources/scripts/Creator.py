@@ -185,7 +185,7 @@ class Creator(object):
                         firerate = str(firerate)
                                 
                         gun.write('    return '+firerate+', "'+action+'", '+damage+', '+mag+', '+reloadtime+', '+recoil+'\n')
-                        gun.write('def blit_gun(angle, mainx=300, mainy=240):\n')
+                        gun.write('def blit_gun(angle, mainx=295, mainy=215):\n')
                         gun.write('    bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)\n')
                         for i in self.rects:
                             gun.write('    pygame.draw.rect(bg, '+str(i[1])+', '+str(i[2])+')\n')

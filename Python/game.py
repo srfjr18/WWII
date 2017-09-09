@@ -98,6 +98,8 @@ while running:
     clock.tick(FPS)
     internalclock += 1
     
+    #player.test(mousepos)
+    
     player.set_angle(mousepos)
     
     #updating collisions based on our position
@@ -208,7 +210,7 @@ while running:
 
     if pygame.mouse.get_pressed()[2] and not semiauto and not reloading and in_between_shots:
         recoil = randint(-1 * setup.recoil, setup.recoil)
-        player_gun.create_shot(mousepos, recoil, player.angle)
+        player_gun.create_shot(recoil, player.angle)
         in_between_shots = False
         if setup.action == "semi-auto":
             semiauto = True
@@ -288,7 +290,8 @@ while running:
     screen.blit(player.maincharacter, (player.mainx, player.mainy))
     setup.guns(loadout_number, player.angle) #blitting our gun   
     player.red_screen(setup.medic, enemy_player.enemy_stk, enemy_hit)
-    player.ui(kills, deaths, setup.weapon, setup.mag, shot, reloading, setup.max_kills)    
+    player.ui(kills, deaths, setup.weapon, setup.mag, shot, reloading, setup.max_kills) 
+    #pygame.draw.circle(screen, (0, 0, 0), (screen.get_size()[0] / 2, screen.get_size()[1] / 2), screen.get_size()[1] / 2, 20)   
     pygame.display.flip()
     
 pygame.quit()

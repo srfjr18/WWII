@@ -8,10 +8,10 @@ if __name__ == "__main__":
 
 class Gun_Types(object):
     def __init__(self):
-        self.mainx = 300
-        self.mainy = 240
+        self.mainx = 295
+        self.mainy = 215
         
-    def getrand_gun_or_blit(self, random_gun=None, angle=None, mainx=300, mainy=240):
+    def getrand_gun_or_blit(self, random_gun=None, angle=None, mainx=295, mainy=215):
         #this has to be number of guns
         if random_gun == None:
             random_gun = randint(1,17)
@@ -52,7 +52,7 @@ class Gun_Types(object):
             return self.springfield(angle, mainx, mainy)
             
     #ASSAULT RIFLES
-    def stg(self, angle=None, mainx=300, mainy=240):
+    def stg(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (54, 0, 0), (70, 28, 11, 20))
@@ -62,7 +62,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (54, 0, 0), (70, 28, 11, 20)), (None, (54, 63, 57), (72, 3, 5, 22)), (None, (54, 63, 57), (68, 14, 14, 20))] #list of rect stuff
         return 10, "full-auto", 15, 30, 150, 13
-    def m_one_a_one(self, angle=None, mainx=300, mainy=240):
+    def m_one_a_one(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (0, 0, 0), (68, 32, 0, 14))
@@ -75,7 +75,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (0, 0, 0), (68, 32, 0, 14)), (None, (0, 0, 0), (81, 33, 0, 14)), (None, (0, 0, 0), (67, 48, 15, 0)), (None, (0, 0, 0), (70, 2, 6, 22)), (None, (41, 20, 0), (65, 15, 18, 21))]
         return 5, "semi-auto", 10, 15, 160, 6
-    def fg_forty_two(self, angle=None, mainx=300, mainy=240):
+    def fg_forty_two(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (80, 44, 27), (70, 36, 11, 11))
@@ -88,7 +88,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (80, 44, 27), (70, 36, 11, 11)), (None, (80, 44, 27), (71, 15, 10, 9)), (None, (2, 3, 2), (71, 23, 10, 13)), (None, (2, 3, 2), (72, 6, 8, 10)), (None, (2, 3, 2), (75, 1, 1, 12))]
         return 5, "full-auto", 25, 20, 160, 10
-    def gewehr_forty_three(self, angle=None, mainx=300, mainy=240):
+    def gewehr_forty_three(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (97, 24, 0), (70, 33, 10, 15))
@@ -100,7 +100,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (97, 24, 0), (70, 33, 10, 15)), (None, (97, 24, 0), (70, 16, 10, 16)), (None, (10, 5, 0), (72, 1, 4, 14)), (None, (10, 5, 0), (74, 22, 3, 19))]
         return 8, "semi-auto", 12, 10, 110, 6
-    def m_one_garand(self, angle=None, mainx=300, mainy=240):
+    def m_one_garand(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (60, 23, 0), (70, 14, 8, 31))
@@ -115,7 +115,7 @@ class Gun_Types(object):
         # shots to kill is more like number of frames bullet collides with enemy
         
     #SMGS
-    def mp40(self, angle=None, mainx=300, mainy=240):
+    def mp40(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (0, 0, 0), (70, 12, 9, 21))
@@ -125,7 +125,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (0, 0, 0), (70, 12, 9, 21)), (None, (0, 0, 0), (73, 1, 3, 18))]
         return 4, "full-auto", 30, 25, 125, 14
-    def thompson(self, angle=None, mainx=300, mainy=240):
+    def thompson(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (1, 1, 1), (64, 17, 18, 9))
@@ -136,7 +136,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (1, 1, 1), (64, 17, 18, 9)), (None, (34, 28, 26), (69, 4, 9, 33)), (None, (86, 26, 20), (66, 29, 15, 20))]
         return 2, "full-auto", 30, 40, 75, 9
-    def ppsh(self, angle=None, mainx=300, mainy=240):
+    def ppsh(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (0, 0, 0), (69, 2, 0, 21))
@@ -152,7 +152,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (0, 0, 0), (69, 2, 0, 21)), (None, (0, 0, 0), (78, 3, 0, 21)), (None, (0, 0, 0), (67, 2, 12, 1)), (None, (26, 29, 29), (61, 17, 25, 8)), (None, (131, 70, 29), (67, 25, 13, 24)), (None, (0, 0, 0), (69, 10, 10, 1)), (None, (0, 0, 0), (73, 1, 1, 15)), (None, (0, 2, 1), (67, 17, 12, 11))]
         return 1, "full-auto", 45, 71, 150, 8
-    def m_three(self, angle=None, mainx=300, mainy=240):
+    def m_three(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (0, 0, 0), (74, 0, 0, 24))
@@ -164,7 +164,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (0, 0, 0), (74, 0, 0, 24)), (None, (48, 37, 38), (63, 19, 22, 6)), (None, (4, 1, 4), (70, 11, 9, 23)), (None, (4, 1, 4), (74, 34, 1, 7))]
         return 8, "full-auto", 13, 30, 100, 10
-    def owen(self, angle=None, mainx=300, mainy=240):
+    def owen(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (0, 0, 0), (72, 0, 5, 23))
@@ -178,7 +178,7 @@ class Gun_Types(object):
         return 5, "full-auto", 20, 33, 150, 10
         
     #LMGS
-    def m_nineteen_nineteen(self, angle=None, mainx=300, mainy=240):
+    def m_nineteen_nineteen(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (0, 0, 0), (71, 0, 6, 18))
@@ -191,7 +191,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (0, 0, 0), (71, 0, 6, 18)), (None, (0, 0, 0), (64, 17, 20, 17)), (None, (0, 0, 0), (68, 31, 13, 15)), (None, (0, 45, 0), (90, 19, 9, 12)), (None, (186, 137, 0), (79, 20, 14, 8))]
         return 9, "full-auto", 16, 250, 1000, 11
-    def bar(self, angle=None, mainx=300, mainy=240):
+    def bar(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (0, 0, 0), (75, 0, 0, 32))
@@ -202,7 +202,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (0, 0, 0), (75, 0, 0, 32)), (None, (0, 0, 0), (70, 22, 10, 17)), (None, (91, 49, 0), (69, 32, 12, 15))]
         return 7, "full-auto", 16, 20, 200, 9
-    def type_ninety_nine(self, angle=None, mainx=300, mainy=240):
+    def type_ninety_nine(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (0, 0, 0), (71, 0, 5, 42))
@@ -216,7 +216,7 @@ class Gun_Types(object):
         return 6, "full-auto", 12, 30, 180, 10
     
     #SNIPERS/ BOLT ACTION RIFLES
-    def svt_forty(self, angle=None, mainx=300, mainy=240):
+    def svt_forty(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (0, 0, 0), (71, 0, 0, 24))
@@ -229,7 +229,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (0, 0, 0), (71, 0, 0, 24)), (None, (141, 68, 0), (62, 19, 19, 22)), (None, (141, 68, 0), (65, 12, 12, 14)), (None, (141, 68, 0), (67, 30, 7, 17)), (None, (3, 3, 0), (67, 17, 9, 22))]
         return 145, "semi-auto", 1, 10, 140, 0
-    def mosin_nagant(self, angle=None, mainx=300, mainy=240):
+    def mosin_nagant(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (77, 28, 0), (70, 12, 9, 37))
@@ -240,7 +240,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (77, 28, 0), (70, 12, 9, 37)), (None, (77, 28, 0), (72, 1, 4, 12)), (None, (8, 1, 0), (68, 19, 12, 16))]
         return 1, "semi-auto", 1, 1, 130, 0
-    def ariaska(self, angle=None, mainx=300, mainy=240):
+    def ariaska(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (83, 20, 0), (71, 19, 8, 30))
@@ -252,7 +252,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (83, 20, 0), (71, 19, 8, 30)), (None, (83, 20, 0), (75, 1, 1, 17)), (None, (83, 20, 0), (72, 8, 7, 12)), (None, (13, 20, 0), (69, 16, 13, 12))]
         return 130, "semi-auto", 1, 5, 200, 0
-    def springfield(self, angle=None, mainx=300, mainy=240):
+    def springfield(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
             pygame.draw.rect(bg, (86, 0, 0), (68, 15, 11, 33))

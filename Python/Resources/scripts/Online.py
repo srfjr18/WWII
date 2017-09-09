@@ -17,8 +17,8 @@ class online_mode(Enemy, Enemy_Gun):
         self.eo = 3
         self.break_waitscreen = False
         self.raise_error = False
-        self.mainx = 300
-        self.mainy = 240
+        self.mainx = 295
+        self.mainy = 215
         self.angle = 0 
         self.background = pygame.Surface(screen.get_size())
         self.background.fill((0,0,0))
