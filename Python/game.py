@@ -34,7 +34,7 @@ def titlescreen_menu(start=False):
     global enemy_hit, kills, deaths, hit, shot, internalclock
     global setup, maps, loadouts, player, player_gun
     global enemy_gun, enemy_player, loadout_number
-    global background, in_between_shots, first_run
+    global background, in_between_shots, first_run, enemy_gun_online
     first_run = True
     reloading = semiauto = False
     enemy_hit = kills = deaths = hit = shot = internalclock = 0 
@@ -71,9 +71,9 @@ def titlescreen_menu(start=False):
     
     if setup.online:
         try:
-            loadout_number = Loadouts(False).display_loadout(enemy_player.c, "client")
+            loadout_number, enemy_gun_online = Loadouts(False).display_loadout(enemy_player.c, "client")
         except:
-            loadout_number = Loadouts(False).display_loadout(enemy_player.s, "server")
+            loadout_number, enemy_gun_online = Loadouts(False).display_loadout(enemy_player.s, "server")
     else:
         loadout_number = Loadouts(False).display_loadout()
     setup.guns(loadout_number)
@@ -143,6 +143,14 @@ while running:
     if enemy_gun.collide_you(collision_list):
         enemy_hit += 1
         if enemy_hit >= enemy_player.enemy_stk:
+            if setup.online:
+                try:
+                    Menu([]).killed(enemy_player.name, enemy_player.c, "client")
+                except:
+                    Menu([]).killed(enemy_player.name, enemy_player.s, "server")
+            else:
+                Menu([]).killed()
+
             enemy_hit = 0
             if setup.custom:
                 player = Player(setup.map_choice)
@@ -180,8 +188,6 @@ while running:
                 pass
             reloading = False
             shot = 0
-            if not setup.online:
-                Menu([]).killed()
 
     if setup.online:
         #sending gun model to other player if online and on first run
@@ -190,8 +196,12 @@ while running:
             first_run = False
             gun = setup.gun
             enemy_player.send_receive(setup.stk, player.angle, player.imagesx, player.imagesy,  player_gun.shotrise_list, player_gun.shotrun_list, gun)
-            
-        endcheck = enemy_player.send_receive(setup.stk, player.angle, player.imagesx, player.imagesy,  player_gun.shotrise_list, player_gun.shotrun_list) #means we are playing online
+        
+        try:    
+            endcheck = enemy_player.send_receive(setup.stk, player.angle, player.imagesx, player.imagesy,  player_gun.shotrise_list, player_gun.shotrun_list, enemy_gun=enemy_gun_online) #means we are playing online
+            del(enemy_gun_online)
+        except:
+            endcheck = enemy_player.send_receive(setup.stk, player.angle, player.imagesx, player.imagesy,  player_gun.shotrise_list, player_gun.shotrun_list)
         if endcheck:
             try:
                 enemy_player.c.close

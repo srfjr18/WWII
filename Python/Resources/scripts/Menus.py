@@ -67,11 +67,17 @@ class Menu(object):
                 pressed = False #used so you cant hold the button without even seeing the killed screen
             pygame.display.flip()
     
-    def killed(self):
+    def killed(self, enemies=["dankman", "xXrektXx", "FAZE quickscope", "OPTIC NERVE", "mubba bubba", "xxNOsCoPeXX"], socket=None, socktype=None):
         pygame.time.delay(300)
         pressed = True
-        enemies = ["dankman", "xXrektXx", "FAZE quickscope", "OPTIC NERVE", "mubba bubba", "xxNOsCoPeXX"]
-        enemy = enemies[randint(0,5)]
+        if socket == None:
+            enemy = enemies[randint(0,5)]
+            
+        if socket != None:
+            enemy = enemies
+            setup = Setup()
+            Thread(target=setup.send_while_pause, args=(socket,socktype,0,)).start()
+            
         while True:
             screen.blit(self.background, (0, 0))
             text = self.font["medium"].render("KILLED BY "+enemy,1,(255,255,255))
@@ -85,6 +91,9 @@ class Menu(object):
                     if event.key == pygame.K_ESCAPE:
                         sys.exit()
             if pygame.mouse.get_pressed()[0] and not pressed:
+                if socket != None:
+                    setup.kill_thread = True
+                    pygame.time.delay(300)
                 break
             elif not pygame.mouse.get_pressed()[0]:
                 pressed = False #used so you cant hold the button without even seeing the killed screen
@@ -462,6 +471,8 @@ class Loadouts(object):
                         pygame.mixer.Sound.play(self.click)
                         if socket != None:
                             setup.kill_thread = True
+                            pygame.time.delay(300)
+                            return self.words[num], setup.enemy_gun
                         return self.words[num]
             pygame.display.flip()
 
@@ -895,16 +906,36 @@ class Setup(object):
     
     def send_while_pause(self, socket, socktype, l):
         #prevents timeouts
+        self.enemy_gun = None
         self.kill_thread = False
         while True:
             if self.kill_thread:
                 sys.exit()
             if socktype == "server":
                 socket.send("pause".encode())
-                socket.recv(1024)
+                
+                try:
+                    new = pickle.loads(socket.recv(1024))
+                except:
+                    new = 1,2,3,4,5,6
             else:
-                socket.recv(1024)
+                try:
+                    new = pickle.loads(socket.recv(1024))
+                except:    
+                    new = 1,2,3,4,5,6
                 socket.send("pause".encode())
+                
+            #fixes loadout pause problem
+            try:
+                a,b,c,d,e,f = new
+            except (TypeError, ValueError): #gun model was sent instead
+                bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
+                try:
+                    for i in new[0]:
+                        pygame.draw.rect(bg, i[1], i[2])
+                    self.enemy_gun = bg
+                except:
+                    pass
             
     def pause(self, setup, socket=None, socktype=None):
         if socket != None:
@@ -913,6 +944,7 @@ class Setup(object):
             pause = Menu(["RESUME", "LOADOUTS     UPDATES AT NEXT SPAWN", "OPTIONS", "END GAME"]).GameSetup()
             if pause == "RESUME":
                 self.kill_thread = True
+                pygame.time.delay(300)
                 try:
                     return new_setup
                 except:
@@ -937,4 +969,5 @@ class Setup(object):
                         break
             elif pause == "END GAME":
                 self.kill_thread = True
+                pygame.time.delay(300)
                 return "end"          

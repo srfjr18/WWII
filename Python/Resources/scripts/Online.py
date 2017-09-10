@@ -8,6 +8,7 @@ if __name__ == "__main__":
     sys.exit()
     
 screen = pygame.display.set_mode((640,480))
+path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', '')
 
 class online_mode(Enemy, Enemy_Gun):
     def __init__(self, map_choice, max_kills):
@@ -178,6 +179,16 @@ class online_mode(Enemy, Enemy_Gun):
                 pygame.time.delay(300)
             
                 self.online_max_kills = int(self.recvall(self.s).decode())
+                
+                pygame.time.delay(300)
+                
+                self.name = self.recvall(self.s).decode()
+                
+                with open(path+"userdata", "rb") as file:
+                    data = pickle.load(file)
+                    name = data["name"]
+                    
+                self.s.send(str(name).encode())
         
                 self.s.settimeout(3)
             except:
@@ -233,11 +244,15 @@ class online_mode(Enemy, Enemy_Gun):
             try:
                 self.s = socket.socket()
                 host = "" #ip #str(ip) #'192.168.254.29' #computer ip
-                port = 5006                
+                port = 5006  
+                
+                self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                              
                 self.s.bind((host, port))       
         
                 self.s.listen(5)  
                 self.c, self.addr = self.s.accept()
+                del(self.s)
             except:
                 print("Error when joining server:")
                 traceback.print_exc()
@@ -296,6 +311,16 @@ class online_mode(Enemy, Enemy_Gun):
         pygame.time.delay(300)
         
         self.c.send(str(self.online_max_kills).encode())
+        
+        pygame.time.delay(300)
+        
+        
+        with open(path+"userdata", "rb") as file:
+            data = pickle.load(file)
+            name = data["name"]
+        self.c.send(str(name).encode())
+        
+        self.name = self.recvall(self.c)
          
         self.c.settimeout(3)
               
@@ -311,7 +336,7 @@ class online_mode(Enemy, Enemy_Gun):
                 if pygame.Rect((run,rise), self.bullet.get_size()).colliderect(main_collision):
                     return True
         
-    def send_receive(self, stk, angle, imagesx, imagesy, shotrise_list, shotrun_list, gun=None):
+    def send_receive(self, stk, angle, imagesx, imagesy, shotrise_list, shotrun_list, gun=None, enemy_gun=None):
     
         """experimental to speed up user side of game on slow server"""
         self.eo += 1
@@ -354,7 +379,8 @@ class online_mode(Enemy, Enemy_Gun):
                 pass 
             
             
-            
+        if enemy_gun != None:
+            self.enemy_gun = enemy_gun    
         if self.option == "JOIN SERVER":
             data = pickle.dumps([stk, angle, imagesx, imagesy, shotrise_list, shotrun_list], protocol=2)
             try:
