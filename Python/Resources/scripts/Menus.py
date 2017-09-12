@@ -522,7 +522,7 @@ class Setup(object):
                     except:
                         pass
                     if go_back_once:
-                        self.map_choice = Menu(["CUSTOM", "SHIP", "PACIFIC", "BARREN", "TOWN", "BASE", "BACK"]).GameSetup()
+                        self.map_choice = Menu(["CUSTOM", "SHIP", "PACIFIC", "BARREN", "TOWN", "BASE", "SUPPLY", "BACK"]).GameSetup()
                     else:
                         break
                 
