@@ -10,6 +10,7 @@ from Resources.scripts.Player import *
 from Resources.scripts.Enemy import *
 from Resources.scripts.Online import *
 from Resources.scripts.Creator import *
+from threading import Thread
 
 #fix __file__ error when compiled into exe
 if getattr(sys, 'frozen', False):
@@ -95,18 +96,18 @@ def titlescreen_menu(start=False):
     pygame.mixer.music.stop()
     pygame.mixer.music.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Resources', 'sounds', '')+'gamemusic.wav')
     pygame.mixer.music.play(-1)
-
-
+            
 titlescreen_menu(True)
 while running:
+    
+    if enemy_player.stop_all:
+        continue
     
     mousepos = pygame.mouse.get_pos()
     clock.tick(FPS)
     internalclock += 1
     
     #player.test(mousepos)
-    
-    player.set_angle(mousepos)
     
     #updating collisions based on our position
     if setup.custom:
@@ -132,6 +133,8 @@ while running:
                         enemy_player.c.close
                     except:
                         enemy_player.s.close
+                while enemy_player.online_paused:
+                    pass
                 Menu([]).end_screen(kills, deaths)
                 player.update_rank(kills)
                 titlescreen_menu()
@@ -143,13 +146,14 @@ while running:
     if enemy_gun.collide_you(collision_list):
         enemy_hit += 1
         if enemy_hit >= enemy_player.enemy_stk:
-            if setup.online:
-                try:
-                    Menu([]).killed(enemy_player.name, enemy_player.c, "client")
-                except:
-                    Menu([]).killed(enemy_player.name, enemy_player.s, "server")
-            else:
-                Menu([]).killed()
+            if not enemy_player.online_paused:
+                if setup.online:
+                    try:
+                        Menu([]).killed(enemy_player.name, enemy_player.c, "client")
+                    except:
+                        Menu([]).killed(enemy_player.name, enemy_player.s, "server")
+                else:
+                    Menu([]).killed()
 
             enemy_hit = 0
             if setup.custom:
@@ -167,12 +171,16 @@ while running:
                         enemy_player.c.close
                     except:
                         enemy_player.s.close
+                while enemy_player.online_paused:
+                    pass
                 Menu([]).end_screen(kills, deaths)
                 player.update_rank(kills)
                 titlescreen_menu()
             
             #updating our loadout if we changed it at the pause menu
             try:
+                if setup.online:
+                    new_setup = enemy_player.new_setup
                 online = setup.online
                 custom = setup.custom
                 setup = new_setup
@@ -212,6 +220,8 @@ while running:
             except:
                 pass 
             endcheck = None
+            while enemy_player.online_paused:
+                pass
             Menu([]).end_screen(kills, deaths)
             player.update_rank(kills)
             titlescreen_menu()
@@ -242,6 +252,11 @@ while running:
     #if we've waited long enough, stop reloading
     if reloading and internalclock >= setup.reloadtime:
         reloading = False
+    
+    if enemy_player.online_paused:
+        continue
+    
+    player.set_angle(mousepos)
                              
     if pygame.mouse.get_pressed()[1] and shot != 0:
         reloading = True
@@ -269,27 +284,31 @@ while running:
                     pass
             elif event.key == pygame.K_RSHIFT:
                 if setup.online:
-                    try:
-                        new_setup = setup.pause(setup, enemy_player.c, "client")
-                    except:
-                        new_setup = setup.pause(setup, enemy_player.s, "server")
+                    enemy_player.online_paused = True
+                    Thread(target=enemy_player.online_pause_thread, args=(0,setup,player,kills,deaths,)).start()
                 else:
-                    new_setup = setup.pause(setup) #resume w/ changing loadout
-                
-                if new_setup == None: #resume w/o changing loadout
-                    del(new_setup)          
-                elif new_setup == "end": #end game
-                    del(new_setup)
                     if setup.online:
                         try:
-                            enemy_player.c.close
+                            new_setup = setup.pause(setup, enemy_player.c, "client")
+                            #Thread(target=setup.pause, args=(setup, enemy_player.c,"client",0,)).start()
                         except:
-                            enemy_player.s.close
-                    Menu([]).end_screen(kills, deaths)
-                    player.update_rank(kills)
-                    titlescreen_menu()
-                    break
-                        
+                            new_setup = setup.pause(setup, enemy_player.s, "server")
+                    else:
+                        new_setup = setup.pause(setup) #resume w/ changing loadout
+                
+                    if new_setup == None: #resume w/o changing loadout
+                        del(new_setup)          
+                    elif new_setup == "end": #end game
+                        del(new_setup)
+                        if setup.online:
+                            try:
+                                enemy_player.c.close
+                            except:
+                                enemy_player.s.close
+                        Menu([]).end_screen(kills, deaths)
+                        player.update_rank(kills)
+                        titlescreen_menu()
+                       
     #images/rendering
     pygame.display.set_caption("WWII  FPS: " + str(int(clock.get_fps()))) #+ " " + str((player.imagesx + player.mainx, player.imagesy + player.mainy)))
     screen.blit(background, (0, 0))

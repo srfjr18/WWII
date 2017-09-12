@@ -17,6 +17,8 @@ class online_mode(Enemy, Enemy_Gun):
         self.online_map_choice = map_choice
         self.eo = 3
         self.break_waitscreen = False
+        self.stop_all = False
+        self.online_paused = False
         self.raise_error = False
         self.mainx = 295
         self.mainy = 215
@@ -157,6 +159,28 @@ class online_mode(Enemy, Enemy_Gun):
                 return data
             except:
                 data += sock.recv(1024)    
+    
+    def online_pause_thread(self, l, setup, player, kills, deaths):
+        self.stop_all = False
+        self.online_paused = True
+        self.new_setup = setup.pause(setup, True) #resume w/ changing loadout                
+        if self.new_setup == None: #resume w/o changing loadout
+            del(self.new_setup)          
+        elif new_setup == "end": #end game
+            del(self.new_setup)
+            if setup.online:
+                try:
+                    self.c.close
+                except:
+                    self.s.close  
+            self.stop_all = True  
+            Menu([]).end_screen(kills, deaths)
+            player.update_rank(kills)
+            titlescreen_menu()
+            self.online_paused = False
+            self.stop_all = False
+            sys.exit()
+        self.online_paused = False
         
     def client_connector(self, ip, l):
         self.break_waitscreen = False

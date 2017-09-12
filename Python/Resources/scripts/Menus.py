@@ -239,9 +239,15 @@ class Menu(object):
             mouse_collision = pygame.Rect((mousepos[0], mousepos[1]), (1,1))
             for event in pygame.event.get():  
                 if event.type == pygame.QUIT: 
+                    if True in description:
+                        pygame.display.set_mode((640,480))
+                        os._exit(1)
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
+                        if True in description:
+                            pygame.display.set_mode((640,480))
+                            os._exit(1)
                         sys.exit()
             try:
                 if description[0] == "name":
@@ -408,7 +414,7 @@ class Loadouts(object):
         
         self.font = {"big": pygame.font.SysFont("monospace", 50), "small": pygame.font.SysFont("monospace", 25)}
             
-    def display_loadout(self, socket=None, socktype=None):
+    def display_loadout(self, socket=None, socktype=None, online_paused=False):
         pygame.time.delay(300)
         
         if socket != None:
@@ -425,9 +431,15 @@ class Loadouts(object):
             mouse_collision = pygame.Rect((mousepos[0], mousepos[1]), (1,1))
             for event in pygame.event.get():  
                 if event.type == pygame.QUIT: 
+                    if online_paused:
+                        pygame.display.set_mode((640,480))
+                        os._exit(1)
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
+                        if online_paused:
+                            pygame.display.set_mode((640,480))
+                            os._exit(1)
                         sys.exit()
             for num in range(0, len(self.words)):
                 text = self.font["small"].render(self.words[num],1,(255,255,255))
@@ -937,11 +949,9 @@ class Setup(object):
                 except:
                     pass
             
-    def pause(self, setup, socket=None, socktype=None):
-        if socket != None:
-            Thread(target=self.send_while_pause, args=(socket,socktype,0,)).start()
+    def pause(self, setup, online_pause=False):
         while True:
-            pause = Menu(["RESUME", "LOADOUTS     UPDATES AT NEXT SPAWN", "OPTIONS", "END GAME"]).GameSetup()
+            pause = Menu(["RESUME", "LOADOUTS     UPDATES AT NEXT SPAWN", "OPTIONS", "END GAME"]).GameSetup(True)
             if pause == "RESUME":
                 self.kill_thread = True
                 pygame.time.delay(300)
@@ -950,7 +960,7 @@ class Setup(object):
                 except:
                     return None
             elif pause == "LOADOUTS     UPDATES AT NEXT SPAWN":
-                loadout_number = Loadouts(True).display_loadout()                    
+                loadout_number = Loadouts(True).display_loadout(online_paused=online_pause)                    
                 if loadout_number != "BACK":
                     new_setup = Setup()
                     new_setup.guns(loadout_number)
@@ -960,7 +970,7 @@ class Setup(object):
                     new_setup.loadout_number = loadout_number
             elif pause == "OPTIONS":
                 while True:
-                    option_choice = Menu(["FULLSCREEN", "WINDOWED", "BACK"]).GameSetup()
+                    option_choice = Menu(["FULLSCREEN", "WINDOWED", "BACK"]).GameSetup(True)
                     if option_choice == "FULLSCREEN": 
                         pygame.display.set_mode((640,480), pygame.FULLSCREEN)
                     elif option_choice == "WINDOWED":
@@ -968,6 +978,5 @@ class Setup(object):
                     else:
                         break
             elif pause == "END GAME":
-                self.kill_thread = True
                 pygame.time.delay(300)
                 return "end"          
