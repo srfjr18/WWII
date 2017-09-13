@@ -17,7 +17,7 @@ class Enemy(Setup, Gun_Types):
         self.enemyposY = 0
         self.enemy_shot = 0
         self.shoot = False
-        self.stop_all = self.online_paused = False #online vars that we have to set to false to play offline
+        self.stop_all = self.online_paused = self.titlescreen = False #online vars that we have to set to false to play offline
         self.counter = 0
         self.before_sees_you = 0
         self.before_accurate = 0

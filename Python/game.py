@@ -100,6 +100,9 @@ def titlescreen_menu(start=False):
 titlescreen_menu(True)
 while running:
     
+    if enemy_player.titlescreen:
+        titlescreen_menu()
+    
     if enemy_player.stop_all:
         continue
     

@@ -17,6 +17,7 @@ class online_mode(Enemy, Enemy_Gun):
         self.online_map_choice = map_choice
         self.eo = 3
         self.break_waitscreen = False
+        self.titlescreen = False
         self.stop_all = False
         self.online_paused = False
         self.raise_error = False
@@ -166,7 +167,7 @@ class online_mode(Enemy, Enemy_Gun):
         self.new_setup = setup.pause(setup, True) #resume w/ changing loadout                
         if self.new_setup == None: #resume w/o changing loadout
             del(self.new_setup)          
-        elif new_setup == "end": #end game
+        elif self.new_setup == "end": #end game
             del(self.new_setup)
             if setup.online:
                 try:
@@ -176,7 +177,7 @@ class online_mode(Enemy, Enemy_Gun):
             self.stop_all = True  
             Menu([]).end_screen(kills, deaths)
             player.update_rank(kills)
-            titlescreen_menu()
+            self.titlescreen = True
             self.online_paused = False
             self.stop_all = False
             sys.exit()
