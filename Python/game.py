@@ -101,6 +101,8 @@ titlescreen_menu(True)
 while running:
     
     if enemy_player.titlescreen:
+        Menu([]).end_screen(kills, deaths)
+        player.update_rank(kills)
         titlescreen_menu()
     
     if enemy_player.stop_all:
@@ -288,7 +290,7 @@ while running:
             elif event.key == pygame.K_RSHIFT:
                 if setup.online:
                     enemy_player.online_paused = True
-                    Thread(target=enemy_player.online_pause_thread, args=(0,setup,player,kills,deaths,)).start()
+                    Thread(target=enemy_player.online_pause_thread, args=(0,setup,)).start()
                 else:
                     if setup.online:
                         try:

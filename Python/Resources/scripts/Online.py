@@ -161,7 +161,7 @@ class online_mode(Enemy, Enemy_Gun):
             except:
                 data += sock.recv(1024)    
     
-    def online_pause_thread(self, l, setup, player, kills, deaths):
+    def online_pause_thread(self, l, setup):
         self.stop_all = False
         self.online_paused = True
         self.new_setup = setup.pause(setup, True) #resume w/ changing loadout                
@@ -175,8 +175,6 @@ class online_mode(Enemy, Enemy_Gun):
                 except:
                     self.s.close  
             self.stop_all = True  
-            Menu([]).end_screen(kills, deaths)
-            player.update_rank(kills)
             self.titlescreen = True
             self.online_paused = False
             self.stop_all = False
