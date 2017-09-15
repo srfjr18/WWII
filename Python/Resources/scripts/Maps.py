@@ -72,7 +72,7 @@ class Maps(object):
         elif map_choice == "BASE":
             return (55, 70, 0)
         elif map_choice == "SUPPLY":
-            return (98, 43, 14)
+            return (98, 110, 14)
         else:
             raise ValueError("You are using a custom map")
        
