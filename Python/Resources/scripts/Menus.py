@@ -537,8 +537,12 @@ class Setup(object):
                         self.map_choice = Menu(custom_maps).GameSetup()
                         if self.map_choice == "BACK":
                             self.custom = False
+                    elif self.map_choice != "BACK":
+                        self.custom = False
+                        go_back_once = False
                     else:
                         go_back_once = False
+                    
                     
                     if self.map_choice == "BACK":
                         try:
