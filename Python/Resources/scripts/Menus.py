@@ -172,7 +172,7 @@ class Menu(object):
                         with open(path+"userdata", "rb") as file:
                             data = pickle.load(file)
                         data["name"] = name
-                        data["rank"] = 25
+                        data["rank"] = 28
                         with open(path+"userdata", "wb+") as file:
                             pickle.dump(data, file, protocol=2) 
                         """with open (path+'data', 'w+') as file:
@@ -203,7 +203,7 @@ class Menu(object):
                 break
         if not os.path.isfile(path+'userdata'):
             mac = ':'.join(("%012X" % getnode())[i:i+2] for i in range(0, 12, 2))
-            new = {"name": "NONE", "rank": 25, "LOADOUT 1": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 2": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 3": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 4": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 5": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "IP": [], "MAC": mac}
+            new = {"name": "NONE", "rank": 28, "prestige": 0, "LOADOUT 1": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 2": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 3": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 4": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 5": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "IP": [], "MAC": mac}
             with open(path+"userdata", "wb+") as file:
                 pickle.dump(new, file, protocol=2)
             self.name()
@@ -258,14 +258,40 @@ class Menu(object):
                     with open(path+"userdata", "rb") as file:
                         data = pickle.load(file)
                     name = data["name"]
+                    prestige = data["prestige"]
                     self.rank = data["rank"]
                     
-                    self.rank = int(int(self.rank) / 25)
+                    self.rank = int(int(self.rank) / 25 - int(self.rank) / 100)
                     pygame.draw.rect(screen, (255, 255, 255), (480 - 55, 0, screen.get_size()[0] / 3, 50), 2)
                     text = self.font["small"].render(name,1,(255,255,255))
-                    screen.blit(text, (480 - 25, 15))
+                    screen.blit(text, (480 - 50, 15))
+                    
+                    if prestige > 0 and not (mouse_collision.colliderect(pygame.Rect((480 - 55, 0), (screen.get_size()[0] / 3, 50))) and self.rank >= 25 and prestige < 10):
+                        pygame.draw.circle(screen, (255, 255, 255), (570, 27), 15, 1)
+                        text = self.font["smallish"].render(str(prestige),1,(255,255,255))
+                        screen.blit(text, (480 + 85, 17))
                     text = self.font["small"].render(str(self.rank),1,(255,255,255))
-                    screen.blit(text, (480 + 125, 15))
+                    screen.blit(text, (480 + 115, 15))
+                    
+                    
+                    if mouse_collision.colliderect(pygame.Rect((480 - 55, 0), (screen.get_size()[0] / 3, 50))) and self.rank >= 25 and prestige < 10:
+                        pygame.draw.circle(screen, (255,165,0), (570, 27), 15, 1)
+                        text = self.font["small"].render(name,1,(255,165,0))
+                        screen.blit(text, (480 - 50, 15))
+                        text = self.font["smallish"].render(str(prestige+1),1,(255,165,0))
+                        screen.blit(text, (480 + 85, 17))
+                        text = self.font["small"].render(str(self.rank),1,(255,165,0))
+                        screen.blit(text, (480 + 115, 15))
+                        
+                        if pygame.mouse.get_pressed()[0]:
+                            pygame.mixer.Sound.play(self.click)
+                            question = self.yes_no("PRESTIGE? YOU WILL", "BE RESET TO RANK 1")
+                            if question == "yes":
+                                data["prestige"] = data["prestige"] + 1
+                                data["rank"] = 28
+                                with open(path+"userdata", "wb+") as file:
+                                    pickle.dump(data, file, protocol=2)
+                                pygame.time.delay(300)
             except:
                 pass
             
@@ -285,10 +311,10 @@ class Menu(object):
                     data = pickle.load(file)
                 
                 self.rank = data["rank"]
-                self.rank = int(int(self.rank) / 25)
+                self.rank = int(int(self.rank) / 25 - int(self.rank) / 100)
                 self.required_ranks = description[1]
                        
-
+            
             for num in range(0, len(self.words)):
                 if mouse_collision.colliderect(pygame.Rect((0, num * 50), (screen.get_size()[0] / 3, 50))):
                 

@@ -77,17 +77,21 @@ class Player(object):
         os.remove(path+'data')
         with open(path+'data', 'w+') as file:
             file.write(name+str(int(rank) + kills))"""
+        
         with open(path+"userdata", "rb") as file:
             data = pickle.load(file)
             
         rank = data["rank"]
         
         data["rank"] = int(rank) + kills
+        
+        if int((int(rank) + kills) / 25 - (int(rank) + kills) / 100) >= 25:
+            return
         with open(path+"userdata", "wb+") as file:
             pickle.dump(data, file, protocol=2)
          
-            
-        self.rank = int((int(rank) + kills) / 25)
+        #this does absolutely nothing looking back at this project 1 month after I abandoned it. Why is this here?    
+        self.rank = int((int(rank) + kills) / 25 - (int(rank) + kills) / 100)
         
     def ui(self, kills, deaths, weapon, mag, shot, reloading, max_kills):
         kd_bg = pygame.Surface((100,30), pygame.SRCALPHA)
