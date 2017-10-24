@@ -103,6 +103,7 @@ class Menu(object):
     def name(self, different=False, diftext=None, int_only=False):
         name = ""
         shift = False
+        caps = False
         screen.blit(self.background, (0, 0))
         text = self.font["small"].render("NAME:",1,(255,255,255))
         screen.blit(text, (250, 150))
@@ -126,6 +127,11 @@ class Menu(object):
                 shift = True
             elif not pygame.key.get_pressed()[pygame.K_RSHIFT] and not pygame.key.get_pressed()[pygame.K_LSHIFT]:
                 shift = False
+            
+            if pygame.key.get_pressed()[pygame.K_CAPSLOCK]:
+                caps = True
+            elif not pygame.key.get_pressed()[pygame.K_CAPSLOCK]:
+                caps = False
             
             for event in pygame.event.get():  
                 if event.type == pygame.QUIT: 
@@ -160,7 +166,7 @@ class Menu(object):
                             if str(chr(event.key)) == '.':
                                 raise ValueError
                                  
-                            if shift:
+                            if shift or caps:
                                 name = name + str(chr(event.key)).upper()
                             else:
                                 name = name + str(chr(event.key))
@@ -287,6 +293,16 @@ class Menu(object):
                             pygame.mixer.Sound.play(self.click)
                             question = self.yes_no("PRESTIGE? YOU WILL", "BE RESET TO RANK 1")
                             if question == "yes":
+                                  
+                                custom_guns = os.listdir(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', 'Creations', 'Guns'))
+                                custom_guns = [s for s in custom_guns if s.endswith('.py')]
+                                custom_guns = [guns[:-3] for guns in custom_guns]
+                                custom_guns.remove("__init__")
+                                
+                                for loadout in ["LOADOUT 1", "LOADOUT 2", "LOADOUT 3", "LOADOUT 4", "LOADOUT 5"]:
+                                    if data[loadout][0] in custom_guns:
+                                        data[loadout][0] = "M1 GARAND"
+
                                 data["prestige"] = data["prestige"] + 1
                                 data["rank"] = 28
                                 with open(path+"userdata", "wb+") as file:
@@ -548,7 +564,7 @@ class Setup(object):
                     except:
                         pass
                     if go_back_once:
-                        self.map_choice = Menu(["CUSTOM", "SHIP", "PACIFIC", "BARREN", "TOWN", "BASE", "SUPPLY", "BACK"]).GameSetup()
+                        self.map_choice = Menu(["CUSTOM", "SHIP", "PACIFIC", "BARREN", "TOWN", "BASE", "SUPPLY", "BACK"]).GameSetup("rank", [25,0,0,0,0,0,0,0])
                     else:
                         break
                 
@@ -608,13 +624,13 @@ class Setup(object):
                             
                             """remove now non existent guns from loadouts"""
                             loadoutpath = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', '')    
-                            with open(loadoutpath+"userdata", "r") as file:
+                            with open(loadoutpath+"userdata", "rb") as file:
                                 data = pickle.load(file)
                             for loadout in ["LOADOUT 1", "LOADOUT 2", "LOADOUT 3", "LOADOUT 4", "LOADOUT 5"]:
                                 if delete == data[loadout][0]:
                                     data[loadout][0] = "M1 GARAND"
                                     
-                            with open(loadoutpath+"userdata", "w+") as file:
+                            with open(loadoutpath+"userdata", "wb+") as file:
                                 pickle.dump(data, file, protocol=2)
                                 
                                 """rewrite_file = False
@@ -680,7 +696,7 @@ class Setup(object):
                         loadoutchoice = Menu(["WEAPON", "PERK 1", "PERK 2", "PERK 3", "BACK"]).GameSetup()
                     if loadoutchoice == "WEAPON":
                         while True:
-                            weapon_type = Menu(["RIFLES", "SMGs", "LMGs", "SNIPERS", "CUSTOM", "BACK"]).GameSetup()                    
+                            weapon_type = Menu(["RIFLES", "SMGs", "LMGs", "SNIPERS", "CUSTOM", "BACK"]).GameSetup("rank",[0,0,0,0,25])                    
                             if weapon_type == "RIFLES":                    
                                 weapon = Menu(["M1 GARAND", "GEWEHR 43", "M1A1", "FG42", "STG44", "BACK"]).GameSetup("rank", [1, 5, 10, 16, 18], "SEMI-AUTO, HIGHEST DAMAGE ASSAULT RIFLE", "SEMI-AUTO, MODERATE POWER", "SEMI-AUTO, SHORT DELAY BETWEEN SHOTS", "FULL-AUTO, HIGH FIRERATE", "FULL-AUTO, HIGH POWER")
                             elif weapon_type == "SMGs":

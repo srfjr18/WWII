@@ -5,7 +5,7 @@ path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__))
 with open(path, "r") as file:
     data = pickle.load(file)
                     
-data["rank"] = 1000
+data["rank"] = 834
 
 with open(path, "w+") as file:
     pickle.dump(data, file, protocol=2)

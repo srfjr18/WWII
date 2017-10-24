@@ -85,9 +85,11 @@ class Player(object):
         
         data["rank"] = int(rank) + kills
         
-        if int((int(rank) + kills) / 25 - (int(rank) + kills) / 100) >= 25:
+        if int(int(rank) / 25 - int(rank) / 100) == 25: #if already equals 25, don't bother with the rest
             return
         with open(path+"userdata", "wb+") as file:
+            if data["rank"] > 834:
+                data["rank"] = 834
             pickle.dump(data, file, protocol=2)
          
         #this does absolutely nothing looking back at this project 1 month after I abandoned it. Why is this here?    

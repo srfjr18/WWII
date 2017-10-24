@@ -65,8 +65,8 @@ class online_mode(Enemy, Enemy_Gun):
                     if ip == "BACK":
                         del(ip)
                             
-                Thread(target=self.client_connector, args=(ip,0,)).start()
                 try:
+                    Thread(target=self.client_connector, args=(ip,0,)).start()
                     self.client_main()
                 except:
                     continue
