@@ -40,6 +40,19 @@ class Player(object):
                     file.write("            mousepos = "+str(pos)+"\n")
             sys.exit()
     
+    def test_2(self, mousepos):
+        """not called anymore, used to generate consistent shot starting position"""
+        if not int(self.angle) in self.angle_list: 
+            self.angle_list.append(int(self.angle))
+            self.pos_list.append(mousepos)
+        print(str(len(self.angle_list)))
+        if len(self.angle_list) == 360:
+            with open("test", "w+") as file:
+                for angle, pos in zip(self.angle_list, self.pos_list):
+                    file.write("        if int(angle) == "+str(angle)+":\n")
+                    file.write("            self.mainx, self.mainy = "+str(pos)+"\n")
+            sys.exit()
+    
     def proper_spawn(self, collision_list):
         main_collision = pygame.Rect((self.mainx, self.mainy), (self.backup.get_size()[0] * 2, self.backup.get_size()[1] * 2)) 
             

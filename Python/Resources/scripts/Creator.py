@@ -600,7 +600,7 @@ class Creator(object):
                             
                             maps.write("def collision(imagesx, imagesy):"+"\n")
                             maps.write("    return [")
-                            for images in range(number_of_images):
+                            for images in range(number_of_images + 1):
                                 if collision[images]:
                                     maps.write("pygame.Rect(("+str(x[images])+" - imagesx, "+str(y[images])+" - imagesy), ("+str(width[images])+", "+str(height[images])+")), ")
                             

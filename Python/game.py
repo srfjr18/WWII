@@ -112,6 +112,7 @@ while running:
     clock.tick(FPS)
     internalclock += 1
     
+    
     #player.test(mousepos)
     
     #updating collisions based on our position
@@ -271,8 +272,16 @@ while running:
     if not pygame.mouse.get_pressed()[2] and setup.action == "semi-auto":
         semiauto = False 
             
-    if pygame.mouse.get_pressed()[0]:     
+    if pygame.mouse.get_pressed()[0]: 
+        #player.test_2(mousepos)    
         player.move(mousepos, setup.rations, setup.map_choice)
+    """if pygame.mouse.get_pressed()[2]:
+        if internalclock % 20 == 0:
+            if player.angle == 360:
+                player.angle = 0
+            else:
+                player.angle += 1
+            player.maincharacter = pygame.transform.rotate(player.backup, player.angle)"""
     
     
     for event in pygame.event.get():  
@@ -281,7 +290,7 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
-            elif event.key == pygame.K_d:
+            elif event.key == pygame.K_q:
                 try:
                     if str(sys.argv[1]) == "-d": 
                         player.spawn(maps.spawnX, maps.spawnY, setup.map_choice) #use this to test spawns
