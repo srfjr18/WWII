@@ -42,7 +42,7 @@ Fully featured WWII pygame, written 100% in python.
 * If you want to play online on something other than lan, you have to port forward everything coming in at port 5006 to port 5006. The client then must use your public (not private!!) IP address to connect.
 
 
-* This version comes packaged with the python 3.6 interperter for Windows. If you are on Mac/Linux or would like to use the game with your own python build (this is compatible with python 2.7 as well), then move game.py, Resources, and Data (all in the Python directory) to the directory of your choice, and run game.py.
+* This is built for python 2.7, but is mostly compatible with python 3 (with the most notable exception being issues with the online mode I'm too lazy to fix).
 
 
-* If you are lazy like me and don't want/have the time to rank up to level 25 to unlock everything, there is a file located in Python\Data called max\_rank.py. Run the file to instantly get rank 25 (if using packaged interperter run \path\to\python.exe \path\to\max\_rank.py).
+* If you are lazy like me and don't want/have the time to rank up to level 25 to unlock everything, there is a file located in WWII\Data called max\_rank.py. Run the file to instantly get rank 25.
