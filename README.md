@@ -5,7 +5,7 @@ Fully featured WWII pygame, written 100% in python.
 **Features:**
 
 
-* 5 customizable loadouts, complete with 17 default guns and 9 perks to choose from
+* 5 customizable loadouts, complete with 19 default guns and 9 perks to choose from
 
 * 5 default maps
 
@@ -15,19 +15,21 @@ Fully featured WWII pygame, written 100% in python.
 
 * Offline competition against AI
 
-* Rank system. Level up to unlock new guns, perks, and feautures 
+* Rank system. Level up to unlock new guns, perks, and feautures
 
-* Sound
+* Prestige Mode. Reach rank 25 to prestige and advance your character 
+
+* Gun sounds, as well as background sound/music
 
 
 
 **Controls:**
 
-* Menu: left click to choose options
+* Menus: left click to choose options
 
 * Gun builder (gun stat creator): drag sliders to change stats
 
-* Gun builder (model creator)/map builder: controls listed in game. However, you can also use WASD and IJKL for faster creation
+* Gun builder (model creator) and map builder: controls listed in game. However, you can also use WASD and IJKL for faster creation
 
 * In game: mouse to turn, left click to move, right click to shoot, and right shift to pause
 
@@ -43,4 +45,4 @@ Fully featured WWII pygame, written 100% in python.
 * This version comes packaged with the python 3.6 interperter for Windows. If you are on Mac/Linux or would like to use the game with your own python build (this is compatible with python 2.7 as well), then move game.py, Resources, and Data (all in the Python directory) to the directory of your choice, and run game.py.
 
 
-* If you are lazy like me and don't want/have the time to rank up to level 25 to unlock everything, there is a file located in Python\Data called max\_rank.py. Run the file to instantly get rank 40 (if using packaged interperter run \path\to\python.exe \path\to\max\_rank.py).
+* If you are lazy like me and don't want/have the time to rank up to level 25 to unlock everything, there is a file located in Python\Data called max\_rank.py. Run the file to instantly get rank 25 (if using packaged interperter run \path\to\python.exe \path\to\max\_rank.py).
