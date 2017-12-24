@@ -324,6 +324,6 @@ class Gun_Types(object):
             return [(None, (0, 28, 0), (78, 26, 27, 27)), (None, (0, 28, 0), (68, 34, 18, 8)), (None, (0, 28, 0), (67, 5, 7, 36)), (None, (240, 1, 0), (66, 3, 8, 10))]
         self.shotgun = True
         self.flame = True
-        return 1, "full-auto", 30, 200, 200, 8
+        return 6, "full-auto", 30.1, 200, 201, 8 #the 30.1 makes this exclusive and easier to identify in the online mode
           
     

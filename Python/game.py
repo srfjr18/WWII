@@ -354,7 +354,7 @@ while running:
     player.ui(kills, deaths, setup.weapon, setup.mag, shot, reloading, setup.max_kills) 
     #pygame.draw.circle(screen, (0, 0, 0), (screen.get_size()[0] / 2, screen.get_size()[1] / 2), screen.get_size()[1] / 2, 20)   
     pygame.display.flip()
-    
+
 pygame.quit()
 if setup.online:
     try:

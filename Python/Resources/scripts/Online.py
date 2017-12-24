@@ -26,7 +26,12 @@ class online_mode(Enemy, Enemy_Gun):
         self.angle = 0 
         self.background = pygame.Surface(screen.get_size())
         self.background.fill((0,0,0))
+        self.fire = pygame.image.load(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Resources', 'images', '')+'flame.png')
+        
+        self.flame_thrower = False
+        
         self.background = self.background.convert()
+        self.shotgun = True
         self.font = {"big": pygame.font.SysFont("monospace", 50), "medium": pygame.font.SysFont("monospace", 35), "small": pygame.font.SysFont("monospace", 25), "smallish": pygame.font.SysFont("monospace", 20), "extrasmall": pygame.font.SysFont("monospace", 15)}
         
         
@@ -164,7 +169,8 @@ class online_mode(Enemy, Enemy_Gun):
     def online_pause_thread(self, l, setup):
         self.stop_all = False
         self.online_paused = True
-        self.new_setup = setup.pause(setup, True) #resume w/ changing loadout                
+        self.new_setup = setup.pause(setup, True)
+        self.flame_thrower = setup.flame_thrower #resume w/ changing loadout                
         if self.new_setup == None: #resume w/o changing loadout
             del(self.new_setup)          
         elif self.new_setup == "end": #end game
@@ -173,7 +179,9 @@ class online_mode(Enemy, Enemy_Gun):
                 try:
                     self.c.close
                 except:
-                    self.s.close  
+                    self.s.close 
+                    
+                     
             self.stop_all = True  
             self.titlescreen = True
             self.online_paused = False
@@ -348,9 +356,12 @@ class online_mode(Enemy, Enemy_Gun):
         self.c.settimeout(3)
               
     
-    def blit_shot(self):
+    def blit_shot(self, nothing=False):
         for rise, run in zip(self.enemy_shotrise_list, self.enemy_shotrun_list):
-            screen.blit(self.bullet, (run, rise))
+            if self.flame_thrower or nothing:
+                screen.blit(self.fire, (run, rise))
+            else:
+                screen.blit(self.bullet, (run, rise))
             
     def collide_you(self, collision_list):
         main_collision = pygame.Rect((self.mainx, self.mainy), self.backup.get_size())
@@ -434,6 +445,10 @@ class online_mode(Enemy, Enemy_Gun):
                 
                 try:
                     self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list = new
+                    if str(self.enemy_stk) == "30.1" or str(self.enemy_stk) == "22.575":
+                        self.flame_thrower = True
+                    else:
+                        self.flame_thrower = False
                 except (TypeError, ValueError): #gun model was sent instead
                     bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
                     try:
@@ -442,6 +457,7 @@ class online_mode(Enemy, Enemy_Gun):
                         self.enemy_gun = bg
                     except:
                         return True
+                    
                 
                 
                 
@@ -475,6 +491,10 @@ class online_mode(Enemy, Enemy_Gun):
                 
                 try:
                     self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list = new
+                    if str(self.enemy_stk) == "30.1" or str(self.enemy_stk) == "22.575":
+                        self.flame_thrower = True
+                    else:
+                        self.flame_thrower = False
                 except (TypeError, ValueError): #gun model was sent instead
                     bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
                     try:

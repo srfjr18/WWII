@@ -86,10 +86,16 @@ class Menu(object):
             screen.blit(text, (150, 275))
             for event in pygame.event.get():  
                 if event.type == pygame.QUIT: 
-                    sys.exit()
+                    if socket == None:
+                        sys.exit()
+                    else:
+                        os._exit(1)
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        sys.exit()
+                        if socket == None:
+                            sys.exit()
+                        else:
+                            os._exit(1)
             if pygame.mouse.get_pressed()[0] and not pressed:
                 if socket != None:
                     setup.kill_thread = True
@@ -97,6 +103,10 @@ class Menu(object):
                 break
             elif not pygame.mouse.get_pressed()[0]:
                 pressed = False #used so you cant hold the button without even seeing the killed screen
+            try:
+                self.flame_thrower = setup.flame_thrower
+            except:
+                pass
             pygame.display.flip()
         
 
@@ -538,6 +548,7 @@ class Setup(object):
         self.online = False
         self.background = pygame.Surface(screen.get_size())
         self.background.fill((0,0,0))
+        self.flame_thrower = False
         self.background = self.background.convert()
         self.font = {"big": pygame.font.SysFont("monospace", 50), "medium": pygame.font.SysFont("monospace", 35), "small": pygame.font.SysFont("monospace", 25), "smallish": pygame.font.SysFont("monospace", 20), "extrasmall": pygame.font.SysFont("monospace", 15)}
     
@@ -930,7 +941,7 @@ class Setup(object):
             self.flame = True
             try:
                 self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().thrower(angle)
-            except ((TypeError, ValueError), ValueError):
+            except:
                 self.gun = Gun_Types().thrower(angle)
                 return
         else: #custom gun
