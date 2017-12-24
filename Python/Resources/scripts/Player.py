@@ -226,15 +226,19 @@ class Gun(object):
         self.shotrise_list = []
         self.backup_shotrise = []
         self.backup_shotrun = []
-        self.bullet = pygame.image.load(path+'bullet.png')     
+        self.bullet = pygame.image.load(path+'bullet.png')
+        self.flame = pygame.image.load(path+'flame.png')     
        
-    def blit_shot(self):
+    def blit_shot(self, flame=False):
         for rise, run, brise, brun in zip(self.shotrise_list, self.shotrun_list, self.backup_shotrise, self.backup_shotrun):
             self.shotrise_list.remove(rise)
             self.shotrun_list.remove(run)
             self.shotrise_list.append(rise + brise)
             self.shotrun_list.append(run + brun)
-            screen.blit(self.bullet, (run, rise))            
+            if flame:
+                screen.blit(self.flame, (run, rise))
+            else:
+                screen.blit(self.bullet, (run, rise))            
             
     def wall_collide(self, collision_list):
         for rise, run, brise, brun in zip(self.shotrise_list, self.shotrun_list, self.backup_shotrise, self.backup_shotrun):

@@ -169,7 +169,7 @@ class Enemy(Setup, Gun_Types):
         spawnpointX = randint(self.spawnarea_x[0], self.spawnarea_x[1]) #- imagesx
         spawnpointY = randint(self.spawnarea_y[0], self.spawnarea_y[1]) #- imagesy
         while True:
-            if self.proper_spawn(spawnpointX - imagesx, spawnpointY - imagesy, collision_list) or 640 > spawnpointX - imagesx > 0 and 480 > spawnpointY - imagesy > 0:
+            if self.proper_spawn(spawnpointX - imagesx, spawnpointY - imagesy, collision_list) or 640 > spawnpointX - imagesx > 0 and 480 > spawnpointY - imagesy > 0 or spawnpointX - imagesx == 0:
                 spawnpointX = randint(self.spawnarea_x[0], self.spawnarea_x[1]) #(spawnarea)
                 spawnpointY = randint(self.spawnarea_y[0], self.spawnarea_y[1]) #(spawnarea)
             else:
@@ -200,6 +200,7 @@ class Enemy_Gun(object):
         self.enemy_backup_shotrise = []
         self.enemy_backup_shotrun = [] 
         self.bullet = pygame.image.load(path+'bullet.png')    
+        self.flame = pygame.image.load(path+'flame.png')  
         
     def wall_collide(self, collision_list):
         for rise, run, brise, brun in zip(self.enemy_shotrise_list, self.enemy_shotrun_list, self.enemy_backup_shotrise, self.enemy_backup_shotrun):
@@ -221,13 +222,16 @@ class Enemy_Gun(object):
                 if pygame.Rect((run,rise), self.bullet.get_size()).colliderect(main_collision):
                     return True
                     
-    def blit_shot(self):
+    def blit_shot(self, flame=False):
         for rise, run, brise, brun in zip(self.enemy_shotrise_list, self.enemy_shotrun_list, self.enemy_backup_shotrise, self.enemy_backup_shotrun):
             self.enemy_shotrise_list.remove(rise)
             self.enemy_shotrun_list.remove(run)
             self.enemy_shotrise_list.append(rise + brise)
             self.enemy_shotrun_list.append(run + brun)
-            screen.blit(self.bullet, (run, rise))
+            if flame:
+                screen.blit(self.flame, (run, rise))
+            else:
+                screen.blit(self.bullet, (run, rise))   
     
     
     

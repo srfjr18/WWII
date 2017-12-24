@@ -336,8 +336,14 @@ while running:
         Play_Maps(setup.map_choice).blit_map(player.imagesx, player.imagesy)
     else:
         Maps(player.imagesx, player.imagesy).blit_map(setup.map_choice)
-    player_gun.blit_shot()
-    enemy_gun.blit_shot()
+    if setup.shotgun and setup.flame:
+        player_gun.blit_shot(True)
+    else:
+        player_gun.blit_shot()
+    if enemy_player.shotgun and enemy_player.flame:
+        enemy_gun.blit_shot(True)
+    else:
+        enemy_gun.blit_shot()
     if setup.online:
         enemy_player.blit_enemy(hit_enemy, player.imagesx, player.imagesy, enemy_player.angle, enemy_player.enemy_gun) 
     else:

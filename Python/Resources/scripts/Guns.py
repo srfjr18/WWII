@@ -11,11 +11,12 @@ class Gun_Types(object):
         self.mainx = 295
         self.mainy = 215
         self.shotgun = False
+        self.flame = False
         
     def getrand_gun_or_blit(self, random_gun=None, angle=None, mainx=295, mainy=215):
         #this has to be number of guns
         if random_gun == None:
-            random_gun = randint(1,19)
+            random_gun = randint(1,20)
             self.rand_num = random_gun
         if random_gun == 1:
             return self.stg(angle, mainx, mainy)
@@ -55,6 +56,8 @@ class Gun_Types(object):
             return self.double_barrel(angle, mainx, mainy)
         elif random_gun == 19:
             return self.m1987(angle, mainx, mainy)
+        elif random_gun == 20:
+            return self.thrower(angle, mainx, mainy)
             
     #ASSAULT RIFLES
     def stg(self, angle=None, mainx=295, mainy=215):
@@ -308,5 +311,19 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (93, 95, 93), (72, 0, 5, 35)), (None, (145, 58, 1), (70, 17, 9, 32)), (None, (0, 1, 1), (72, 16, 6, 18))]
         self.shotgun = True
-        return 130, "semi-auto", 9, 6, 200, 0     
+        return 130, "semi-auto", 9, 6, 200, 0   
+    def thrower(self, angle=None, mainx=295, mainy=215):
+        if angle != None:
+            bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
+            pygame.draw.rect(bg, (0, 28, 0), (78, 26, 27, 27))
+            pygame.draw.rect(bg, (0, 28, 0), (68, 34, 18, 8))
+            pygame.draw.rect(bg, (0, 28, 0), (67, 5, 7, 36))
+            pygame.draw.rect(bg, (240, 1, 0), (66, 3, 8, 10))
+            bg = pygame.transform.rotate(bg, angle)
+            screen.blit(bg, (mainx - 25, mainy - 25))
+            return [(None, (0, 28, 0), (78, 26, 27, 27)), (None, (0, 28, 0), (68, 34, 18, 8)), (None, (0, 28, 0), (67, 5, 7, 36)), (None, (240, 1, 0), (66, 3, 8, 10))]
+        self.shotgun = True
+        self.flame = True
+        return 1, "full-auto", 30, 200, 200, 8
+          
     

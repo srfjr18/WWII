@@ -5,7 +5,7 @@ Fully featured WWII pygame, written 100% in python.
 **Features:**
 
 
-* 5 customizable loadouts, complete with 19 default guns and 9 perks to choose from
+* 5 customizable loadouts, complete with 20 default guns and 9 perks to choose from
 
 * 5 default maps
 
