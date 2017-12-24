@@ -51,6 +51,8 @@ class Creator(object):
         
         semiauto = False
         fullauto = True
+        shotgun = False
+        hit = False
         while True:
             
             if semiauto:
@@ -80,10 +82,14 @@ class Creator(object):
             screen.blit(text, (400, 5))
             
             text = self.menu.font["smallish"].render("semi-auto",1,(255,255,255))
-            screen.blit(text, (20, 80))
+            screen.blit(text, (20, 70))
             
             text = self.menu.font["smallish"].render("full-auto",1,(255,255,255))
-            screen.blit(text, (20, 100))
+            screen.blit(text, (20, 90))
+            
+            text = self.menu.font["smallish"].render("shotgun?:",1,(255,255,255))
+            screen.blit(text, (20, 110))
+            
             
             #Done button
             pygame.draw.rect(screen, (255, 255, 255), (screen.get_size()[0] / 3, 400, screen.get_size()[0] / 3, 50), 2)
@@ -92,20 +98,39 @@ class Creator(object):
             
             if semiauto:
                 text = self.menu.font["smallish"].render("semi-auto",1,(255,165,0))
-                screen.blit(text, (20, 80))
+                screen.blit(text, (20, 70))
             else:
                 text = self.menu.font["smallish"].render("full-auto",1,(255,165,0))
-                screen.blit(text, (20, 100))
+                screen.blit(text, (20, 90))
             
-            if mouse_collision.colliderect(pygame.Rect((20, 80), (120, 30))):
+            if shotgun:
+                text = self.menu.font["smallish"].render("Y",1,(255,255,255))
+                screen.blit(text, (130, 110))
+            else:
+                text = self.menu.font["smallish"].render("N",1,(255,255,255))
+                screen.blit(text, (130, 110))
+            
+            
+            if mouse_collision.colliderect(pygame.Rect((20, 70), (120, 30))):
                 text = self.menu.font["smallish"].render("semi-auto",1,(255,165,0))
-                screen.blit(text, (20, 80))
-            elif mouse_collision.colliderect(pygame.Rect((20, 100), (120, 30))):
+                screen.blit(text, (20, 70))
+            elif mouse_collision.colliderect(pygame.Rect((20, 90), (120, 30))):
                 text = self.menu.font["smallish"].render("full-auto",1,(255,165,0))
-                screen.blit(text, (20, 100))
+                screen.blit(text, (20, 90))
             elif mouse_collision.colliderect(pygame.Rect((screen.get_size()[0] / 3, 400), (screen.get_size()[0] / 3, 50))):
                 text = self.menu.font["small"].render("DONE",1,(255,165,0))
                 screen.blit(text, (screen.get_size()[0] / 3 + 25, 415))
+            elif mouse_collision.colliderect(pygame.Rect((110, 110), (60, 30))) and not hit:
+                if not shotgun:
+                    text = self.menu.font["smallish"].render("N",1,(0,0,0))
+                    screen.blit(text, (130, 110))
+                    text = self.menu.font["smallish"].render("Y",1,(255,165,0))
+                    screen.blit(text, (130, 110))
+                else:
+                    text = self.menu.font["smallish"].render("Y",1,(0,0,0))
+                    screen.blit(text, (130, 110))
+                    text = self.menu.font["smallish"].render("N",1,(255,165,0))
+                    screen.blit(text, (130, 110))
             
             #line under points and name
             pygame.draw.rect(screen, (255, 255, 255), (0, 60, 640, 1), 3)
@@ -120,19 +145,33 @@ class Creator(object):
             self.sliders(screen, 350, 220, "mag size", 10, 50)
             self.sliders(screen, 350, 320, "reload time", 10, 25)
               
+            
+            if not pygame.mouse.get_pressed()[0] and not mouse_collision.colliderect(pygame.Rect((110, 110), (60, 30))):
+                hit = False
                 
             if pygame.mouse.get_pressed()[0]:
-                if mouse_collision.colliderect(pygame.Rect((20, 80), (120, 30))):
+                if mouse_collision.colliderect(pygame.Rect((20, 70), (120, 30))):
                     semiauto = True
                     fullauto = False
-                elif mouse_collision.colliderect(pygame.Rect((20, 100), (120, 30))):
+                elif mouse_collision.colliderect(pygame.Rect((20, 90), (120, 30))):
                     semiauto = False
                     fullauto = True
+                elif mouse_collision.colliderect(pygame.Rect((110, 110), (60, 30))) and not hit:
+                    hit = True
+                    if shotgun:
+                        shotgun = False
+                    else:
+                        shotgun = True
+                
                 elif mouse_collision.colliderect(pygame.Rect((screen.get_size()[0] / 3, 400), (screen.get_size()[0] / 3, 50))):
                     self.map_builder(size=(50,50), build_gun=True, map_name=str(gun_name))
                     with open(gun_path+str(gun_name)+".py", 'w+') as gun:
                         gun.write("import pygame\n")
                         gun.write("from Resources.scripts.Menus import screen #so if display (full/windowed) stays the same\n")
+                        if shotgun:
+                            gun.write("shotgun=True\n")
+                        else:
+                            gun.write("shotgun=False\n")
                         gun.write("def gun():"+"\n")
                         if semiauto:
                             action = "semi-auto"
@@ -166,6 +205,12 @@ class Creator(object):
                         if mag == 0:
                             mag = 1
                         mag = str(mag)
+                        
+                        if shotgun:
+                            mag = self.slider_dict["mag size"]
+                            if mag == 0:
+                                mag = 1
+                            mag = str(mag)
                            
                         reloadtime = str(300 - (20 * self.slider_dict["reload time"]))
                            
@@ -226,6 +271,7 @@ class Creator(object):
                         os.execv(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'game.py'), sys.argv)
                     except OSError: #using embedded python 3 windows version
                         sys.exit()
+                
                     
             for event in pygame.event.get():  
                 if event.type == pygame.QUIT: 
@@ -642,6 +688,10 @@ class Custom_Gun(object):
     def __init__(self, gun_choice):
         import importlib
         self.guns = importlib.import_module("Data.Creations.Guns."+gun_choice)
+        try:
+            self.shotgun = self.guns.shotgun
+        except:
+            self.shotgun = False
     def return_gun(self):
         return self.guns.gun()
     def blit_gun(self, angle):

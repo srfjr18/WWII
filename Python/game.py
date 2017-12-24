@@ -242,7 +242,13 @@ while running:
 
     if pygame.mouse.get_pressed()[2] and not semiauto and not reloading and in_between_shots:
         recoil = randint(-1 * setup.recoil, setup.recoil)
-        player_gun.create_shot(recoil, player.angle)
+        
+        
+        if setup.shotgun:
+            player_gun.shotgun_create_shot(recoil, player.angle)
+        else:
+            player_gun.create_shot(recoil, player.angle)
+        
         in_between_shots = False
         if setup.action == "semi-auto":
             semiauto = True

@@ -696,7 +696,7 @@ class Setup(object):
                         loadoutchoice = Menu(["WEAPON", "PERK 1", "PERK 2", "PERK 3", "BACK"]).GameSetup()
                     if loadoutchoice == "WEAPON":
                         while True:
-                            weapon_type = Menu(["RIFLES", "SMGs", "LMGs", "SNIPERS", "CUSTOM", "BACK"]).GameSetup("rank",[0,0,0,0,25])                    
+                            weapon_type = Menu(["RIFLES", "SMGs", "LMGs", "SNIPERS", "SHOTGUNS", "CUSTOM", "BACK"]).GameSetup("rank",[0,0,0,0,0,25])                    
                             if weapon_type == "RIFLES":                    
                                 weapon = Menu(["M1 GARAND", "GEWEHR 43", "M1A1", "FG42", "STG44", "BACK"]).GameSetup("rank", [1, 5, 10, 16, 18], "SEMI-AUTO, HIGHEST DAMAGE ASSAULT RIFLE", "SEMI-AUTO, MODERATE POWER", "SEMI-AUTO, SHORT DELAY BETWEEN SHOTS", "FULL-AUTO, HIGH FIRERATE", "FULL-AUTO, HIGH POWER")
                             elif weapon_type == "SMGs":
@@ -705,6 +705,8 @@ class Setup(object):
                                 weapon = Menu(["M1919", "BAR", "TYPE 99", "BACK"]).GameSetup("rank", [1, 5, 13], "FULL-AUTO, 250 ROUND MAG", "FULL-AUTO, MODERATE FIRERATE", "FULL-AUTO, BALANCE BETWEEN POWER AND FIRERATE")
                             elif weapon_type == "SNIPERS":
                                 weapon = Menu(["SVT40", "MOSIN NAGANT", "ARIASKA", "SPRINGFIELD", "BACK"]).GameSetup("rank", [1, 6, 7, 12], "BOLT ACTION", "BOLT ACTION", "BOLT ACTION", "BOLT ACTION")
+                            elif weapon_type == "SHOTGUNS":
+                                weapon = Menu(["DB SHOTGUN", "M1987", "BACK"]).GameSetup("rank", [5, 10], "SINGLE SHOT, MODERATE POWER", "PUMP ACTION, HIGH POWER")
                             elif weapon_type == "CUSTOM":
                                 custom_guns = os.listdir(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', 'Creations', 'Guns'))
                                 custom_guns = [s for s in custom_guns if s.endswith('.py')]
@@ -798,7 +800,7 @@ class Setup(object):
         #open(path+loadout_number, 'r').close()"""
         with open(path+"userdata", "rb") as file:
             data = pickle.load(file)
-            
+        self.shotgun = False    
         try:
             loadout = data[str(loadout_number)]
             self.weapon = loadout[0]
@@ -906,10 +908,26 @@ class Setup(object):
             except ((TypeError, ValueError), ValueError):
                 self.gun = Gun_Types().springfield(angle)
                 return
+        elif self.weapon == "DB SHOTGUN":
+            self.shotgun = True
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().double_barrel(angle)
+            except ((TypeError, ValueError), ValueError):
+                self.gun = Gun_Types().double_barrel(angle)
+                return
+        elif self.weapon == "M1987":
+            self.shotgun = True
+            try:
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m1987(angle)
+            except ((TypeError, ValueError), ValueError):
+                self.gun = Gun_Types().m1987(angle)
+                return
         else: #custom gun
             if angle == None:
                 self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Custom_Gun(self.weapon).return_gun()
+                self.shotgun = Custom_Gun(self.weapon).shotgun
             else:
+                self.shotgun = Custom_Gun(self.weapon).shotgun
                 self.gun = Custom_Gun(self.weapon).blit_gun(angle)
                 return
                 

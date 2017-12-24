@@ -254,6 +254,23 @@ class Gun(object):
             for collisions in collision_list[:]:
                 if pygame.Rect((run,rise), self.bullet.get_size()).colliderect(enemy_rect):
                     return True
+    
+    
+    def shotgun_create_shot(self, recoil, angle):
+        ang = -37
+        for i in range(8):
+            ang += 7
+            if angle + ang < 0:
+                pos = 360 - (angle + ang)
+            elif angle + ang > 360:
+                pos = 360 - angle + ang
+            else:
+                pos = angle + ang
+            
+            if pos > 360 or pos < 0:
+                continue    
+            self.create_shot(recoil, pos)
+
                    
     def create_shot(self, recoil, angle):
         """makes gunshot speeds consistent"""
