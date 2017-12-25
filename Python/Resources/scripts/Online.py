@@ -456,7 +456,7 @@ class online_mode(Enemy, Enemy_Gun):
                         for i in new[0]:
                             pygame.draw.rect(bg, i[1], i[2])
                         self.enemy_gun = bg
-                    except TypeError:
+                    except (TypeError, IndexError):
                         pass
                     except:
                         traceback.print_exc()
@@ -506,7 +506,7 @@ class online_mode(Enemy, Enemy_Gun):
                         for i in new[0]:
                             pygame.draw.rect(bg, i[1], i[2])
                         self.enemy_gun = bg
-                    except TypeError:
+                    except (TypeError, IndexError):
                         pass
                     except:
                         traceback.print_exc()
