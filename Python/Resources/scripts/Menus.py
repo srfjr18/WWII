@@ -75,7 +75,10 @@ class Menu(object):
             
         if socket != None:
             enemy = enemies
-            enemy = str(enemy.decode())
+            try:
+                enemy = str(enemy.decode())
+            except:
+                pass
             
             setup = Setup()
             Thread(target=setup.send_while_pause, args=(socket,socktype,0,)).start()
