@@ -965,7 +965,7 @@ class Setup(object):
         if perk1 == "QUICK HANDS":
             self.reloadtime *= 0.75
         elif perk1 == "RAPID FIRE":
-            if self.firerate > 1:
+            if self.firerate > 1 and self.stk != 30.1:
                 self.firerate = int(self.firerate * 0.5)
     
         """perk2 = open(path+loadout_number, 'r').readlines()[2].rstrip() """
