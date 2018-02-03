@@ -79,7 +79,13 @@ class online_mode(Enemy, Enemy_Gun):
         Enemy_Gun.__init__(self)
         Enemy.__init__(self, 1, 1, 1, 1)
     
-        
+    def get_ip(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()    
+        return ip
+            
     def ip_enter(self):
         soundpath = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-1]), 'sounds', '')
         self.key = pygame.mixer.Sound(soundpath+"key.wav")
@@ -298,12 +304,15 @@ class online_mode(Enemy, Enemy_Gun):
             break
         
     def server_main(self):
+        ip = self.get_ip()
         while True:
             screen.blit(self.background, (0, 0))
             text = self.font["smallish"].render("STARTING SERVER...",1,(255,255,255))
             screen.blit(text, (170, 150))
             text = self.font["smallish"].render("WAITING FOR CONNECTION...",1,(255,255,255))
             screen.blit(text, (170, 200))
+            text = self.font["smallish"].render("YOUR IP: "+str(ip),1,(255,255,255))
+            screen.blit(text, (170, 300))
             pygame.display.flip()
             
             if self.raise_error:

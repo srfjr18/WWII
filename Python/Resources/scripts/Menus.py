@@ -1,4 +1,4 @@
-import os, pygame, sys, socket, pickle, traceback
+import os, pygame, sys, socket, pickle, traceback, platform
 from random import randint
 from Resources.scripts.Guns import *
 from Resources.scripts.Creator import *
@@ -12,6 +12,7 @@ pygame.init()
 screen =  pygame.display.set_mode((640,480))
 path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', '')
 soundpath = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-1]), 'sounds', '')
+
 
 class Menu(object):
     def __init__(self, words):
@@ -557,7 +558,14 @@ class Setup(object):
         self.fix_online = False
         self.background = self.background.convert()
         self.font = {"big": pygame.font.SysFont("monospace", 50), "medium": pygame.font.SysFont("monospace", 35), "small": pygame.font.SysFont("monospace", 25), "smallish": pygame.font.SysFont("monospace", 20), "extrasmall": pygame.font.SysFont("monospace", 15)}
-    
+        if platform.system() == "Windows":
+            self.windows = True
+            self.fix_online = True
+        else:
+            self.windows = False
+            self.fix_online = False
+        
+        
     def update_data(self, number, loadout_number, new):
         with open(path+"userdata", "rb") as file:
             data = pickle.load(file)
@@ -687,24 +695,34 @@ class Setup(object):
             
             if choice == "OPTIONS":
                 while True:
-                    option_choice = Menu(["FULLSCREEN", "WINDOWED", "GAME OPTIONS", "FIX ONLINE PAUSE", "RESET ONLINE PAUSE", "BACK"]).GameSetup("", "", "", "", "PLAY TO CUSTOM KILLS/DEATHS FOR YOUR GAME")
+                    option_choice = Menu(["FULLSCREEN", "WINDOWED", "GAME OPTIONS", "BACK"]).GameSetup()
                     if option_choice == "GAME OPTIONS":
                         while True:
-                            self.max_kills = Menu([]).name(True, "MAX K/Ds:", True)
-                            try:
-                                self.max_kills = int(self.max_kills)
+                            if self.fix_online and self.windows:                 
+                                choice = Menu(["PLAY TO", "BACK"]).GameSetup()
+                            elif self.fix_online and not self.windows:
+                                choice = Menu(["PLAY TO", "DEFAULT PAUSE", "BACK"]).GameSetup("", "", "End game at set kills/deaths", "Set online pausing back to default. Appear to opponent when paused")
+                            elif not self.fix_online:
+                                choice = Menu(["PLAY TO", "WINDOWS PAUSE", "BACK"]).GameSetup("", "", "End game at set kills/deaths", "On by default on windows to fix bug. Disappear when paused online")
+                            if choice == "BACK":
                                 break
-                            except:
-                                pass
+                            if choice == "WINDOWS PAUSE":
+                                self.fix_online = True
+                            elif choice == "DEFAULT PAUSE":
+                                self.fix_online = False
+                            elif choice == "PLAY TO":
+                                while True:
+                                    self.max_kills = Menu([]).name(True, "MAX K/Ds:", True)
+                                    try:
+                                        self.max_kills = int(self.max_kills)
+                                        break
+                                    except:
+                                        pass
                     elif option_choice == "FULLSCREEN": 
                         pygame.display.set_mode((640,480), pygame.FULLSCREEN)
                     elif option_choice == "WINDOWED":
                         pygame.display.set_mode((640,480))
-                    elif option_choice == "FIX ONLINE PAUSE":
-                        self.fix_online = True
-                    elif option_choice == "RESET ONLINE PAUSE":
-                        self.fix_online = False
-                    else:
+                    elif option_choice == "BACK":
                         break
             
             if choice == "LOADOUTS":
