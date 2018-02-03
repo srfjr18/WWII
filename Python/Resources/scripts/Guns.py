@@ -213,13 +213,13 @@ class Gun_Types(object):
     def bar(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
-            pygame.draw.rect(bg, (0, 0, 0), (75, 0, 0, 32))
-            pygame.draw.rect(bg, (0, 0, 0), (70, 22, 10, 17))
-            pygame.draw.rect(bg, (91, 49, 0), (69, 32, 12, 15))
+            pygame.draw.rect(bg, (91, 25, 0), (72, 0, 7, 32))
+            pygame.draw.rect(bg, (60, 60, 60), (70, 22, 10, 17))
+            pygame.draw.rect(bg, (91, 25, 0), (69, 32, 12, 15))
             backup_bg = bg
             bg = pygame.transform.rotate(bg, angle)
             screen.blit(bg, (mainx - 25, mainy - 25))
-            return [(None, (0, 0, 0), (75, 0, 0, 32)), (None, (0, 0, 0), (70, 22, 10, 17)), (None, (91, 49, 0), (69, 32, 12, 15))]
+            return [(None, (91, 25, 0), (72, 0, 7, 32)), (None, (60, 60, 60), (70, 22, 10, 17)), (None, (91, 25, 0), (69, 32, 12, 15))]
         self.shotgun = False
         return 7, "full-auto", 16, 20, 200, 9
     def type_ninety_nine(self, angle=None, mainx=295, mainy=215):
