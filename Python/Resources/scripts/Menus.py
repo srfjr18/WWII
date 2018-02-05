@@ -808,6 +808,7 @@ class Setup(object):
                     self.online = True
                     return
             elif choice == "OFFLINE GAME":
+                self.online = False
                 try:
                     self.map_choice
                     return
@@ -992,7 +993,7 @@ class Setup(object):
         """perk2 = open(path+loadout_number, 'r').readlines()[2].rstrip() """
         perk2 = loadout[2]   
         if perk2 == "HOLLOW POINTS":
-            self.stk *= 0.75
+            self.stk *= 0.9
         elif perk2 == "SELECT FIRE":
             if self.stk > 5:
                 if self.action == "semi-auto":

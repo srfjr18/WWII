@@ -13,8 +13,8 @@ class Enemy(Setup, Gun_Types):
         self.spawnarea_y = spawnarea_y
         self.mainx = 295
         self.mainy = 215
-        self.enemyposX = 0
-        self.enemyposY = 0
+        self.enemyposX = 10000000
+        self.enemyposY = 10000000
         self.enemy_shot = 0
         self.shoot = False
         self.stop_all = self.online_paused = self.titlescreen = False #online vars that we have to set to false to play offline
@@ -58,16 +58,24 @@ class Enemy(Setup, Gun_Types):
             self.enemyposX, self.enemyposY = 0, 0 
                 
         # modify the randint to change speed enemies spawn         
-        if randint(1, 1) == 1 and not 640 > self.enemyposX - imagesx > 0 and not 480 > self.enemyposY - imagesy > 0 or self.proper_spawn(self.enemyposX - imagesx, self.enemyposY - imagesy, collision_list):
-    
+        if not 640 > self.enemyposX - imagesx > 0 and not 480 > self.enemyposY - imagesy > 0 or self.proper_spawn(self.enemyposX - imagesx, self.enemyposY - imagesy, collision_list):
+            
+            
+            if randint(1, 500) != 1:
+                 return
+            
+            
+            
+            
+            
             #choose random gun for enemy
             self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime, recoil = self.getrand_gun_or_blit() #recoil is just neglected because badaim usually makes up for it or more
             if self.enemy_action == "semi-auto":
                 self.enemy_firerate = 30
         
-            # enemies need 1.5 times more shots if medic perk is used    
+            # enemies need 1.1 times more shots if medic perk is used    
             if self.medic:
-                self.enemy_stk *= 1.5
+                self.enemy_stk *= 1.1
             self.spawn(imagesx, imagesy, collision_list)
             self.alreadycollided = False
             #makes enemy aim less precise
