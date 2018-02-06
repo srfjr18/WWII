@@ -405,7 +405,7 @@ while running:
     else:
         player_gun.blit_shot()
     if setup.online:
-        if enemy_player.shotgun and enemy_player.flame:
+        if enemy_player.shotgun and enemy_player.flame_thrower:
             enemy_gun.blit_shot(True)
         else:
             enemy_gun.blit_shot()

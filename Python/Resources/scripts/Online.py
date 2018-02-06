@@ -369,6 +369,7 @@ class online_mode(Enemy, Enemy_Gun):
         for rise, run in zip(self.enemy_shotrise_list, self.enemy_shotrun_list):
             if self.flame_thrower or nothing:
                 screen.blit(self.fire, (run, rise))
+                
             else:
                 screen.blit(self.bullet, (run, rise))
             
@@ -454,9 +455,8 @@ class online_mode(Enemy, Enemy_Gun):
                 
                 try:
                     self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list = new
-                    if str(self.enemy_stk) == "30.1" or str(self.enemy_stk) == "22.575" or str(self.enemy_stk) == "22.575000000000003":
+                    if str(self.enemy_stk) == "30.1" or 27.1 > self.enemy_stk > 27.08:
                         self.flame_thrower = True
-                        print("true")
                     else:
                         self.flame_thrower = False
                 except (TypeError, ValueError): #gun model was sent instead
@@ -504,8 +504,7 @@ class online_mode(Enemy, Enemy_Gun):
                 
                 try:
                     self.enemy_stk, self.angle, self.enemyposX, self.enemyposY, self.enemy_shotrise_list, self.enemy_shotrun_list = new
-                    print(self.enemy_stk)
-                    if str(self.enemy_stk) == "30.1" or str(self.enemy_stk) == "22.575" or str(self.enemy_stk) == "22.575000000000003":
+                    if str(self.enemy_stk) == "30.1" or 27.1 > self.enemy_stk > 27.08:
                         self.flame_thrower = True
                     else:
                         self.flame_thrower = False

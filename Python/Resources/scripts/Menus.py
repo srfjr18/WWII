@@ -1036,7 +1036,6 @@ class Setup(object):
         self.enemy_gun = None
         self.kill_thread = False
         while True:
-            print("working")
             if self.kill_thread:
                 sys.exit()
             if socktype == "server":
@@ -1068,7 +1067,7 @@ class Setup(object):
     def pause(self, setup, online_pause=False, third=None):
         if third != None:
             Thread(target=self.send_while_pause, args=(online_pause,third,0,)).start()
-            print("triggered")
+            #print("triggered")
         while True:
             pause = Menu(["RESUME", "LOADOUTS     UPDATES AT NEXT SPAWN", "OPTIONS", "END GAME"]).GameSetup(True)
             if pause == "RESUME":

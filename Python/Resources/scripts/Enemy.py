@@ -61,8 +61,8 @@ class Enemy(Setup, Gun_Types):
         if not 640 > self.enemyposX - imagesx > 0 and not 480 > self.enemyposY - imagesy > 0 or self.proper_spawn(self.enemyposX - imagesx, self.enemyposY - imagesy, collision_list):
             
             
-            if randint(1, 500) != 1:
-                 return
+            """if randint(1, 500) != 1:
+                 return"""
             
             
             
@@ -72,7 +72,9 @@ class Enemy(Setup, Gun_Types):
             self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime, recoil = self.getrand_gun_or_blit() #recoil is just neglected because badaim usually makes up for it or more
             if self.enemy_action == "semi-auto":
                 self.enemy_firerate = 30
-        
+            #makes enemies kill you faster
+            self.enemy_stk *= 0.8
+            
             # enemies need 1.1 times more shots if medic perk is used    
             if self.medic:
                 self.enemy_stk *= 1.1
@@ -85,8 +87,8 @@ class Enemy(Setup, Gun_Types):
             else:
                 self.badaim = randint(0, 5)
             self.before_sees_you = randint(0, 30)
-            self.before_accurate = randint(51, 120)
-            if self.before_accurate < 75:
+            self.before_accurate = randint(0, 60)
+            if self.before_accurate < 30:
                 self.badaim *= -1 # doing this just to switch up the direction half the time without allowing the enemy to be too accurate in the middle with distraction
             
         #if enemy hasn't collided with an object and alpha perk is off, then move towards you            
