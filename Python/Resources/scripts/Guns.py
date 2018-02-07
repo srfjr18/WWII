@@ -167,7 +167,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (0, 0, 0), (69, 2, 0, 21)), (None, (0, 0, 0), (78, 3, 0, 21)), (None, (0, 0, 0), (67, 2, 12, 1)), (None, (26, 29, 29), (61, 17, 25, 8)), (None, (131, 70, 29), (67, 25, 13, 24)), (None, (0, 0, 0), (69, 10, 10, 1)), (None, (0, 0, 0), (73, 1, 1, 15)), (None, (0, 2, 1), (67, 17, 12, 11))]
         self.shotgun = False
-        return 1, "full-auto", 45, 71, 150, 8
+        return 1, "full-auto", 40, 71, 150, 8
     def m_three(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)

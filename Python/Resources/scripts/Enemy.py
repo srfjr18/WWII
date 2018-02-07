@@ -24,6 +24,7 @@ class Enemy(Setup, Gun_Types):
         self.alreadycollided = False
         self.gun = enemy_gun
         self.enemy_reloading = 0
+        self.pushed_backX, self.pushed_backY = 0, 0
         Gun_Types.__init__(self)
         Setup.__init__(self)
         self.backup = self.enemy = pygame.image.load(path+'enemy.png')
@@ -90,6 +91,15 @@ class Enemy(Setup, Gun_Types):
             self.before_accurate = randint(0, 60)
             if self.before_accurate < 30:
                 self.badaim *= -1 # doing this just to switch up the direction half the time without allowing the enemy to be too accurate in the middle with distraction
+        
+        
+        
+        #allows enemy to move again if our position means they wouldn't be colliding with a wall if they moved towards us
+        if self.alreadycollided:
+            testY = self.enemyposY + self.pushed_backY + ((self.mainy + imagesy - self.enemyposY) / 100)
+            testX = self.enemyposX + self.pushed_backX + ((self.mainx + imagesx - self.enemyposX)/ 100)
+            if not self.proper_spawn(testX - imagesx, testY - imagesy, collision_list):
+                self.alreadycollided = False
             
         #if enemy hasn't collided with an object and alpha perk is off, then move towards you            
         if not self.alreadycollided and not self.alpha:      
@@ -106,13 +116,18 @@ class Enemy(Setup, Gun_Types):
             self.enemy = pygame.transform.rotate(self.backup, math.degrees(math.atan((self.enemyposY) / (self.enemyposX)) + 0))
        
         #checks for a collision and kicks the enemy back to a permenant position if it returns True      
-        if self.proper_spawn(self.enemyposX - imagesx, self.enemyposY - imagesy, collision_list) and not self.alreadycollided:            
+        if self.proper_spawn(self.enemyposX - imagesx, self.enemyposY - imagesy, collision_list) and not self.alreadycollided: 
+            self.pushed_backY = 10 * ((self.mainy + imagesy - self.enemyposY) / 100)
+            self.pushed_backX = 10 * ((self.mainx + imagesx - self.enemyposX) / 100)
+                   
             self.enemyposY -= 10 * ((self.mainy + imagesy - self.enemyposY) / 100)
             self.enemyposX -= 10 * ((self.mainx + imagesx - self.enemyposX) / 100)
+            
+            
             self.alreadycollided = True
         
-        #if the enemy is on our screen
-        if 640 > self.enemyposX - imagesx > 0 and 480 > self.enemyposY - imagesy > 0:
+        #if the enemy is on our screen or a little outside
+        if 740 > self.enemyposX - imagesx > -100 and 580 > self.enemyposY - imagesy > -100:
     
             #count the frames that the enemy is on our screen
             self.counter += 1
