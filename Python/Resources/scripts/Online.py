@@ -241,7 +241,21 @@ class online_mode(Enemy, Enemy_Gun):
             self.break_waitscreen = True
             break
         
-        
+    def back_button(self):
+        pygame.draw.rect(screen, (255, 255, 255), (0, 480 - 50, screen.get_size()[0] / 3, 50), 2)
+        text = self.font["small"].render("BACK",1,(255,255,255))
+        screen.blit(text, (25, 15 + 480 - 50))
+        mousepos = pygame.mouse.get_pos()
+        mouse_collision = pygame.Rect((mousepos[0], mousepos[1]), (1,1))
+        if mouse_collision.colliderect(pygame.Rect((0, 480 - 50), (screen.get_size()[0] / 3, 50))):
+            text = self.font["small"].render("BACK",1,(255,165,0))
+            screen.blit(text, (25, 15 + 480 - 50))
+            if pygame.mouse.get_pressed()[0]:
+                try:
+                    self.c.close
+                except:
+                    self.s.close
+                    
     def client_main(self):
         while True:
             screen.blit(self.background, (0, 0))
@@ -249,6 +263,10 @@ class online_mode(Enemy, Enemy_Gun):
             screen.blit(text, (170, 150))
             text = self.font["smallish"].render("WAITING FOR CONNECTION...",1,(255,255,255))
             screen.blit(text, (170, 200))
+            
+            
+            self.back_button()
+            
             pygame.display.flip()
             
             if self.raise_error:
@@ -313,6 +331,11 @@ class online_mode(Enemy, Enemy_Gun):
             screen.blit(text, (170, 200))
             text = self.font["smallish"].render("YOUR IP: "+str(ip),1,(255,255,255))
             screen.blit(text, (170, 300))
+            
+            
+            self.back_button()
+            
+            
             pygame.display.flip()
             
             if self.raise_error:
