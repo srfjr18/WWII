@@ -116,7 +116,7 @@ class Menu(object):
             pygame.display.flip()
         
 
-    def name(self, different=False, diftext=None, int_only=False):
+    def name(self, different=False, diftext=None, int_only=False, back=False):
         name = ""
         shift = False
         caps = False
@@ -148,6 +148,22 @@ class Menu(object):
                 caps = True
             elif not pygame.key.get_pressed()[pygame.K_CAPSLOCK]:
                 caps = False
+            
+            
+            
+            if back:
+                pygame.draw.rect(screen, (255, 255, 255), (0, 480 - 50, screen.get_size()[0] / 3, 50), 2)
+                text = self.font["small"].render("BACK",1,(255,255,255))
+                screen.blit(text, (25, 15 + 480 - 50))
+                mousepos = pygame.mouse.get_pos()
+                mouse_collision = pygame.Rect((mousepos[0], mousepos[1]), (1,1))
+                if mouse_collision.colliderect(pygame.Rect((0, 480 - 50), (screen.get_size()[0] / 3, 50))):
+                    text = self.font["small"].render("BACK",1,(255,165,0))
+                    screen.blit(text, (25, 15 + 480 - 50))
+                    if pygame.mouse.get_pressed()[0]:
+                        return "back"
+            
+            
             
             for event in pygame.event.get():  
                 if event.type == pygame.QUIT: 
@@ -385,7 +401,7 @@ class Menu(object):
             pygame.display.flip()
             
             
-    def yes_no(self, question, questiontwo="", yes="YES", no="NO"):
+    def yes_no(self, question, questiontwo="", yes="YES", no="NO", back=False):
         pygame.time.delay(300)
         while True:
             screen.blit(self.background, (0, 0))
@@ -419,9 +435,26 @@ class Menu(object):
             elif mouse_collision.colliderect(pygame.Rect((100 + screen.get_size()[0] / 3, 5 * 50), (screen.get_size()[0] / 3, 50))):
                 text = self.font["small"].render(no,1,(255,165,0))
                 screen.blit(text, (125 + screen.get_size()[0] / 3, 15 + 50 * 5))
-
+   
+            
+            if back:
+                pygame.draw.rect(screen, (255, 255, 255), (0, 480 - 50, screen.get_size()[0] / 3, 50), 2)
+                text = self.font["small"].render("BACK",1,(255,255,255))
+                screen.blit(text, (25, 15 + 480 - 50))
+                if mouse_collision.colliderect(pygame.Rect((0, 480 - 50), (screen.get_size()[0] / 3, 50))):
+                    text = self.font["small"].render("BACK",1,(255,165,0))
+                    screen.blit(text, (25, 15 + 480 - 50))
+            
+            
+            
                 
             if pygame.mouse.get_pressed()[0]:
+            
+                if mouse_collision.colliderect(pygame.Rect((0, 480 - 50), (screen.get_size()[0] / 3, 50))) and back:
+                    pygame.mixer.Sound.play(self.click)
+                    return "back"
+            
+            
                 if mouse_collision.colliderect(pygame.Rect((100, 5 * 50), (screen.get_size()[0] / 3, 50))):
                     pygame.mixer.Sound.play(self.click)
                     return "yes"
@@ -551,6 +584,7 @@ class Setup(object):
         self.map_choice = map_choice
         self.custom = custom
         self.max_kills = 1000000
+        self.enemies = 3
         self.online = False
         self.background = pygame.Surface(screen.get_size())
         self.background.fill((0,0,0))
@@ -699,11 +733,11 @@ class Setup(object):
                     if option_choice == "GAME OPTIONS":
                         while True:
                             if self.fix_online and self.windows:                 
-                                choice = Menu(["PLAY TO", "BACK"]).GameSetup()
+                                choice = Menu(["PLAY TO", "BACK"]).GameSetup("", "", "End game at set kills/deaths", "Set custom number of enemies between 1 and 6 for offline")
                             elif self.fix_online and not self.windows:
-                                choice = Menu(["PLAY TO", "DEFAULT PAUSE", "BACK"]).GameSetup("", "", "End game at set kills/deaths", "Set online pausing back to default. Appear to opponent when paused")
+                                choice = Menu(["PLAY TO", "ENEMIES", "DEFAULT PAUSE", "BACK"]).GameSetup("", "", "End game at set kills/deaths", "Set custom number of enemies between 1 and 6 for offline", "Set online pausing back to default. Appear to opponent when paused")
                             elif not self.fix_online:
-                                choice = Menu(["PLAY TO", "WINDOWS PAUSE", "BACK"]).GameSetup("", "", "End game at set kills/deaths", "On by default on windows to fix bug. Disappear when paused online")
+                                choice = Menu(["PLAY TO", "ENEMIES", "WINDOWS PAUSE", "BACK"]).GameSetup("", "", "End game at set kills/deaths", "Set custom number of enemies between 1 and 6 for offline", "On by default on windows to fix bug. Disappear when paused online")
                             if choice == "BACK":
                                 break
                             if choice == "WINDOWS PAUSE":
@@ -712,11 +746,27 @@ class Setup(object):
                                 self.fix_online = False
                             elif choice == "PLAY TO":
                                 while True:
-                                    self.max_kills = Menu([]).name(True, "MAX K/Ds:", True)
+                                    self.max_kills = Menu([]).name(True, "MAX K/Ds:", True, True)
                                     try:
                                         self.max_kills = int(self.max_kills)
                                         break
                                     except:
+                                        if self.max_kills == "back":
+                                            break
+                                        pass
+                            elif choice == "ENEMIES":
+                                while True:
+                                    self.enemies = Menu([]).name(True, "ENEMIES:", True, True)
+                                    try:
+                                        self.enemies = int(self.enemies)
+                                        if 0 > self.enemies or self.enemies > 6:
+                                            if not str(sys.argv[1]) == "-d": 
+                                                raise Exception
+                                        break
+                                    except:
+                                        if self.enemies == "back":
+                                            self.enemies = 3
+                                            break
                                         pass
                     elif option_choice == "FULLSCREEN": 
                         pygame.display.set_mode((640,480), pygame.FULLSCREEN)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from Resources.scripts.Enemy import *
 from Resources.scripts.Menus import *   
-import pygame, socket, pickle, sys, math, traceback, os
+import pygame, socket, pickle, sys, math, traceback, os, time
 from threading import Thread
 
 if __name__ == "__main__":
@@ -11,16 +11,26 @@ screen = pygame.display.set_mode((640,480))
 path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', '')
 
 class online_mode(Enemy, Enemy_Gun):
-    def __init__(self, map_choice, max_kills):
+    def __init__(self, map_choice, max_kills, join=False):
         self.enemy_gun = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
         self.online_max_kills = max_kills
         self.online_map_choice = map_choice
         self.eo = 3
         self.break_waitscreen = False
         self.titlescreen = False
+        
+        
+        
         self.stop_all = False
+        
+        
         self.online_paused = False
         self.raise_error = False
+        
+        self.no_lan = False
+        self.stop_all = False
+        self.joins = False
+        
         self.mainx = 295
         self.mainy = 215
         self.angle = 0 
@@ -37,7 +47,12 @@ class online_mode(Enemy, Enemy_Gun):
         
         self.back = False
         while True:
-            self.option = Menu(["START SERVER", "JOIN SERVER", "BACK"]).GameSetup()
+            if self.stop_all:
+                return
+            if join:
+                self.option = "JOIN SERVER"
+            else:
+                self.option = Menu(["START SERVER", "JOIN SERVER", "BACK"]).GameSetup()
             if self.option == "BACK":
                 self.back = True
                 break
@@ -57,18 +72,25 @@ class online_mode(Enemy, Enemy_Gun):
                         continue
                     break
             elif self.option == "JOIN SERVER":
-                choice = Menu([]).yes_no("   CHOOSE IP FROM:", "", "PREVIOUS IPS", "  NEW IP")
-                if choice == "no":
-                    ip = self.ip_enter()
-                else:
-                    path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', '')
-                    with open(path+"userdata", "rb") as file:
-                        data = pickle.load(file)
-                    ip_options = data["IP"]
-                    ip_options.append("BACK")        
-                    ip = Menu(ip_options).GameSetup("long")
-                    if ip == "BACK":
-                        del(ip)
+                while True:
+                    choice = Menu([]).yes_no("   CHOOSE IP FROM:", "", "PREVIOUS IPS", "  NEW IP", True)
+                    if choice == "no":
+                        ip = self.ip_enter()
+                    elif choice == "back":
+                        break
+                    else:
+                        path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', '')
+                        with open(path+"userdata", "rb") as file:
+                            data = pickle.load(file)
+                        ip_options = data["IP"]
+                        ip_options.append("BACK")        
+                        ip = Menu(ip_options).GameSetup("long")
+                        if ip == "BACK":
+                            del(ip)
+                            continue
+                        break
+                            
+                        
                             
                 try:
                     Thread(target=self.client_connector, args=(ip,0,)).start()
@@ -83,7 +105,7 @@ class online_mode(Enemy, Enemy_Gun):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
-        s.close()    
+        s.close()  
         return ip
             
     def ip_enter(self):
@@ -107,6 +129,19 @@ class online_mode(Enemy, Enemy_Gun):
             screen.blit(text, (220, 150))
             text = self.font["smallish"].render(name+"_",1,(255,255,255))
             screen.blit(text, (220, 250))
+            
+            
+            
+            
+            
+            
+            if self.back_button(True):
+                return
+            
+            
+            
+            
+            
             for event in pygame.event.get():  
                 if event.type == pygame.QUIT: 
                     sys.exit()
@@ -183,9 +218,9 @@ class online_mode(Enemy, Enemy_Gun):
             del(self.new_setup)
             if setup.online:
                 try:
-                    self.c.close
+                    self.c.close()
                 except:
-                    self.s.close 
+                    self.s.close() 
                     
                      
             self.stop_all = True  
@@ -197,6 +232,7 @@ class online_mode(Enemy, Enemy_Gun):
         
     def client_connector(self, ip, l):
         self.break_waitscreen = False
+        self.server = False
         while True:
             try:
                 self.s = socket.socket()        
@@ -229,19 +265,30 @@ class online_mode(Enemy, Enemy_Gun):
         
                 self.s.settimeout(3)
             except:
+                self.joins = True
                 print("Error when joining server:")
                 traceback.print_exc()
                 self.raise_error = True
                 try:
-                    self.c.close
+                    self.c.close()
                 except:
-                    self.s.close
+                    self.s.close()
                 sys.exit()
                 
             self.break_waitscreen = True
             break
+    
+    def attempt_disconnect(self):
+        self.b = socket.socket()        
+        host = str(self.get_ip()) 
+        port = 5006     
+        self.b.settimeout(0.1)        
+        self.b.connect((host, port))
+        self.b.close()
+        self.no_lan = True
+        self.stop_all = True
         
-    def back_button(self):
+    def back_button(self, normal=False):
         pygame.draw.rect(screen, (255, 255, 255), (0, 480 - 50, screen.get_size()[0] / 3, 50), 2)
         text = self.font["small"].render("BACK",1,(255,255,255))
         screen.blit(text, (25, 15 + 480 - 50))
@@ -251,10 +298,16 @@ class online_mode(Enemy, Enemy_Gun):
             text = self.font["small"].render("BACK",1,(255,165,0))
             screen.blit(text, (25, 15 + 480 - 50))
             if pygame.mouse.get_pressed()[0]:
+                if normal:
+                    return True
+                if not self.server:
+                    self.joins = True
                 try:
-                    self.c.close
+                    self.s.close()
                 except:
-                    self.s.close
+                    self.c.close()
+                self.raise_error = True
+                
                     
     def client_main(self):
         while True:
@@ -271,23 +324,25 @@ class online_mode(Enemy, Enemy_Gun):
             
             if self.raise_error:
                 self.raise_error = False
+                self.stop_all = True
+                self.joins = True
                 raise Exception
             
             for event in pygame.event.get():  
                 if event.type == pygame.QUIT: 
                     pygame.display.set_mode((640,480))
                     try:
-                        self.c.close
+                        self.c.close()
                     except:
-                        self.s.close
+                        self.s.close()
                     os._exit(1)
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         pygame.display.set_mode((640,480))
                         try:
-                            self.c.close
+                            self.c.close()
                         except:
-                            self.s.close
+                            self.s.close()
                         os._exit(1)
             if self.break_waitscreen:
                 break
@@ -295,6 +350,9 @@ class online_mode(Enemy, Enemy_Gun):
 
     def server_connector(self, l):
         self.break_waitscreen = False
+        self.server = True
+        
+        
         while True:
             try:
                 self.s = socket.socket()
@@ -313,9 +371,10 @@ class online_mode(Enemy, Enemy_Gun):
                 traceback.print_exc()
                 self.raise_error = True
                 try:
-                    self.c.close
+                    self.c.close()
                 except:
-                    self.s.close
+                    self.s.close()
+
                 sys.exit()
             
             self.break_waitscreen = True
@@ -340,30 +399,35 @@ class online_mode(Enemy, Enemy_Gun):
             
             if self.raise_error:
                 self.raise_error = False
-                raise Exception
+                self.attempt_disconnect()
+
             
             for event in pygame.event.get():  
                 if event.type == pygame.QUIT: 
                     pygame.display.set_mode((640,480))
                     try:
-                        self.c.close
+                        self.c.close()
                     except:
-                        self.s.close
+                        self.s.close()
                     os._exit(1)
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         pygame.display.set_mode((640,480))
                         try:
-                            self.c.close
+                            self.c.close()
                         except:
-                            self.s.close
+                            self.s.close()
                         os._exit(1)
             if self.break_waitscreen:
                 break
         
          
-        self.c.send(str(self.online_map_choice).encode())    
-        self.lan = Menu([]).yes_no("ARE YOU ON LAN OR HAVE", "A STRONG CONNECTION?")
+        self.c.send(str(self.online_map_choice).encode())  
+        
+        if self.no_lan:
+            self.lan = ""
+        else:  
+            self.lan = Menu([]).yes_no("ARE YOU ON LAN OR HAVE", "A STRONG CONNECTION?")
         if self.lan == "yes":
             self.lan = True
         else:

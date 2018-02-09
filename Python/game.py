@@ -55,7 +55,18 @@ def titlescreen_menu(start=False):
     if setup.online:
         hit = 0
         enemy_hit = 0
+        
         enemy_player = enemy_gun = online_mode(setup.map_choice, setup.max_kills)
+        while True:
+            if enemy_player.stop_all:
+                if enemy_player.joins:
+                    enemy_player = enemy_gun = online_mode(setup.map_choice, setup.max_kills, True)
+                else:
+                    enemy_player = enemy_gun = online_mode(setup.map_choice, setup.max_kills)
+            else:
+                break
+        
+        
             
         setup.map_choice = enemy_player.online_map_choice
         setup.max_kills = enemy_gun.online_max_kills
@@ -68,8 +79,11 @@ def titlescreen_menu(start=False):
         if enemy_player.back:
             titlescreen_menu()
     else:
-        hit = [0,0,0]
-        enemy_hit = [0,0,0]
+        hit = []
+        enemy_hit = []
+        for i in range(0, setup.enemies):
+            hit.append(0)
+            enemy_hit.append(0)
     
     if setup.custom:
         maps = Play_Maps(setup.map_choice)
@@ -89,7 +103,7 @@ def titlescreen_menu(start=False):
     if not setup.online:
         enemy_gun = []
         enemy_player = []
-        for i in range(0,3):
+        for i in range(0, setup.enemies):
             enemy_gun.append(Enemy_Gun())
             enemy_player.append(Enemy(maps.spawnX, maps.spawnY, loadout_number, enemy_gun[i]))
 
@@ -100,6 +114,7 @@ def titlescreen_menu(start=False):
     player.spawn(maps.spawnX, maps.spawnY, setup.map_choice)
 
     in_between_shots = False
+
 
     pygame.mixer.music.stop()
     pygame.mixer.music.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Resources', 'sounds', '')+'gamemusic.wav')
@@ -119,13 +134,13 @@ while running:
         except:
             pass
     else:
-        for i in range(0,3):
+        for i in range(0, setup.enemies):
             if enemy_player[i].titlescreen:
                 Menu([]).end_screen(kills, deaths)
                 player.update_rank(kills)
                 titlescreen_menu()
     
-        for i in range(0,3):
+        for i in range(0, setup.enemies):
             if enemy_player[i].stop_all:
                 continue
     
@@ -153,17 +168,19 @@ while running:
                 kills += 1
                 if kills >= setup.max_kills:
                     try:
-                        enemy_player.c.close
+                        enemy_player.c.close()
                     except:
-                        enemy_player.s.close
+                        enemy_player.s.close()
                     while enemy_player.online_paused:
                         pass
                     Menu([]).end_screen(kills, deaths)
                     player.update_rank(kills)
                     titlescreen_menu()
     else:
-        hit_enemy = [False, False, False]
-        for i in range(0,3):
+        hit_enemy = []
+        for i in range(0, setup.enemies):
+            hit_enemy.append(False)
+        for i in range(0, setup.enemies):
             hit_enemy[i] = player_gun.enemy_collide(collision_list, pygame.Rect((enemy_player[i].enemyposX - player.imagesx, enemy_player[i].enemyposY - player.imagesy), enemy_player[i].backup.get_size()))   
             if hit_enemy[i]:
                 hit[i] += 1
@@ -199,9 +216,9 @@ while running:
                 deaths += 1
                 if deaths >= setup.max_kills:
                     try:
-                        enemy_player.c.close
+                        enemy_player.c.close()
                     except:
-                        enemy_player.s.close
+                        enemy_player.s.close()
                     while enemy_player.online_paused:
                         pass
                     Menu([]).end_screen(kills, deaths)
@@ -226,23 +243,25 @@ while running:
                 reloading = False
                 shot = 0
     else:
-        for i in range(0,3):
+        for i in range(0, setup.enemies):
             if enemy_gun[i].collide_you(collision_list):
                 enemy_hit[i] += 1
-                for b in range(0,3):
+                for b in range(0, setup.enemies):
                     if enemy_player[b].enemy_stk > enemy_hit[b] + 1 and b != i:
                         enemy_hit[b] += 1 #shot from anyone causes damage for everyone
                 if enemy_hit[i] >= enemy_player[i].enemy_stk:
                     Menu([]).killed()
-
-                    enemy_hit = [0,0,0]
+                    
+                    enemy_hit = []
+                    for c in range(0, setup.enemies):
+                        enemy_hit.append(0)
                     if setup.custom:
                         player = Player(setup.map_choice)
                     else:
                         player = Player()
                     player.spawn(maps.spawnX, maps.spawnY, setup.map_choice)
                     deaths += 1
-                    for b in range(0,3):
+                    for b in range(0, setup.enemies):
                         enemy_gun[b].enemy_shotrun_list = []
                         enemy_gun[b].enemy_shotrise_list = []
                         enemy_gun[b].enemy_backup_shotrun = []
@@ -282,11 +301,11 @@ while running:
             endcheck = enemy_player.send_receive(setup.stk, player.angle, player.imagesx, player.imagesy,  player_gun.shotrise_list, player_gun.shotrun_list)
         if endcheck:
             try:
-                enemy_player.c.close
+                enemy_player.c.close()
             except:
                 pass
             try:
-                enemy_player.s.close 
+                enemy_player.s.close() 
             except:
                 pass 
             endcheck = None
@@ -296,7 +315,7 @@ while running:
             player.update_rank(kills)
             titlescreen_menu()
     else:
-        for i in range(0,3):
+        for i in range(0, setup.enemies):
             enemy_player[i].AI(player.imagesx, player.imagesy, collision_list, loadout_number, internalclock)         
             enemy_gun[i].wall_collide(collision_list)
 
@@ -386,9 +405,9 @@ while running:
                         del(new_setup)
                         if setup.online:
                             try:
-                                enemy_player.c.close
+                                enemy_player.c.close()
                             except:
-                                enemy_player.s.close
+                                enemy_player.s.close()
                         Menu([]).end_screen(kills, deaths)
                         player.update_rank(kills)
                         titlescreen_menu()
@@ -410,7 +429,7 @@ while running:
         else:
             enemy_gun.blit_shot()
     else:
-        for i in range(0,3):
+        for i in range(0, setup.enemies):
             if enemy_player[i].shotgun and enemy_player[i].flame:
                 enemy_gun[i].blit_shot(True)
             else:
@@ -418,7 +437,7 @@ while running:
     if setup.online:
         enemy_player.blit_enemy(hit_enemy, player.imagesx, player.imagesy, enemy_player.angle, enemy_player.enemy_gun) 
     else:
-        for i in range(0,3):
+        for i in range(0, setup.enemies):
             try:
                 enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy)         
             except:
@@ -436,7 +455,7 @@ while running:
 pygame.quit()
 if setup.online:
     try:
-        enemy_player.c.close
+        enemy_player.c.close()
     except:
-        enemy_player.s.close
+        enemy_player.s.close()
 sys.exit()
