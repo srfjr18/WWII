@@ -828,7 +828,7 @@ class Setup(object):
                             go_back_once = True
                             del(weapon)
                     elif loadoutchoice == "ATTACHMENTS":
-                        perk1 = Menu(["EXT MAGS", "SELECT FIRE", "RAPID FIRE", "HOLLOW POINTS", "BACK"]).GameSetup("rank", [1, 7, 15, 20], "MORE AMMO PER MAGAZINE", "SEMI-AUTO GUNS ARE FULL-AUTO, AND VICE VERSA", "FIRE RATE INCREASED BY 50%", "MORE DAMAGE")
+                        perk1 = Menu(["EXT MAGS", "SELECT FIRE", "GRIP", "RAPID FIRE", "HOLLOW POINTS", "BACK"]).GameSetup("rank", [1, 7, 14, 17, 20], "MORE AMMO PER MAGAZINE", "SEMI-AUTO GUNS ARE FULL-AUTO, AND VICE VERSA", "REDUCES RECOIL", "FIRE RATE INCREASED BY 50%", "MORE DAMAGE")
                 
                         if perk1 != "BACK":
                             self.update_data(1, loadout_number, perk1)
@@ -893,7 +893,7 @@ class Setup(object):
         try:
             test.request("HEAD", "/")
             return True
-        except LookupError: #broken encoding.idna problem when on 64 bit computer, so I just return True
+        except LookupError: #broken encoding.idna problem when on 64 bit computer using the embedded python3, so I just return True
             return True
         except:
             return False
@@ -1064,7 +1064,13 @@ class Setup(object):
                     self.action = "semi-auto"
                     self.firerate = 1
         elif perk1 == "EXT MAGS":
-            self.mag = int(self.mag * 1.5)    
+            self.mag = int(self.mag * 1.5)
+            
+            
+               
+        if not perk1 == "GRIP":
+            #recoil was too low when I 1st added it to the game. Now, without grip, it's at a good level
+            self.recoil *= 2
     
     def perks(self, loadout_number):
         with open(path+"userdata", "rb") as file:
