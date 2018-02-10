@@ -1070,7 +1070,7 @@ class Setup(object):
                
         if not perk1 == "GRIP":
             #recoil was too low when I 1st added it to the game. Now, without grip, it's at a good level
-            self.recoil *= 2
+            self.recoil *= 3
     
     def perks(self, loadout_number):
         with open(path+"userdata", "rb") as file:
