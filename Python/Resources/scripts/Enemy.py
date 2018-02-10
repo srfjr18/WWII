@@ -76,6 +76,11 @@ class Enemy(Setup, Gun_Types):
             #makes enemies kill you faster
             self.enemy_stk *= 0.8
             
+            if self.stealer:
+                if self.enemy_mag > 1:
+                    self.enemy_mag *= 0.7
+                    self.enemy_mag = int(self.enemy_mag)
+            
             # enemies need 1.1 times more shots if medic perk is used    
             if self.medic:
                 self.enemy_stk *= 1.1

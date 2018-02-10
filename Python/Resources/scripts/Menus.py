@@ -263,9 +263,16 @@ class Menu(object):
                 text = self.font["big"].render("WWII",1,(255,255,255))
                 screen.blit(text, (250, 225))
             
+
             
             
             for num in range(0, len(self.words)):
+                if len(self.words[num]) >= 13 and not long_boxes and len(self.words[num]) < 25:
+                    self.font["small"] = pygame.font.SysFont("monospace", 25 - (len(self.words[num]) - 11))
+                else:
+                    self.font["small"] = pygame.font.SysFont("monospace", 25)
+                    
+                    
                 text = self.font["small"].render(self.words[num],1,(255,255,255))
                 screen.blit(text, (25, 15 + 50 * num))
                 if long_boxes:
@@ -364,6 +371,10 @@ class Menu(object):
                        
             
             for num in range(0, len(self.words)):
+                if len(self.words[num]) >= 13 and not long_boxes and len(self.words[num]) < 25:
+                    self.font["small"] = pygame.font.SysFont("monospace", 25 - (len(self.words[num]) - 11))
+                else:
+                    self.font["small"] = pygame.font.SysFont("monospace", 25)
                 if mouse_collision.colliderect(pygame.Rect((0, num * 50), (screen.get_size()[0] / 3, 50))):
                 
                     #pygame.mixer.Sound.play(self.hover)
@@ -782,7 +793,7 @@ class Setup(object):
                     if loadout_number == "BACK":
                         break
                     else:    
-                        loadoutchoice = Menu(["WEAPON", "PERK 1", "PERK 2", "PERK 3", "BACK"]).GameSetup()
+                        loadoutchoice = Menu(["WEAPON", "ATTACHMENTS", "BOOSTS", "ENEMY BEHAVIOR", "BACK"]).GameSetup()
                     if loadoutchoice == "WEAPON":
                         while True:
                             weapon_type = Menu(["RIFLES", "SMGs", "LMGs", "SNIPERS", "SHOTGUNS", "SPECIAL", "CUSTOM", "BACK"]).GameSetup("rank",[0,0,0,0,0,0,25])                    
@@ -816,8 +827,8 @@ class Setup(object):
                                 self.update_data(0, loadout_number, weapon)
                             go_back_once = True
                             del(weapon)
-                    elif loadoutchoice == "PERK 1":
-                        perk1 = Menu(["RATIONS", "QUICK HANDS", "RAPID FIRE", "BACK"]).GameSetup("rank", [1, 3, 6], "MOVE FASTER", "RELOAD FASTER", "FIRE RATE INCREASED BY 50%")
+                    elif loadoutchoice == "ATTACHMENTS":
+                        perk1 = Menu(["EXT MAGS", "SELECT FIRE", "RAPID FIRE", "HOLLOW POINTS", "BACK"]).GameSetup("rank", [1, 7, 15, 20], "MORE AMMO PER MAGAZINE", "SEMI-AUTO GUNS ARE FULL-AUTO, AND VICE VERSA", "FIRE RATE INCREASED BY 50%", "MORE DAMAGE")
                 
                         if perk1 != "BACK":
                             self.update_data(1, loadout_number, perk1)
@@ -825,8 +836,8 @@ class Setup(object):
                 
                         del(perk1)
                      
-                    elif loadoutchoice == "PERK 2":
-                        perk2 = Menu(["HOLLOW POINTS", "SELECT FIRE", "EXT MAGS", "BACK"]).GameSetup("rank", [1, 5, 9], "HIGHER DAMAGE", "SEMI-AUTO GUNS ARE FULL-AUTO", "50% MORE AMMO")
+                    elif loadoutchoice == "BOOSTS":
+                        perk2 = Menu(["RATIONS", "QUICK HANDS", "MEDIC", "BACK"]).GameSetup("rank", [1, 14, 22], "MOVE FASTER", "RELOAD FASTER", "MORE HEALTH")
                 
                         if perk2 != "BACK":
                             self.update_data(2, loadout_number, perk2)
@@ -834,8 +845,8 @@ class Setup(object):
                 
                         del(perk2)
                                           
-                    elif loadoutchoice == "PERK 3":
-                        perk3 = Menu(["MEDIC", "ALPHA MALE", "DISTRACTION", "BACK"]).GameSetup("rank", [1, 5, 11], "MORE HEALTH", "ENEMIES MOVE SLOWER TOWARDS YOU", "ENEMIES ARE LESS ACCURATE")
+                    elif loadoutchoice == "ENEMY BEHAVIOR":
+                        perk3 = Menu(["STEALER", "ALPHA MALE", "DISTRACTION", "BACK"]).GameSetup("rank", [1, 10, 18], "OFFLINE ENEMIES HAVE SMALLER MAGAZINES", "OFFLINE ENEMIES MOVE SLOWER TOWARDS YOU", "OFFLINE ENEMIES ARE LESS ACCURATE")
                 
                         if perk3 != "BACK":
                             self.update_data(3, loadout_number, perk3)
@@ -1033,18 +1044,18 @@ class Setup(object):
                 return
                 
         """perk1 = open(path+loadout_number, 'r').readlines()[1].rstrip() """
-        perk1 = loadout[1]   
-        if perk1 == "QUICK HANDS":
+        perk2 = loadout[2]   
+        if perk2 == "QUICK HANDS":
             self.reloadtime *= 0.75
-        elif perk1 == "RAPID FIRE":
-            if self.firerate > 1 and self.stk != 30.1:
-                self.firerate = int(self.firerate * 0.5)
     
         """perk2 = open(path+loadout_number, 'r').readlines()[2].rstrip() """
-        perk2 = loadout[2]   
-        if perk2 == "HOLLOW POINTS":
+        perk1 = loadout[1]  
+        if perk1 == "RAPID FIRE":
+            if self.firerate > 1 and self.stk != 30.1:
+                self.firerate = int(self.firerate * 0.5) 
+        elif perk1 == "HOLLOW POINTS":
             self.stk *= 0.9
-        elif perk2 == "SELECT FIRE":
+        elif perk1 == "SELECT FIRE":
             if self.stk > 5:
                 if self.action == "semi-auto":
                     self.action = "full-auto"
@@ -1052,7 +1063,7 @@ class Setup(object):
                 else:
                     self.action = "semi-auto"
                     self.firerate = 1
-        elif perk2 == "EXT MAGS":
+        elif perk1 == "EXT MAGS":
             self.mag = int(self.mag * 1.5)    
     
     def perks(self, loadout_number):
@@ -1060,18 +1071,18 @@ class Setup(object):
             data = pickle.load(file)
         loadout = data[str(loadout_number)]
         """perk1 = open(path+loadout_number, 'r').readlines()[1].rstrip()"""
-        perk1 = loadout[1]
-        if perk1 == "RATIONS":
+        perk2 = loadout[2]
+        if perk2 == "RATIONS":
             self.rations = True
         else: 
             self.rations = False
-   
-        """perk3 = open(path+loadout_number, 'r').readlines()[3].rstrip()"""
-        perk3 = loadout[3]    
-        if perk3 == "MEDIC":
+        if perk2 == "MEDIC":
             self.medic = True
         else:
             self.medic = False
+            
+        """perk3 = open(path+loadout_number, 'r').readlines()[3].rstrip()"""
+        perk3 = loadout[3]   
         if perk3 == "ALPHA MALE":
             self.alpha = True
         else:
@@ -1080,6 +1091,10 @@ class Setup(object):
             self.distraction = True
         else:
             self.distraction = False
+        if perk3 == "STEALER":
+            self.stealer = True
+        else:
+            self.stealer = False
     
     def send_while_pause(self, socket, socktype, l):
         #prevents timeouts
