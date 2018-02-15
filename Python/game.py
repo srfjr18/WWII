@@ -274,17 +274,17 @@ while running:
                         titlescreen_menu()
             
             #updating our loadout if we changed it at the pause menu
-            try:
-                online = setup.online
-                custom = setup.custom
-                setup = new_setup
-                setup.online = online
-                setup.custom = custom
-                del(new_setup)
-                loadout_number = setup.loadout_number
-                gun = setup.gun
-            except:
-                pass
+                    try:
+                        online = setup.online
+                        custom = setup.custom
+                        setup = new_setup
+                        setup.online = online
+                        setup.custom = custom
+                        del(new_setup)
+                        loadout_number = setup.loadout_number
+                        gun = setup.gun
+                    except:
+                        pass
 
     if setup.online:
         #sending gun model to other player if online and on first run
