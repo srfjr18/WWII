@@ -241,7 +241,7 @@ class Menu(object):
                 break
         if not os.path.isfile(path+'userdata'):
             mac = ':'.join(("%012X" % getnode())[i:i+2] for i in range(0, 12, 2))
-            new = {"name": "NONE", "rank": 28, "prestige": 0, "LOADOUT 1": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 2": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 3": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 4": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "LOADOUT 5": ["M1 GARAND", "RATIONS", "HOLLOW POINTS", "MEDIC"], "IP": [], "MAC": mac}
+            new = {"name": "NONE", "rank": 28, "prestige": 0, "LOADOUT 1": ["M1 GARAND", "EXT MAGS", "RATIONS", "STEALER"], "LOADOUT 2": ["M1 GARAND", "EXT MAGS", "RATIONS", "STEALER"], "LOADOUT 3": ["M1 GARAND", "EXT MAGS", "RATIONS", "STEALER"], "LOADOUT 4": ["M1 GARAND", "EXT MAGS", "RATIONS", "STEALER"], "LOADOUT 5": ["M1 GARAND", "EXT MAGS", "RATIONS", "STEALER"], "IP": [], "MAC": mac}
             with open(path+"userdata", "wb+") as file:
                 pickle.dump(new, file, protocol=2)
             self.name()
