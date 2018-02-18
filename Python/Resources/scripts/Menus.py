@@ -789,11 +789,22 @@ class Setup(object):
             if choice == "LOADOUTS":
                 while True:
                     if not go_back_once:
+                        lb = Loadouts(True)
                         loadout_number = Loadouts(True).display_loadout()
                     if loadout_number == "BACK":
                         break
-                    else:    
-                        loadoutchoice = Menu(["WEAPON", "ATTACHMENTS", "BOOSTS", "ENEMY BEHAVIOR", "BACK"]).GameSetup()
+                    else:
+                        if loadout_number == "LOADOUT 1":
+                            desc = lb.loadout_one   
+                        if loadout_number == "LOADOUT 2":
+                            desc = lb.loadout_two
+                        if loadout_number == "LOADOUT 3":
+                            desc = lb.loadout_three
+                        if loadout_number == "LOADOUT 4":
+                            desc = lb.loadout_four
+                        if loadout_number == "LOADOUT 5":
+                            desc = lb.loadout_five          
+                        loadoutchoice = Menu(["WEAPON", "ATTACHMENTS", "BOOSTS", "ENEMY BEHAVIOR", "BACK"]).GameSetup("", "", "CURRENT WEAPON: "+desc[0], "CURRENT ATTACHMENT: "+desc[1], "CURRENT BOOST: "+desc[2], "CURRENT ENEMY BEHAVIOR: "+desc[3])
                     if loadoutchoice == "WEAPON":
                         while True:
                             weapon_type = Menu(["RIFLES", "SMGs", "LMGs", "SNIPERS", "SHOTGUNS", "SPECIAL", "CUSTOM", "BACK"]).GameSetup("rank",[0,0,0,0,0,0,25])                    
@@ -820,6 +831,8 @@ class Setup(object):
                             
                             
                             elif weapon_type == "BACK":
+                                go_back_once = True
+                                lb = Loadouts(True)
                                 break
                                 
                             """writing our weapon choice to file"""
