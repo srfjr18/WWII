@@ -35,7 +35,8 @@ def titlescreen_menu(start=False):
     global enemy_hit, kills, deaths, hit, shot, internalclock
     global setup, maps, loadouts, player, player_gun
     global enemy_gun, enemy_player, loadout_number
-    global background, in_between_shots, first_run, enemy_gun_online
+    global background, in_between_shots, first_run, enemy_gun_online, enemy_pos_backup
+    enemy_pos = None
     first_run = True
     reloading = semiauto = False
     kills = deaths = shot = internalclock = 0 
@@ -51,7 +52,11 @@ def titlescreen_menu(start=False):
     player_gun = Gun()
     player.update_rank(kills)
     setup.MainMenu()
-
+    
+    if setup.campaign:
+        enemy_pos_backup = maps.enemy_pos(setup.map_choice)
+        setup.enemies = len(enemy_pos_backup)
+    
     if setup.online:
         hit = 0
         enemy_hit = 0
@@ -94,12 +99,15 @@ def titlescreen_menu(start=False):
             loadout_number, enemy_gun_online = Loadouts(False).display_loadout(enemy_player.c, "client")
         except:
             loadout_number, enemy_gun_online = Loadouts(False).display_loadout(enemy_player.s, "server")
+    elif setup.campaign:
+        loadout_number = "LOADOUT 6"
     else:
         loadout_number = Loadouts(False).display_loadout()
     setup.guns(loadout_number)
     setup.perks(loadout_number)
     maps.spawn_area(setup.map_choice)
-
+    
+    
     if not setup.online:
         enemy_gun = []
         enemy_player = []
@@ -112,10 +120,9 @@ def titlescreen_menu(start=False):
     background = background.convert()
 
     player.spawn(maps.spawnX, maps.spawnY, setup.map_choice)
-
+    
     in_between_shots = False
-
-
+    
     pygame.mixer.music.stop()
     pygame.mixer.music.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Resources', 'sounds', '')+'gamemusic.wav')
     pygame.mixer.music.play(-1)
@@ -151,6 +158,25 @@ while running:
     
     #player.test(mousepos)
     
+    
+    
+    
+    
+    """if setup.campaign:
+        for i in enemy_pos_backup:
+            if i[0] - player.imagesx - 500 < player.mainx < i[0] - player.imagesx + 500 and i[1] - player.imagesy - 500 < player.mainy < i[1] - player.imagesy + 500:
+                no = False
+                for b in range(0, len(enemy_player)):
+                    if (i[0], i[1]) == (enemy_player[b].enemyposX, enemy_player[b].enemyposY):
+                        no = True
+                if not no:
+                    setup.enemies += 1
+            else:
+                setup.enemies -= 1"""
+    
+    
+    
+    
     #updating collisions based on our position
     if setup.custom:
         collision_list = maps.map_collisions_update(player.imagesx, player.imagesy) 
@@ -185,8 +211,11 @@ while running:
             if hit_enemy[i]:
                 hit[i] += 1
                 if hit[i] >= setup.stk:
-                    enemy_gun[i] = Enemy_Gun()
-                    enemy_player[i] = Enemy(maps.spawnX, maps.spawnY, loadout_number, enemy_gun[i])
+                    if setup.campaign:
+                        enemy_player[i].enemyposX = 100000000
+                    else:
+                        enemy_gun[i] = Enemy_Gun()
+                        enemy_player[i] = Enemy(maps.spawnX, maps.spawnY, loadout_number, enemy_gun[i])
                     hit[i] = 0
                     kills += 1
                     if kills >= setup.max_kills:
@@ -316,7 +345,13 @@ while running:
             titlescreen_menu()
     else:
         for i in range(0, setup.enemies):
-            enemy_player[i].AI(player.imagesx, player.imagesy, collision_list, loadout_number, internalclock)         
+            if setup.campaign:
+                try:
+                    enemy_player[i].AI(player.imagesx, player.imagesy, collision_list, loadout_number, internalclock, enemy_pos_backup[i])
+                except:
+                    pass
+            else:
+                enemy_player[i].AI(player.imagesx, player.imagesy, collision_list, loadout_number, internalclock)         
             enemy_gun[i].wall_collide(collision_list)
 
     #key input
@@ -413,7 +448,7 @@ while running:
                         titlescreen_menu()
                        
     #images/rendering
-    pygame.display.set_caption("WWII  FPS: " + str(int(clock.get_fps()))) #+ " " + str((player.imagesx + player.mainx, player.imagesy + player.mainy)))
+    pygame.display.set_caption("WWII  FPS: " + str(int(clock.get_fps())) + " " + str((player.imagesx + player.mainx, player.imagesy + player.mainy)))
     screen.blit(background, (0, 0))
     if setup.custom:
         Play_Maps(setup.map_choice).blit_map(player.imagesx, player.imagesy)

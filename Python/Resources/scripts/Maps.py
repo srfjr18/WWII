@@ -28,6 +28,9 @@ class Maps(object):
         self.supply_spawnarea_x = (-1824, 415)
         self.supply_spawnarea_y = (-1832, 69)
         
+        self.testcampaign_spawnarea_x = (-1, 1)
+        self.testcampaign_spawnarea_y = (700, 702)
+        
     def blit_map(self, map_choice):
         if map_choice == "SHIP":
             self.ship()
@@ -41,6 +44,8 @@ class Maps(object):
             self.base()
         elif map_choice == "SUPPLY":
             self.supply()
+        elif map_choice == "TEST":
+            self.testcampaign()
         else:
             raise ValueError("You are using a custom map")
         
@@ -57,6 +62,8 @@ class Maps(object):
             self.spawnX, self.spawnY = self.base_spawnarea_x, self.base_spawnarea_y            
         elif map_choice == "SUPPLY":
             self.spawnX, self.spawnY = self.supply_spawnarea_x, self.supply_spawnarea_y
+        elif map_choice == "TEST":
+            self.spawnX, self.spawnY = self.testcampaign_spawnarea_x, self.testcampaign_spawnarea_y
         else:
             raise ValueError("You are using a custom map")
         
@@ -73,9 +80,15 @@ class Maps(object):
             return (55, 70, 0)
         elif map_choice == "SUPPLY":
             return (98, 110, 14)
+        elif map_choice == "TEST":
+            return (0, 20, 90)
         else:
             raise ValueError("You are using a custom map")
        
+    
+    def enemy_pos(self, map_choice):
+        if map_choice == "TEST":
+            return [(0,0), (100, 100), (200,200), (30, 60)]
     
     def supply(self):
         pygame.draw.rect(screen, (0, 0, 0), (-1519 - self.imagesx, 369 - self.imagesy, 2523, 247))
@@ -1209,6 +1222,53 @@ class Maps(object):
         return [pygame.Rect((1 - self.imagesx, -166 - self.imagesy), (173, 26)), pygame.Rect((327 - self.imagesx, -165 - self.imagesy), (191, 25)), pygame.Rect((714 - self.imagesx, -164 - self.imagesy), (130, 24)), pygame.Rect((821 - self.imagesx, -588 - self.imagesy), (24, 150)), pygame.Rect((821 - self.imagesx, -274 - self.imagesy), (23, 113)), pygame.Rect((3 - self.imagesx, -590 - self.imagesy), (27, 424)), pygame.Rect((30 - self.imagesx, -591 - self.imagesy), (447, 24)), pygame.Rect((30 - self.imagesx, -381 - self.imagesy), (300, 29)), pygame.Rect((34 - self.imagesx, -496 - self.imagesy), (31, 58)), pygame.Rect((183 - self.imagesx, -414 - self.imagesy), (65, 31)), pygame.Rect((488 - self.imagesx, -420 - self.imagesy), (179, 113)), pygame.Rect((696 - self.imagesx, -1034 - self.imagesy), (20, 159)), pygame.Rect((696 - self.imagesx, -761 - self.imagesy), (20, 70)), pygame.Rect((270 - self.imagesx, -704 - self.imagesy), (281, 16)), pygame.Rect((272 - self.imagesx, -1037 - self.imagesy), (255, 16)), pygame.Rect((270 - self.imagesx, -1023 - self.imagesy), (21, 318)), pygame.Rect((422 - self.imagesx, -906 - self.imagesy), (149, 71)), pygame.Rect((1377 - self.imagesx, 136 - self.imagesy), (222, 25)), pygame.Rect((1880 - self.imagesx, 137 - self.imagesy), (29, 352)), pygame.Rect((1377 - self.imagesx, 459 - self.imagesy), (505, 28)), pygame.Rect((1551 - self.imagesx, 272 - self.imagesy), (119, 74)), pygame.Rect((1483 - self.imagesx, -333 - self.imagesy), (24, 313)), pygame.Rect((1672 - self.imagesx, -477 - self.imagesy), (19, 301)), pygame.Rect((1633 - self.imagesx, -41 - self.imagesy), (222, 19)), pygame.Rect((1324 - self.imagesx, -874 - self.imagesy), (263, 33)), pygame.Rect((1324 - self.imagesx, -644 - self.imagesy), (252, 32)), pygame.Rect((1757 - self.imagesx, -876 - self.imagesy), (28, 263)), pygame.Rect((1606 - self.imagesx, -750 - self.imagesy), (151, 19)), pygame.Rect((8 - self.imagesx, 601 - self.imagesy), (2166, 62)), pygame.Rect((2104 - self.imagesx, -1833 - self.imagesy), (68, 2437)), pygame.Rect((64 - self.imagesx, -1832 - self.imagesy), (2051, 71)), pygame.Rect((65 - self.imagesx, -1762 - self.imagesy), (85, 882)), pygame.Rect((-218 - self.imagesx, -951 - self.imagesy), (285, 70)), pygame.Rect((-219 - self.imagesx, -884 - self.imagesy), (75, 1549)), pygame.Rect((-145 - self.imagesx, 602 - self.imagesy), (153, 61)), pygame.Rect((1806 - self.imagesx, -1324 - self.imagesy), (164, 58)), pygame.Rect((564 - self.imagesx, -1760 - self.imagesy), (21, 185)), pygame.Rect((562 - self.imagesx, -1383 - self.imagesy), (22, 105)), pygame.Rect((291 - self.imagesx, -1276 - self.imagesy), (293, 20)), pygame.Rect((339 - self.imagesx, -1760 - self.imagesy), (22, 158)), pygame.Rect((275 - self.imagesx, -1480 - self.imagesy), (118, 49)), pygame.Rect((1 - self.imagesx, 0 - self.imagesy), (523, 29)), pygame.Rect((726 - self.imagesx, 0 - self.imagesy), (116, 27)), pygame.Rect((814 - self.imagesx, 26 - self.imagesy), (29, 204)), pygame.Rect((814 - self.imagesx, 404 - self.imagesy), (30, 88)), pygame.Rect((721 - self.imagesx, 465 - self.imagesy), (95, 27)), pygame.Rect((279 - self.imagesx, 465 - self.imagesy), (278, 26)), pygame.Rect((0 - self.imagesx, 164 - self.imagesy), (33, 329)), pygame.Rect((279 - self.imagesx, 159 - self.imagesy), (292, 26)), pygame.Rect((545 - self.imagesx, 183 - self.imagesy), (26, 50)), pygame.Rect((280 - self.imagesx, 182 - self.imagesy), (27, 51)), pygame.Rect((280 - self.imagesx, 349 - self.imagesy), (301, 28)), pygame.Rect((281 - self.imagesx, 324 - self.imagesy), (24, 24)), pygame.Rect((557 - self.imagesx, 327 - self.imagesy), (22, 23)), pygame.Rect((34 - self.imagesx, 250 - self.imagesy), (74, 142)), pygame.Rect((746 - self.imagesx, 29 - self.imagesy), (66, 38)), pygame.Rect((795 - self.imagesx, 39 - self.imagesy), (10, 15)), pygame.Rect((768 - self.imagesx, -1112 - self.imagesy), (175, 40)), pygame.Rect((1270 - self.imagesx, -1112 - self.imagesy), (414, 39)), pygame.Rect((769 - self.imagesx, -1636 - self.imagesy), (43, 526)), pygame.Rect((1639 - self.imagesx, -1634 - self.imagesy), (47, 524)), pygame.Rect((1064 - self.imagesx, -1413 - self.imagesy), (61, 158)), pygame.Rect((983 - self.imagesx, -1361 - self.imagesy), (236, 45))]
         
         
+        
+    def testcampaign(self):
+        pygame.draw.rect(screen, (69, 33, 0), (289 - self.imagesx, 264 - self.imagesy, 51, 192))
+        pygame.draw.rect(screen, (0, 0, 0), (289 - self.imagesx, 264 - self.imagesy, 51, 192), 3)
+        pygame.draw.rect(screen, (2, 59, 21), (226 - self.imagesx, 257 - self.imagesy, 186, 41))
+        pygame.draw.rect(screen, (0, 0, 0), (226 - self.imagesx, 257 - self.imagesy, 186, 41), 3)
+        pygame.draw.rect(screen, (2, 59, 21), (260 - self.imagesx, 224 - self.imagesy, 127, 35))
+        pygame.draw.rect(screen, (0, 0, 0), (260 - self.imagesx, 224 - self.imagesy, 127, 35), 3)
+        pygame.draw.rect(screen, (2, 59, 21), (279 - self.imagesx, 195 - self.imagesy, 82, 29))
+        pygame.draw.rect(screen, (0, 0, 0), (279 - self.imagesx, 195 - self.imagesy, 82, 29), 3)
+        pygame.draw.rect(screen, (2, 59, 21), (295 - self.imagesx, 162 - self.imagesy, 53, 33))
+        pygame.draw.rect(screen, (0, 0, 0), (295 - self.imagesx, 162 - self.imagesy, 53, 33), 3)
+        pygame.draw.rect(screen, (2, 59, 21), (307 - self.imagesx, 137 - self.imagesy, 29, 26))
+        pygame.draw.rect(screen, (0, 0, 0), (307 - self.imagesx, 137 - self.imagesy, 29, 26), 3)
+        pygame.draw.rect(screen, (160, 131, 3), (312 - self.imagesx, 120 - self.imagesy, 19, 19))
+        pygame.draw.rect(screen, (0, 0, 0), (312 - self.imagesx, 120 - self.imagesy, 19, 19), 3)
+        pygame.draw.rect(screen, (160, 14, 3), (263 - self.imagesx, 265 - self.imagesy, 18, 27))
+        pygame.draw.rect(screen, (0, 0, 0), (263 - self.imagesx, 265 - self.imagesy, 18, 27), 3)
+        pygame.draw.rect(screen, (160, 14, 3), (322 - self.imagesx, 198 - self.imagesy, 24, 20))
+        pygame.draw.rect(screen, (0, 0, 0), (322 - self.imagesx, 198 - self.imagesy, 24, 20), 3)
+        pygame.draw.rect(screen, (160, 14, 3), (355 - self.imagesx, 235 - self.imagesy, 15, 21))
+        pygame.draw.rect(screen, (0, 0, 0), (355 - self.imagesx, 235 - self.imagesy, 15, 21), 3)
+        pygame.draw.rect(screen, (0, 8, 162), (302 - self.imagesx, 156 - self.imagesy, 20, 24))
+        pygame.draw.rect(screen, (0, 0, 0), (302 - self.imagesx, 156 - self.imagesy, 20, 24), 3)
+        pygame.draw.rect(screen, (0, 8, 162), (281 - self.imagesx, 216 - self.imagesy, 18, 21))
+        pygame.draw.rect(screen, (0, 0, 0), (281 - self.imagesx, 216 - self.imagesy, 18, 21), 3)
+        pygame.draw.rect(screen, (0, 136, 162), (386 - self.imagesx, 267 - self.imagesy, 21, 24))
+        pygame.draw.rect(screen, (0, 0, 0), (386 - self.imagesx, 267 - self.imagesy, 21, 24), 3)
+        pygame.draw.rect(screen, (0, 136, 162), (310 - self.imagesx, 230 - self.imagesy, 25, 24))
+        pygame.draw.rect(screen, (0, 0, 0), (310 - self.imagesx, 230 - self.imagesy, 25, 24), 3)
+        pygame.draw.rect(screen, (119, 10, 69), (230 - self.imagesx, 274 - self.imagesy, 18, 23))
+        pygame.draw.rect(screen, (0, 0, 0), (230 - self.imagesx, 274 - self.imagesy, 18, 23), 3)
+        pygame.draw.rect(screen, (119, 10, 69), (303 - self.imagesx, 263 - self.imagesy, 21, 22))
+        pygame.draw.rect(screen, (0, 0, 0), (303 - self.imagesx, 263 - self.imagesy, 21, 22), 3)
+        pygame.draw.rect(screen, (119, 10, 234), (351 - self.imagesx, 267 - self.imagesy, 27, 26))
+        pygame.draw.rect(screen, (0, 0, 0), (351 - self.imagesx, 267 - self.imagesy, 27, 26), 3)
+        pygame.draw.rect(screen, (199, 10, 107), (327 - self.imagesx, 175 - self.imagesy, 23, 18))
+        pygame.draw.rect(screen, (0, 0, 0), (327 - self.imagesx, 175 - self.imagesy, 23, 18), 3)
+        
+        
+        
+        
+    def testcampaign_collisions(self):
+        return [pygame.Rect((289 - self.imagesx, 264 - self.imagesy), (51, 192)), pygame.Rect((226 - self.imagesx, 257 - self.imagesy), (186, 41)), pygame.Rect((260 - self.imagesx, 224 - self.imagesy), (127, 35)), pygame.Rect((279 - self.imagesx, 195 - self.imagesy), (82, 29)), pygame.Rect((295 - self.imagesx, 162 - self.imagesy), (53, 33)), pygame.Rect((307 - self.imagesx, 137 - self.imagesy), (29, 26)), pygame.Rect((312 - self.imagesx, 120 - self.imagesy), (19, 19)), pygame.Rect((263 - self.imagesx, 265 - self.imagesy), (18, 27)), pygame.Rect((322 - self.imagesx, 198 - self.imagesy), (24, 20)), pygame.Rect((355 - self.imagesx, 235 - self.imagesy), (15, 21)), pygame.Rect((302 - self.imagesx, 156 - self.imagesy), (20, 24)), pygame.Rect((281 - self.imagesx, 216 - self.imagesy), (18, 21)), pygame.Rect((386 - self.imagesx, 267 - self.imagesy), (21, 24)), pygame.Rect((310 - self.imagesx, 230 - self.imagesy), (25, 24)), pygame.Rect((230 - self.imagesx, 274 - self.imagesy), (18, 23)), pygame.Rect((303 - self.imagesx, 263 - self.imagesy), (21, 22)), pygame.Rect((351 - self.imagesx, 267 - self.imagesy), (27, 26)), pygame.Rect((327 - self.imagesx, 175 - self.imagesy), (23, 18))]  
+
+        
+        
 def map_collisions_update(imagesx, imagesy, map_choice):
     maps = Maps(imagesx, imagesy)
     if map_choice == "SHIP":
@@ -1223,6 +1283,8 @@ def map_collisions_update(imagesx, imagesy, map_choice):
         return maps.base_collisions()
     elif map_choice == "SUPPLY":
         return maps.supply_collisions()
+    elif map_choice == "TEST":
+        return maps.testcampaign_collisions()
     else:
         raise ValueError("You are using a custom map")
 

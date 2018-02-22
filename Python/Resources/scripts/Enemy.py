@@ -17,6 +17,7 @@ class Enemy(Setup, Gun_Types):
         self.enemyposY = 10000000
         self.enemy_shot = 0
         self.shoot = False
+        self.spawned = False
         self.stop_all = self.online_paused = self.titlescreen = False #online vars that we have to set to false to play offline
         self.counter = 0
         self.before_sees_you = 0
@@ -50,7 +51,9 @@ class Enemy(Setup, Gun_Types):
         if collision:
             screen.blit(self.hitmarker, (self.enemyposX - imagesx + (self.backup.get_size()[0] / 2.5), self.enemyposY - imagesy + (self.backup.get_size()[1] / 2.5)))
     
-    def AI(self, imagesx, imagesy, collision_list, loadout_number, internalclock):
+    def AI(self, imagesx, imagesy, collision_list, loadout_number, internalclock, pos=None): #pos will put an enemy at a specific position and make them unable to move
+        if self.enemyposX == 100000000: #setting pos to this kills the enemy in campaign mode
+            return
         self.perks(loadout_number)
         #Core of our enemies's AI          
         try:
@@ -59,8 +62,13 @@ class Enemy(Setup, Gun_Types):
             self.enemyposX, self.enemyposY = 0, 0 
                 
         # modify the randint to change speed enemies spawn         
-        if not 640 > self.enemyposX - imagesx > 0 and not 480 > self.enemyposY - imagesy > 0 or self.proper_spawn(self.enemyposX - imagesx, self.enemyposY - imagesy, collision_list):
+        if (pos != None and 640 > self.enemyposX - imagesx > 0 and 480 > self.enemyposY - imagesy > 0 and not self.spawned) or not 640 > self.enemyposX - imagesx > 0 and not 480 > self.enemyposY - imagesy > 0 and not self.spawned or self.proper_spawn(self.enemyposX - imagesx, self.enemyposY - imagesy, collision_list) and not self.spawned:
             
+            
+            if pos != None:
+                self.spawned = True
+                self.enemyposX = pos[0]
+                self.enemyposY = pos[1]
             
             """if randint(1, 500) != 1:
                  return"""
@@ -84,7 +92,8 @@ class Enemy(Setup, Gun_Types):
             # enemies need 1.1 times more shots if medic perk is used    
             if self.medic:
                 self.enemy_stk *= 1.1
-            self.spawn(imagesx, imagesy, collision_list)
+            if pos == None:
+                self.spawn(imagesx, imagesy, collision_list)
             self.alreadycollided = False
             #makes enemy aim less precise
             # if distraction perk is enabled, make early enemy shots even less accurate
@@ -107,13 +116,13 @@ class Enemy(Setup, Gun_Types):
                 self.alreadycollided = False
             
         #if enemy hasn't collided with an object and alpha perk is off, then move towards you            
-        if not self.alreadycollided and not self.alpha:      
+        if not self.alreadycollided and not self.alpha and pos == None:      
             self.enemyposY += (self.mainy + imagesy - self.enemyposY) / 100
             self.enemyposX += (self.mainx + imagesx - self.enemyposX)/ 100
             #self.enemy = pygame.transform.rotate(self.backup, math.degrees(math.atan((self.enemyposY) / (self.enemyposX)) + 0))
         
         #if alpha is on, move slower
-        if not self.alreadycollided and self.alpha: 
+        if not self.alreadycollided and self.alpha and pos == None: 
             self.enemyposY += (self.mainy + imagesy - self.enemyposY) / 150
             self.enemyposX += (self.mainx + imagesx - self.enemyposX)/ 150
             if self.enemyposX == 0:
