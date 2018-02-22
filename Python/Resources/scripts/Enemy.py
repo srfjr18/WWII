@@ -64,7 +64,7 @@ class Enemy(Setup, Gun_Types):
         # modify the randint to change speed enemies spawn         
         if (pos != None and 640 > self.enemyposX - imagesx > 0 and 480 > self.enemyposY - imagesy > 0 and not self.spawned) or not 640 > self.enemyposX - imagesx > 0 and not 480 > self.enemyposY - imagesy > 0 and not self.spawned or self.proper_spawn(self.enemyposX - imagesx, self.enemyposY - imagesy, collision_list) and not self.spawned:
             
-            
+            print("rekt")
             if pos != None:
                 self.spawned = True
                 self.enemyposX = pos[0]
