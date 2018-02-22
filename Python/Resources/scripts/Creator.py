@@ -10,6 +10,7 @@ class Creator(object):
     def __init__(self):
         from Resources.scripts.Menus import Menu 
         self.menu = Menu([])
+        self.character = pygame.image.load(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-1]), 'images', '')+'character.png')
         self.slider_dict = {"damage": 0, "recoil": 0, "firerate": 0, "mag size": 0, "reload time": 0}
         
     def sliders(self, screen, x, y, name, max_num, textX=65):
@@ -351,6 +352,10 @@ class Creator(object):
                         sys.exit()
             
             if pygame.mouse.get_pressed()[0]:
+                campaign = False
+                break
+            if pygame.mouse.get_pressed()[1]:
+                campaign = True
                 break
            
         pygame.time.delay(300)
@@ -409,7 +414,13 @@ class Creator(object):
             background = tempbackground
 
         change = "pos"
-            
+        ai = []
+        ai_blit = []
+        texts = []  
+        texts_blitx = []
+        texts_blity = []  
+        ai_enemy = []
+        pressedone, pressedtwo = False, False
                    
         while True:
             milliseconds = clock.tick(FPS)
@@ -577,6 +588,56 @@ class Creator(object):
                 if blue[number_of_images] > 255:
                     blue[number_of_images] = 0
             
+            
+            if campaign:
+                for i in range(0, len(ai_blit)):
+                    screen.blit(self.character, (ai_blit[i][0] - scrollscreenx, ai_blit[i][1] - scrollscreeny))
+                for i in range(0, len(texts_blity)):
+                    pygame.draw.rect(screen, (0, 0, 0), (texts_blity[i] - scrollscreenx, 0, 10, 1000))
+                for i in range(0, len(texts_blitx)):
+                    pygame.draw.rect(screen, (0, 0, 0), (0, texts_blitx[i] - scrollscreeny, 1000, 10))
+                if pygame.mouse.get_pressed()[1]:
+                    if not pressedone:
+                        backup = mousepos
+                        try:
+                            types = raw_input("f or e: ")
+                            new = raw_input("angle: ")
+                        except:
+                            types = input("f or e: ")
+                            new = input("angle: ")
+                        if types == "f":
+                            ai.append("screen.blit(pygame.transform.rotate(self.character,"+str(new)+"), ("+str(backup[0])+" - imagesx, "+str(backup[1])+" - imagesy))")
+                        else:
+                            ai_enemy.append(str(backup))
+                        ai_blit.append(backup)
+                    pressedone = True
+                if pygame.mouse.get_pressed()[2]:
+                    if not pressedtwo:
+                        backup = mousepos
+                        try:
+                            new = raw_input("v or h: ")
+                        except:
+                            new = input("v or h: ")
+                        if new == "v":
+                            vert = True
+                        else:
+                            vert = False
+                        try:
+                            new = raw_input("text: ")
+                        except:
+                            new = input("text: ")
+                        if vert:
+                            texts.append("if "+str(backup[0])+" - 5 <= self.mainx - imagesx <= "+str(backup[0])+" + 10: campaign.text("+str(new)+")")
+                            texts_blity.append(backup[0])
+                        else:
+                            texts.append("if "+str(backup[1])+" - 5 <= self.mainy - imagesy <= "+str(backup[1])+" + 10: campaign.text("+"'"+str(new)+"')")
+                            texts_blitx.append(backup[1])
+                    pressedtwo = True
+                if not pygame.mouse.get_pressed()[1]:
+                    pressedone = False
+                if not pygame.mouse.get_pressed()[2]:
+                    pressedtwo = False
+            
             if build_gun:
                 screen.blit(buildscreen, (300, 220))
             for event in pygame.event.get():  
@@ -643,6 +704,18 @@ class Creator(object):
                             for images in range(number_of_images + 1):
                                 maps.write("    pygame.draw.rect(screen, ("+str(red[images])+", "+str(green[images])+", "+str(blue[images])+"), ("+str(x[images])+" - imagesx, "+str(y[images])+" - imagesy, "+str(width[images])+", "+str(height[images])+"))"+"\n")
                                 maps.write("    pygame.draw.rect(screen, (0, 0, 0), ("+str(x[images])+" - imagesx, "+str(y[images])+" - imagesy, "+str(width[images])+", "+str(height[images])+"), 3)"+"\n")
+                            
+                            
+                            #for campaign
+                            #not meant to make a pretty working script, this is for development only
+                            for i in range(0, len(ai)):
+                                maps.write("    "+ai[i]+"\n")
+                            for i in range(0, len(texts)):
+                                maps.write("    "+texts[i]+"\n")
+                            maps.write("    enemy_pos = [")
+                            for i in range(0, len(ai_enemy)):
+                                maps.write(ai_enemy[i]+",")
+                            
                             
                             maps.write("def collision(imagesx, imagesy):"+"\n")
                             maps.write("    return [")

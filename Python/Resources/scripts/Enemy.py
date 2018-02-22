@@ -52,7 +52,7 @@ class Enemy(Setup, Gun_Types):
             screen.blit(self.hitmarker, (self.enemyposX - imagesx + (self.backup.get_size()[0] / 2.5), self.enemyposY - imagesy + (self.backup.get_size()[1] / 2.5)))
     
     def AI(self, imagesx, imagesy, collision_list, loadout_number, internalclock, pos=None): #pos will put an enemy at a specific position and make them unable to move
-        if self.enemyposX == 100000000: #setting pos to this kills the enemy in campaign mode
+        if self.enemyposX == 100000000 or pos != None and not (840 > pos[0] - imagesx > -200 and 680 > pos[1] - imagesy > -200): #setting pos to this kills the enemy in campaign mode
             return
         self.perks(loadout_number)
         #Core of our enemies's AI          
