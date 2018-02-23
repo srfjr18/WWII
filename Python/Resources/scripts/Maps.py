@@ -1,3 +1,4 @@
+from Resources.scripts.Campaign import *
 import pygame, sys, os
 screen = pygame.display.set_mode((640,480))
 
@@ -31,6 +32,7 @@ class Maps(object):
         self.supply_spawnarea_x = (-1824, 415)
         self.supply_spawnarea_y = (-1832, 69)
         
+        self.campaign = Campaign()
         
         self.testcampaign_spawnarea_x = (-1, 1)
         self.testcampaign_spawnarea_y = (-1, 1)
@@ -1238,9 +1240,8 @@ class Maps(object):
         pygame.draw.rect(screen, (0, 0, 0), (733 - self.imagesx, -81 - self.imagesy, 62, 573), 3)
         pygame.draw.rect(screen, (1, 0, 0), (597 - self.imagesx, 445 - self.imagesy, 153, 36))
         pygame.draw.rect(screen, (0, 0, 0), (597 - self.imagesx, 445 - self.imagesy, 153, 36), 3)
-        screen.blit(pygame.transform.rotate(self.character,180), (117, 163))
-        screen.blit(pygame.transform.rotate(self.character,180), (481, 164))
-        if 175 - 5 <= self.mainx - self.imagesx <= 175 + 10: campaign.text("sir hello")
+        screen.blit(pygame.transform.rotate(self.character,90), (117 - self.imagesx, 163 - self.imagesy))
+        if 175 - 5 <= self.mainx - self.imagesx <= 175 + 5: self.campaign.text("sir hello")
         
         
         

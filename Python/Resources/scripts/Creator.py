@@ -627,10 +627,10 @@ class Creator(object):
                         except:
                             new = input("text: ")
                         if vert:
-                            texts.append("if "+str(backup[0])+" - 5 <= self.mainx - imagesx <= "+str(backup[0])+" + 10: campaign.text("+str(new)+")")
+                            texts.append("if "+str(backup[0])+" - 6 <= self.mainx - imagesx <= "+str(backup[0])+" + 6: self.campaign.text("+str(new)+")")
                             texts_blity.append(backup[0])
                         else:
-                            texts.append("if "+str(backup[1])+" - 5 <= self.mainy - imagesy <= "+str(backup[1])+" + 10: campaign.text("+"'"+str(new)+"')")
+                            texts.append("if "+str(backup[1])+" - 6 <= self.mainy - imagesy <= "+str(backup[1])+" + 6: self.campaign.text("+"'"+str(new)+"')")
                             texts_blitx.append(backup[1])
                     pressedtwo = True
                 if not pygame.mouse.get_pressed()[1]:
