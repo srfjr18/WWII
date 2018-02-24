@@ -68,7 +68,7 @@ class Menu(object):
                 pressed = False #used so you cant hold the button without even seeing the killed screen
             pygame.display.flip()
     
-    def killed(self, enemies=["dankman", "xXrektXx", "FAZE quickscope", "OPTIC NERVE", "mubba bubba", "xxNOsCoPeXX"], socket=None, socktype=None):
+    def killed(self, enemies=["dankman", "xXrektXx", "FAZE quickscope", "OPTIC NERVE", "mubba bubba", "xxNOsCoPeXX"], socket=None, socktype=None, campaign=False):
         pygame.time.delay(300)
         pressed = True
         if socket == None:
@@ -86,10 +86,16 @@ class Menu(object):
             
         while True:
             screen.blit(self.background, (0, 0))
-            text = self.font["medium"].render("KILLED BY "+enemy,1,(255,255,255))
-            screen.blit(text, (100, 225))
-            text = self.font["small"].render("left click to respawn",1,(255,255,255))
-            screen.blit(text, (150, 275))
+            if campaign:
+                text = self.font["medium"].render("   MISSION FAILED",1,(255,255,255))
+                screen.blit(text, (100, 225))
+                text = self.font["small"].render("left click to continue",1,(255,255,255))
+                screen.blit(text, (150, 275))
+            else:
+                text = self.font["medium"].render("KILLED BY "+enemy,1,(255,255,255))
+                screen.blit(text, (100, 225))
+                text = self.font["small"].render("left click to respawn",1,(255,255,255))
+                screen.blit(text, (150, 275))
             for event in pygame.event.get():  
                 if event.type == pygame.QUIT: 
                     if socket == None:
@@ -241,7 +247,7 @@ class Menu(object):
                 break
         if not os.path.isfile(path+'userdata'):
             mac = ':'.join(("%012X" % getnode())[i:i+2] for i in range(0, 12, 2))
-            new = {"name": "NONE", "rank": 28, "prestige": 0, "LOADOUT 1": ["M1 GARAND", "EXT MAGS", "RATIONS", "STEALER"], "LOADOUT 2": ["M1 GARAND", "EXT MAGS", "RATIONS", "STEALER"], "LOADOUT 3": ["M1 GARAND", "EXT MAGS", "RATIONS", "STEALER"], "LOADOUT 4": ["M1 GARAND", "EXT MAGS", "RATIONS", "STEALER"], "LOADOUT 5": ["M1 GARAND", "EXT MAGS", "RATIONS", "STEALER"], "LOADOUT 6": ["M1 GARAND", "EXT MAGS", "MEDIC", "ALPHA MALE"], "IP": [], "MAC": mac}
+            new = {"name": "NONE", "rank": 28, "prestige": 0, "LOADOUT 1": ["M1 GARAND", "EXT MAGS", "RATIONS", "STEALER"], "LOADOUT 2": ["M1 GARAND", "EXT MAGS", "RATIONS", "STEALER"], "LOADOUT 3": ["M1 GARAND", "EXT MAGS", "RATIONS", "STEALER"], "LOADOUT 4": ["M1 GARAND", "EXT MAGS", "RATIONS", "STEALER"], "LOADOUT 5": ["M1 GARAND", "EXT MAGS", "RATIONS", "STEALER"], "LOADOUT 6": ["M1 GARAND", "EXT MAGS", "MEDIC", "ALPHA MALE"], "campaign": [], "IP": [], "MAC": mac}
             with open(path+"userdata", "wb+") as file:
                 pickle.dump(new, file, protocol=2)
             self.name()
@@ -368,6 +374,12 @@ class Menu(object):
                 self.rank = data["rank"]
                 self.rank = int(int(self.rank) / 25 - int(self.rank) / 100)
                 self.required_ranks = description[1]
+                
+            if "campaign" in description:
+                with open(path+"userdata", "rb") as file:
+                    data = pickle.load(file)
+                
+                self.campaignrank = data["campaign"]
                        
             
             for num in range(0, len(self.words)):
@@ -389,7 +401,21 @@ class Menu(object):
                             screen.blit(text, (250, 15 + 50 * num))  
                     except:
                         pass
-                    
+                        
+                    try:
+                        if self.words[num] == "BACK":
+                            pass
+                        elif self.words[num] in self.campaignrank:
+                            text = self.font["small"].render("COMPLETED",1,(255,255,255))
+                            screen.blit(text, (250, 15 + 50 * num)) 
+                        elif self.words[num-1] in self.campaignrank or self.words[num] == self.words[0]:
+                            pass
+                        else:
+                            text = self.font["small"].render("COMPLETE "+self.words[num-1]+" TO UNLOCK",1,(255,255,255))
+                            screen.blit(text, (250, 15 + 50 * num)) 
+                    except:
+                        pass
+                            
                     try: #this requires our perks to also have the rank args
                         if description[num + 2] != "name" and description[num + 2] != "rank":
                             text = self.font["extrasmall"].render(description[num + 2],1,(255,255,255))
@@ -408,7 +434,11 @@ class Menu(object):
                             if description[0] == "rank" and self.rank >= self.required_ranks[num]:
                                 return self.words[num]
                             elif description[0] != "rank":
-                                return self.words[num]
+                                if "campaign" in description:
+                                    if (self.words[num] in self.campaignrank or self.words[num-1] in self.campaignrank or self.words[num] == self.words[0]):
+                                        return self.words[num]   
+                                elif not "campaign" in description:
+                                    return self.words[num]
                         else:
                             return self.words[num]
                         
@@ -595,7 +625,19 @@ class Loadouts(object):
 
 class Setup(object):
     def __init__(self, map_choice="SHIP", custom=False):
-        self.map_choice = map_choice
+    
+    
+        custom_maps = os.listdir(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Data', 'Creations', 'Maps'))
+        custom_maps = [s for s in custom_maps if s.endswith('.py')]
+        custom_maps = [maps[:-3] for maps in custom_maps]
+        custom_maps.remove("__init__")
+        if map_choice in custom_maps or map_choice in ["SHIP", "PACIFIC", "BARREN", "TOWN", "BASE", "SUPPLY"]:
+            self.map_choice = map_choice
+        else:
+            self.campaign_map_choice = map_choice
+            self.map_choice = "SHIP"
+            
+            
         self.custom = custom
         self.max_kills = 1000000
         self.enemies = 3
@@ -622,20 +664,34 @@ class Setup(object):
         with open(path+"userdata", "wb+") as file:
             pickle.dump(data, file, protocol=2) 
         
-    def MainMenu(self):
+    def MainMenu(self, start_at=None):
         pygame.mixer.music.load(soundpath+'music.wav')
         pygame.mixer.music.play(-1)
     
         go_back_once = False
         #self.custom = False
+        choice = None
+        
+        if start_at == "campaign_continue":
+            self.campaign = True
+            self.map_choice = self.campaign_map_choice
+            return
+        
         while True:
-            choice = Menu(words = ["CAMPAIGN", "MULTIPLAYER", "EXIT"]).GameSetup("","","ENTER WWII IN SINGLE PLAYER MISSIONS", "PLAY AGAINST UP TO 6 BOTS OR 1V1 ONLINE")
+            if start_at == None or start_at == "start" or choice == "BACK":
+                choice = Menu(words = ["CAMPAIGN", "MULTIPLAYER", "EXIT"]).GameSetup("","","ENTER WWII IN SINGLE PLAYER MISSIONS", "PLAY AGAINST UP TO 6 BOTS OR 1V1 ONLINE")
+            else:
+                if start_at == "campaign":
+                    choice = "CAMPAIGN"
+                elif start_at == "multiplayer":
+                    choice = "MULTIPLAYER"
+                
             if choice == "MULTIPLAYER":
-                pass
+                self.campaign = False
             elif choice == "CAMPAIGN":
                 self.campaign = True
                 while True:
-                    choice = choice = Menu(words = ["TEST", "BACK"]).GameSetup()
+                    choice = Menu(words = ["TEST", "BACK"]).GameSetup("campaign")
                     if choice == "BACK":
                         break
                     else:
@@ -1173,12 +1229,15 @@ class Setup(object):
                 except:
                     pass
         traceback.print_exc()   
-    def pause(self, setup, online_pause=False, third=None):
+    def pause(self, setup, online_pause=False, third=None, campaign=False):
         if third != None:
             Thread(target=self.send_while_pause, args=(online_pause,third,0,)).start()
             #print("triggered")
         while True:
-            pause = Menu(["RESUME", "LOADOUTS     UPDATES AT NEXT SPAWN", "OPTIONS", "END GAME"]).GameSetup(True)
+            if campaign:
+                pause = Menu(["RESUME", "OPTIONS", "EXIT"]).GameSetup(True)
+            else:
+                pause = Menu(["RESUME", "LOADOUTS     UPDATES AT NEXT SPAWN", "OPTIONS", "END GAME"]).GameSetup(True)
             if pause == "RESUME":
                 self.kill_thread = True
                 pygame.time.delay(300)
@@ -1206,7 +1265,7 @@ class Setup(object):
                         pygame.display.set_mode((640,480))
                     else:
                         break
-            elif pause == "END GAME":
+            elif pause == "END GAME" or pause == "EXIT":
                 self.kill_thread = True
                 pygame.time.delay(300)
                 return "end"          

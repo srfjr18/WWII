@@ -6,8 +6,10 @@ if __name__ == "__main__":
     sys.exit()
 
 class Maps(object):
-    def __init__(self, imagesx, imagesy):
-
+    def __init__(self, imagesx, imagesy, campaign_text_check=[]):
+        
+        self.campaign_text_check = campaign_text_check
+        
         self.imagesx = imagesx
         self.imagesy = imagesy
         self.mainx = 295
@@ -38,6 +40,7 @@ class Maps(object):
         self.testcampaign_spawnarea_y = (-1, 1)
         
     def blit_map(self, map_choice):
+        returner = None
         if map_choice == "SHIP":
             self.ship()
         elif map_choice == "PACIFIC":
@@ -51,9 +54,11 @@ class Maps(object):
         elif map_choice == "SUPPLY":
             self.supply()
         elif map_choice == "TEST":
-            self.testcampaign()
+            returner = self.testcampaign()
         else:
             raise ValueError("You are using a custom map")
+            
+        return returner
         
     def spawn_area(self, map_choice):
         if map_choice == "SHIP":
@@ -1241,7 +1246,9 @@ class Maps(object):
         pygame.draw.rect(screen, (1, 0, 0), (597 - self.imagesx, 445 - self.imagesy, 153, 36))
         pygame.draw.rect(screen, (0, 0, 0), (597 - self.imagesx, 445 - self.imagesy, 153, 36), 3)
         screen.blit(pygame.transform.rotate(self.character,90), (117 - self.imagesx, 163 - self.imagesy))
-        if 175 - 5 <= self.mainx - self.imagesx <= 175 + 5: self.campaign.text("sir hello")
+        if 175 - 5 <= self.mainx - self.imagesx <= 175 + 5 and not (175, 0) in self.campaign_text_check: 
+            self.campaign.text("sir hello")
+            return "done" #for blit_map
         
         
         

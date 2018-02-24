@@ -109,13 +109,17 @@ class Player(object):
         self.rank = int((int(rank) + kills) / 25 - (int(rank) + kills) / 100)
         
     def ui(self, kills, deaths, weapon, mag, shot, reloading, max_kills):
-        kd_bg = pygame.Surface((100,30), pygame.SRCALPHA)
-        kd_bg.fill((211,211,211,180))
-        screen.blit(kd_bg, (540,0))
-        pygame.draw.rect(screen, (0, 0, 0), (540, 0, 100, 30), 3)    
-        text = self.font.render("K: " + str(kills) + " D: " + str(deaths),1,(0,0,0))
-        screen.blit(text, (550, 5))
-    
+        try:
+            int(kills)
+            kd_bg = pygame.Surface((100,30), pygame.SRCALPHA)
+            kd_bg.fill((211,211,211,180))
+            screen.blit(kd_bg, (540,0))
+            pygame.draw.rect(screen, (0, 0, 0), (540, 0, 100, 30), 3)    
+            text = self.font.render("K: " + str(kills) + " D: " + str(deaths),1,(0,0,0))
+            screen.blit(text, (550, 5))
+        except:
+            pass
+            
         gun_bg = pygame.Surface((205,50), pygame.SRCALPHA)
         gun_bg.fill((211,211,211,180))
         screen.blit(gun_bg, (435,440))

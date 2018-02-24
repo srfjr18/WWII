@@ -615,23 +615,40 @@ class Creator(object):
                     if not pressedtwo:
                         backup = mousepos
                         try:
-                            new = raw_input("v or h: ")
+                            new = raw_input("v or h or vd/hd: ")
                         except:
-                            new = input("v or h: ")
+                            new = input("v or h or vd/hd: ")
                         if new == "v":
-                            vert = True
+                            vert = (True, True)
+                        elif new == "vd":
+                            vert = (True, None)
+                        elif new == "hd":
+                            vert = (False, None)
                         else:
-                            vert = False
+                            vert = (False, False)
                         try:
                             new = raw_input("text: ")
                         except:
                             new = input("text: ")
-                        if vert:
-                            texts.append("if "+str(backup[0])+" - 6 <= self.mainx - imagesx <= "+str(backup[0])+" + 6: self.campaign.text("+str(new)+")")
+                        if vert[1]:
+                            texts.append("if "+str(backup[0])+" - 6 <= self.mainx - imagesx <= "+str(backup[0])+" + 6:")
+                            texts.append("    "+"self.campaign.text("+"'"+str(new)+"')")
+                            texts.append("    return "+str((backup[1], 0)))
                             texts_blity.append(backup[0])
-                        else:
-                            texts.append("if "+str(backup[1])+" - 6 <= self.mainy - imagesy <= "+str(backup[1])+" + 6: self.campaign.text("+"'"+str(new)+"')")
+                        elif not vert[1]:
+                            texts.append("if "+str(backup[1])+" - 6 <= self.mainy - imagesy <= "+str(backup[1])+" + 6:")
+                            texts.append("    "+"self.campaign.text("+"'"+str(new)+"')")
+                            texts.append("    return "+str((0, backup[1])))
                             texts_blitx.append(backup[1])
+                        elif vert[0]:
+                            texts.append("if "+str(backup[0])+" - 6 <= self.mainx - imagesx <= "+str(backup[0])+" + 6:")
+                            texts.append("    return 'DONE'")
+                            texts_blity.append(backup[0])
+                        elif not vert[1]:
+                            texts.append("if "+str(backup[1])+" - 6 <= self.mainy - imagesy <= "+str(backup[1])+" + 6:")
+                            texts.append("    return 'DONE'")
+                            texts_blitx.append(backup[1])
+                            
                     pressedtwo = True
                 if not pygame.mouse.get_pressed()[1]:
                     pressedone = False

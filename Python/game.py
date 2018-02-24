@@ -10,6 +10,7 @@ from Resources.scripts.Player import *
 from Resources.scripts.Enemy import *
 from Resources.scripts.Online import *
 from Resources.scripts.Creator import *
+from Resources.scripts.Campaign import *
 from threading import Thread
 
 #fix __file__ error when compiled into exe
@@ -30,28 +31,29 @@ FPS = 60
 
 
 """sorry for using global variables, just call this so much that it makes it easier"""
-def titlescreen_menu(start=False):
+def titlescreen_menu(start_at=None):
     global reloading, semiauto
     global enemy_hit, kills, deaths, hit, shot, internalclock
     global setup, maps, loadouts, player, player_gun
-    global enemy_gun, enemy_player, loadout_number
+    global enemy_gun, enemy_player, loadout_number, campaign_text_check
     global background, in_between_shots, first_run, enemy_gun_online, enemy_pos_backup
     enemy_pos = None
     first_run = True
     reloading = semiauto = False
+    campaign_text_check = []
     kills = deaths = shot = internalclock = 0 
     try:
         setup = Setup(setup.map_choice, setup.custom)
     except:
         setup = Setup()
     maps = Maps(0, 0)
-    if start:
+    if start_at == "start":
         Menu([]).TitleScreen()
     loadouts = Loadouts(False)
     player = Player()
     player_gun = Gun()
     player.update_rank(kills)
-    setup.MainMenu()
+    setup.MainMenu(start_at)
     
     if setup.campaign:
         enemy_pos_backup = maps.enemy_pos(setup.map_choice)
@@ -127,20 +129,21 @@ def titlescreen_menu(start=False):
     pygame.mixer.music.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Resources', 'sounds', '')+'gamemusic.wav')
     pygame.mixer.music.play(-1)
             
-titlescreen_menu(True)
+titlescreen_menu("start")
 while running:
     
     if setup.online:
         if enemy_player.titlescreen:
             Menu([]).end_screen(kills, deaths)
             player.update_rank(kills)
-            titlescreen_menu()
+            titlescreen_menu("multiplayer")
         try:
             if enemy_player.stop_all:
                 continue
         except:
             pass
     else:
+        #MY GUESS IS THIS IS HIGHLY UNESSECARRY AND ILL REMOVE IT LATER
         for i in range(0, setup.enemies):
             if enemy_player[i].titlescreen:
                 Menu([]).end_screen(kills, deaths)
@@ -158,25 +161,7 @@ while running:
     
     #player.test(mousepos)
     
-    
-    
-    
-    
-    """if setup.campaign:
-        for i in enemy_pos_backup:
-            if i[0] - player.imagesx - 500 < player.mainx < i[0] - player.imagesx + 500 and i[1] - player.imagesy - 500 < player.mainy < i[1] - player.imagesy + 500:
-                no = False
-                for b in range(0, len(enemy_player)):
-                    if (i[0], i[1]) == (enemy_player[b].enemyposX, enemy_player[b].enemyposY):
-                        no = True
-                if not no:
-                    setup.enemies += 1
-            else:
-                setup.enemies -= 1"""
-    
-    
-    
-    
+
     #updating collisions based on our position
     if setup.custom:
         collision_list = maps.map_collisions_update(player.imagesx, player.imagesy) 
@@ -201,7 +186,7 @@ while running:
                         pass
                     Menu([]).end_screen(kills, deaths)
                     player.update_rank(kills)
-                    titlescreen_menu()
+                    titlescreen_menu("multiplayer")
     else:
         hit_enemy = []
         for i in range(0, setup.enemies):
@@ -219,9 +204,12 @@ while running:
                     hit[i] = 0
                     kills += 1
                     if kills >= setup.max_kills:
-                        Menu([]).end_screen(kills, deaths)
-                        player.update_rank(kills)
-                        titlescreen_menu()
+                        if setup.campaign:
+                            titlescreen_menu("campaign")
+                        else:
+                            Menu([]).end_screen(kills, deaths)
+                            player.update_rank(kills)
+                            titlescreen_menu("multiplayer")
     
     #Checking for our shot's collisions with the wall
     player_gun.wall_collide(collision_list)
@@ -252,7 +240,7 @@ while running:
                         pass
                     Menu([]).end_screen(kills, deaths)
                     player.update_rank(kills)
-                    titlescreen_menu()
+                    titlescreen_menu("multiplayer")
             
             #updating our loadout if we changed it at the pause menu
                 try:
@@ -279,7 +267,16 @@ while running:
                     if enemy_player[b].enemy_stk > enemy_hit[b] + 1 and b != i:
                         enemy_hit[b] += 1 #shot from anyone causes damage for everyone
                 if enemy_hit[i] >= enemy_player[i].enemy_stk:
-                    Menu([]).killed()
+                    if setup.campaign:
+                        Menu([]).killed(campaign=True)
+                        question = Menu([]).yes_no(" RESTART MISSION?", no="NO,EXIT")
+                        if question == "yes":
+                           titlescreen_menu("campaign_continue")
+                        else:
+                            titlescreen_menu("campaign")
+                            break
+                    else:
+                        Menu([]).killed()
                     
                     enemy_hit = []
                     for c in range(0, setup.enemies):
@@ -298,9 +295,12 @@ while running:
                     reloading = False
                     shot = 0
                     if deaths >= setup.max_kills:
-                        Menu([]).end_screen(kills, deaths)
-                        player.update_rank(kills)
-                        titlescreen_menu()
+                        if setup.campaign:
+                            titlescreen_menu("campaign")
+                        else:
+                            Menu([]).end_screen(kills, deaths)
+                            player.update_rank(kills)
+                            titlescreen_menu("multiplayer")
             
             #updating our loadout if we changed it at the pause menu
                     try:
@@ -342,7 +342,7 @@ while running:
                 pass
             Menu([]).end_screen(kills, deaths)
             player.update_rank(kills)
-            titlescreen_menu()
+            titlescreen_menu("multiplayer")
     else:
         for i in range(0, setup.enemies):
             if setup.campaign:
@@ -432,7 +432,7 @@ while running:
                         except:
                            new_setup = setup.pause(setup, enemy_player.c, "client")
                     else:
-                        new_setup = setup.pause(setup) #resume w/ changing loadout
+                        new_setup = setup.pause(setup, campaign=setup.campaign) #resume w/ changing loadout
                 
                     if new_setup == None: #resume w/o changing loadout
                         del(new_setup)          
@@ -443,9 +443,12 @@ while running:
                                 enemy_player.c.close()
                             except:
                                 enemy_player.s.close()
-                        Menu([]).end_screen(kills, deaths)
-                        player.update_rank(kills)
-                        titlescreen_menu()
+                        if setup.campaign:
+                            titlescreen_menu("campaign")
+                        else:
+                            Menu([]).end_screen(kills, deaths)
+                            player.update_rank(kills)
+                            titlescreen_menu("multiplayer")
                        
     #images/rendering
     pygame.display.set_caption("WWII  FPS: " + str(int(clock.get_fps())) + " " + str((player.imagesx + player.mainx, player.imagesy + player.mainy)))
@@ -453,7 +456,23 @@ while running:
     if setup.custom:
         Play_Maps(setup.map_choice).blit_map(player.imagesx, player.imagesy)
     else:
-        Maps(player.imagesx, player.imagesy).blit_map(setup.map_choice)
+        """when in campaign mode, this system makes it so you can only hit text boxes once"""
+        add = Maps(player.imagesx, player.imagesy, campaign_text_check).blit_map(setup.map_choice)
+        
+        if add == "done":
+            Campaign().donescreen(kills, setup.map_choice)
+            with open(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)), 'Data', '')+"userdata", "rb") as file:
+                data = pickle.load(file)
+            if not setup.map_choice in data["campaign"]:
+                new = data["campaign"]
+                new.append(setup.map_choice)
+                data["campaign"] = new
+                with open(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)), 'Data', '')+"userdata", "wb+") as file:
+                    pickle.dump(data, file, protocol=2)
+            titlescreen_menu("campaign")
+        
+        if add != None:
+            campaign_text_check.append(add)
     if setup.shotgun and setup.flame:
         player_gun.blit_shot(True)
     else:
@@ -483,7 +502,10 @@ while running:
         player.red_screen(setup.medic, enemy_player.enemy_stk, enemy_hit)
     else:
         player.red_screen(setup.medic, 5, enemy_hit[0])
-    player.ui(kills, deaths, setup.weapon, setup.mag, shot, reloading, setup.max_kills) 
+    if setup.campaign:
+        player.ui("campaign", deaths, setup.weapon, setup.mag, shot, reloading, setup.max_kills) 
+    else:
+        player.ui(kills, deaths, setup.weapon, setup.mag, shot, reloading, setup.max_kills) 
     #pygame.draw.circle(screen, (0, 0, 0), (screen.get_size()[0] / 2, screen.get_size()[1] / 2), screen.get_size()[1] / 2, 20)   
     pygame.display.flip()
 
