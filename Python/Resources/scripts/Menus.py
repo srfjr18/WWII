@@ -691,11 +691,20 @@ class Setup(object):
             elif choice == "CAMPAIGN":
                 self.campaign = True
                 while True:
-                    choice = Menu(words = ["TEST", "BACK"]).GameSetup("campaign")
+                    choice = Menu(words = ["MIDWAY", "BACK"]).GameSetup("campaign")
                     if choice == "BACK":
                         break
                     else:
                         self.map_choice = choice
+                        if self.map_choice == "MIDWAY":
+                            with open(path+"userdata", "rb") as file:
+                                data = pickle.load(file)
+                            
+                            new = data["LOADOUT 6"]
+                            new[0] = "PLANE"
+                            data["LOADOUT 6"] = new
+                            with open(path+"userdata", "wb+") as file:
+                                    pickle.dump(data, file, protocol=2)
                         return
             elif choice == "EXIT":
                 sys.exit()
@@ -1128,6 +1137,8 @@ class Setup(object):
             except:
                 self.gun = Gun_Types().thrower(angle)
                 return
+        elif self.weapon == "PLANE": #just for midway
+            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().plane(angle)
         else: #custom gun
             if angle == None:
                 self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Custom_Gun(self.weapon).return_gun()

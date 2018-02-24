@@ -16,6 +16,9 @@ class Enemy(Setup, Gun_Types):
         self.enemyposX = 10000000
         self.enemyposY = 10000000
         self.enemy_shot = 0
+        
+        self.midway = False
+        
         self.shoot = False
         self.spawned = False
         self.stop_all = self.online_paused = self.titlescreen = False #online vars that we have to set to false to play offline
@@ -29,12 +32,13 @@ class Enemy(Setup, Gun_Types):
         Gun_Types.__init__(self)
         Setup.__init__(self)
         self.backup = self.enemy = pygame.image.load(path+'enemy.png')
+        self.plane = pygame.image.load(path+'japanplane.png')
         self.hitmarker = pygame.image.load(path+'hitmarker.png')
         self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime, recoil = self.getrand_gun_or_blit()
         if self.enemy_action == "semi-auto":
             self.enemy_firerate = 30
     
-    def blit_enemy(self, collision, imagesx, imagesy, angle=None, gun=None):
+    def blit_enemy(self, collision, imagesx, imagesy, angle=None, gun=None, types=None):
         if angle != None and gun != None:
             self.enemy = pygame.transform.rotate(self.backup, angle)
             gun = pygame.transform.rotate(gun, angle)
@@ -46,12 +50,22 @@ class Enemy(Setup, Gun_Types):
                 self.enemy_angle
             except:
                 self.enemy_angle = 0
-            screen.blit(self.enemy, (self.enemyposX - imagesx, self.enemyposY - imagesy))
-            self.getrand_gun_or_blit(self.rand_num, self.enemy_angle, self.enemyposX - imagesx, self.enemyposY - imagesy)
+            if types == "plane":
+                japan = pygame.transform.rotate(self.plane, self.enemy_angle)
+                screen.blit(japan, (self.enemyposX - imagesx, self.enemyposY - imagesy))
+            else:
+                screen.blit(self.enemy, (self.enemyposX - imagesx, self.enemyposY - imagesy))
+                self.getrand_gun_or_blit(self.rand_num, self.enemy_angle, self.enemyposX - imagesx, self.enemyposY - imagesy)
         if collision:
             screen.blit(self.hitmarker, (self.enemyposX - imagesx + (self.backup.get_size()[0] / 2.5), self.enemyposY - imagesy + (self.backup.get_size()[1] / 2.5)))
     
-    def AI(self, imagesx, imagesy, collision_list, loadout_number, internalclock, pos=None): #pos will put an enemy at a specific position and make them unable to move
+    def AI(self, imagesx, imagesy, collision_list, loadout_number, internalclock, pos=None, map_choice=None): #pos will put an enemy at a specific position and make them unable to move
+    
+        if self.midway or map_choice == "MIDWAY":
+            self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime = 15, "full-auto", 100, 1000000, 0 
+            self.shotgun = False
+            #sys.exit()
+    
         if self.enemyposX == 100000000 or pos != None and not (840 > pos[0] - imagesx > -200 and 680 > pos[1] - imagesy > -200): #setting pos to this kills the enemy in campaign mode
             return
         self.perks(loadout_number)
@@ -60,11 +74,14 @@ class Enemy(Setup, Gun_Types):
             self.enemyposX
         except:
             self.enemyposX, self.enemyposY = 0, 0 
+        
                 
         # modify the randint to change speed enemies spawn         
-        if (pos != None and 840 > pos[0] - imagesx > -200 and 680 > pos[1] - imagesy > -200 and not self.spawned) or (not 640 > self.enemyposX - imagesx > 0 and not 480 > self.enemyposY - imagesy > 0 and not self.spawned and pos == None) or self.proper_spawn(self.enemyposX - imagesx, self.enemyposY - imagesy, collision_list) and not self.spawned and pos == None:
+        if self.midway or (pos != None and 840 > pos[0] - imagesx > -200 and 680 > pos[1] - imagesy > -200 and not self.spawned) or (not 640 > self.enemyposX - imagesx > 0 and not 480 > self.enemyposY - imagesy > 0 and not self.spawned and pos == None) or self.proper_spawn(self.enemyposX - imagesx, self.enemyposY - imagesy, collision_list) and not self.spawned and pos == None:
             
-            if pos != None:
+            if pos != None and not self.midway:
+                if map_choice == "MIDWAY":
+                    self.midway = True
                 self.spawned = True
                 self.enemyposX = pos[0]
                 self.enemyposY = pos[1]
@@ -73,15 +90,25 @@ class Enemy(Setup, Gun_Types):
                  return"""
             
             
-            
-            
+           
             
             #choose random gun for enemy
-            self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime, recoil = self.getrand_gun_or_blit() #recoil is just neglected because badaim usually makes up for it or more
+            if not self.midway and map_choice != "MIDWAY":
+                self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime, recoil = self.getrand_gun_or_blit() #recoil is just neglected because badaim usually makes up for it or more
+            
+            
             if self.enemy_action == "semi-auto":
                 self.enemy_firerate = 30
             #makes enemies kill you faster
             self.enemy_stk *= 0.8
+            
+            if pos != None or self.midway:
+                self.enemy_stk *= 7
+            
+            
+            if self.midway:
+                pos = None
+            
             
             if self.stealer:
                 if self.enemy_mag > 1:
@@ -91,7 +118,7 @@ class Enemy(Setup, Gun_Types):
             # enemies need 1.1 times more shots if medic perk is used    
             if self.medic:
                 self.enemy_stk *= 1.1
-            if pos == None:
+            if pos == None and not self.midway:
                 self.spawn(imagesx, imagesy, collision_list)
             self.alreadycollided = False
             #makes enemy aim less precise

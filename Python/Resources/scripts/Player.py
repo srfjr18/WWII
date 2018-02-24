@@ -21,6 +21,7 @@ class Player(object):
         self.imagesy = 0
         self.angle = 0
         self.maincharacter = self.backup = pygame.image.load(path+'character.png')
+        self.plane = pygame.image.load(path+'usplane.png')
         self.font = pygame.font.SysFont(None, 25)
         self.smallfont = pygame.font.SysFont(None, 20)
         
@@ -157,7 +158,7 @@ class Player(object):
             overlay.fill((255,0,0, alpha))
             screen.blit(overlay, (0,0))
         
-    def set_angle(self, mousepos):
+    def set_angle(self, mousepos, types=None):
     
         self.angle = 90 + 360 - (math.degrees(math.atan2(self.mainy - mousepos[1], self.mainx - mousepos[0])))
 
@@ -165,7 +166,10 @@ class Player(object):
             self.angle -= 360
         elif self.angle <= 0:
             self.angle += 360
-        self.maincharacter = pygame.transform.rotate(self.backup, self.angle)
+        if types == "plane":
+            self.maincharacter = pygame.transform.rotate(self.plane, self.angle)
+        else:
+            self.maincharacter = pygame.transform.rotate(self.backup, self.angle)
         
     def collision(self, collision_list):
         main_collision = pygame.Rect((self.mainx, self.mainy), self.backup.get_size())

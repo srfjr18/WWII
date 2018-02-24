@@ -347,7 +347,7 @@ while running:
         for i in range(0, setup.enemies):
             if setup.campaign:
                 try:
-                    enemy_player[i].AI(player.imagesx, player.imagesy, collision_list, loadout_number, internalclock, enemy_pos_backup[i])
+                    enemy_player[i].AI(player.imagesx, player.imagesy, collision_list, loadout_number, internalclock, enemy_pos_backup[i], setup.map_choice)
                 except:
                     pass
             else:
@@ -386,8 +386,10 @@ while running:
     if setup.online:
         if enemy_player.online_paused:
             continue
-    
-    player.set_angle(mousepos)
+    if setup.map_choice == "MIDWAY":
+        player.set_angle(mousepos, "plane")
+    else:
+        player.set_angle(mousepos)
                              
     if pygame.mouse.get_pressed()[1] and shot != 0:
         reloading = True
@@ -397,7 +399,7 @@ while running:
     if not pygame.mouse.get_pressed()[2] and setup.action == "semi-auto":
         semiauto = False 
             
-    if pygame.mouse.get_pressed()[0]: 
+    if pygame.mouse.get_pressed()[0] or setup.map_choice == "MIDWAY": 
         #player.test_2(mousepos)    
         player.move(mousepos, setup.rations, setup.map_choice)
     """if pygame.mouse.get_pressed()[2]:
@@ -459,7 +461,7 @@ while running:
         """when in campaign mode, this system makes it so you can only hit text boxes once"""
         add = Maps(player.imagesx, player.imagesy, campaign_text_check).blit_map(setup.map_choice)
         
-        if add == "done":
+        if add == "DONE":
             Campaign().donescreen(kills, setup.map_choice)
             with open(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)), 'Data', '')+"userdata", "rb") as file:
                 data = pickle.load(file)
@@ -473,6 +475,10 @@ while running:
         
         if add != None:
             campaign_text_check.append(add)
+            
+            
+            
+            
     if setup.shotgun and setup.flame:
         player_gun.blit_shot(True)
     else:
@@ -493,15 +499,25 @@ while running:
     else:
         for i in range(0, setup.enemies):
             try:
-                enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy)         
+                if setup.map_choice == "MIDWAY":
+                    enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy, types="plane")
+                else:
+                    enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy)         
             except:
-                pass  
-    screen.blit(player.maincharacter, (player.mainx, player.mainy))
-    setup.guns(loadout_number, player.angle) #blitting our gun  
+                pass
+                
+                
+                
+    if setup.map_choice == "MIDWAY":
+        screen.blit(player.maincharacter, (player.mainx, player.mainy))
+    else:              
+        screen.blit(player.maincharacter, (player.mainx, player.mainy))
+        setup.guns(loadout_number, player.angle) #blitting our gun  
     if setup.online:
         player.red_screen(setup.medic, enemy_player.enemy_stk, enemy_hit)
     else:
-        player.red_screen(setup.medic, 5, enemy_hit[0])
+        if setup.map_choice != "MIDWAY":
+            player.red_screen(setup.medic, 5, enemy_hit[0])
     if setup.campaign:
         player.ui("campaign", deaths, setup.weapon, setup.mag, shot, reloading, setup.max_kills) 
     else:

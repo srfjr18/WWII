@@ -68,8 +68,11 @@ class Campaign(object):
                     print_words = words[:num_chars]
                 except:
                     pass
-            text = self.font["small"].render(print_words,1,(0,0,0))
+                  
+            text = self.font["small"].render(print_words[:40],1,(0,0,0))
             screen.blit(text, (20, screen.get_size()[1] - 80))
+            text = self.font["small"].render(print_words[40:],1,(0,0,0))
+            screen.blit(text, (20, screen.get_size()[1] - 50))
             
             if pygame.mouse.get_pressed()[0] and not pressed:
                 pygame.time.delay(300)
