@@ -680,7 +680,7 @@ class Setup(object):
         
         while True:
             #####################################################################
-            build = 'v1.01'
+            build = 'v1.02'
             #####################################################################
         
         
@@ -710,7 +710,7 @@ class Setup(object):
                         screen.blit(self.background, (0, 0))
                         text = self.font["medium"].render("GAME RESTART REQUIRED",1,(255,255,255))
                         screen.blit(text, (130, 150))
-                        text = self.font["small"].render("Depending on your OS, you may need to give proper permissions to the updated game.py file",1,(255,255,255))
+                        text = self.font["extrasmall"].render("Depending on your OS, you may need to give proper permissions to the updated game.py file",1,(255,255,255))
                         screen.blit(text, (10, 200))
                         for event in pygame.event.get():  
                             if event.type == pygame.QUIT: 
