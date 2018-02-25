@@ -62,7 +62,7 @@ class Enemy(Setup, Gun_Types):
     def AI(self, imagesx, imagesy, collision_list, loadout_number, internalclock, pos=None, map_choice=None): #pos will put an enemy at a specific position and make them unable to move
     
         if self.midway or map_choice == "MIDWAY":
-            self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime = 15, "full-auto", 100, 1000000, 0 
+            self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime = 25, "full-auto", 100, 1000000, 0 
             self.shotgun = False
             #sys.exit()
     
