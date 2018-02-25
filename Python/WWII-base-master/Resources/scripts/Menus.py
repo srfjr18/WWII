@@ -678,58 +678,14 @@ class Setup(object):
             return
         
         while True:
-            #####################################################################
-            build = 'v1.0'
-            #####################################################################
-        
-        
-        
-        
             if start_at == None or start_at == "start" or choice == "BACK":
-                choice = Menu(words = ["CAMPAIGN", "MULTIPLAYER", "UPDATE", "EXIT"]).GameSetup("","","ENTER WWII IN SINGLE PLAYER MISSIONS", "PLAY AGAINST UP TO 6 BOTS OR 1V1 ONLINE")
+                choice = Menu(words = ["CAMPAIGN", "MULTIPLAYER", "EXIT"]).GameSetup("","","ENTER WWII IN SINGLE PLAYER MISSIONS", "PLAY AGAINST UP TO 6 BOTS OR 1V1 ONLINE")
             else:
                 if start_at == "campaign":
                     choice = "CAMPAIGN"
                 elif start_at == "multiplayer":
                     choice = "MULTIPLAYER"
-            
-            
-            if choice == "UPDATE":                
-                check = update(build)
-                if check == "up to date":
-                    screen.blit(self.background, (0, 0))
-                    text = self.font["medium"].render("ALREADY UP TO DATE",1,(0,0,0))
-                    screen.blit(text, (180, 150))
-                    pygame.display.flip()
-                    pygame.time.delay(2000)
-                else:
-                    pygame.time.delay(300)    
-                    while True:
-                        screen.blit(background, (0, 0))
-                        text = font.render("GAME RESTART REQUIRED",1,(255,255,255))
-                        screen.blit(text, (200, 200))
-                        for event in pygame.event.get():  
-                            if event.type == pygame.QUIT: 
-                                sys.exit()
-                            elif event.type == pygame.KEYDOWN:
-                                if event.key == pygame.K_ESCAPE:
-                                    sys.exit()
-        
-                        if pygame.mouse.get_pressed()[0]:
-                            break        
-                        if pygame.key.get_pressed()[pygame.K_RETURN]:
-                            break
-                        pygame.display.flip()
-                            
-                    pygame.display.set_mode((640,480))   
-                    try:
-                        os.execv(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'game.py'), sys.argv)
-                    except OSError: #using embedded python 3 windows version
-                        sys.exit()
-                        
-                        
-                        
-                    
+                
             if choice == "MULTIPLAYER":
                 self.campaign = False
             elif choice == "CAMPAIGN":
