@@ -680,7 +680,7 @@ class Setup(object):
         
         while True:
             #####################################################################
-            build = 'v1.01'
+            build = 'v1.00'
             #####################################################################
         
         
@@ -708,7 +708,7 @@ class Setup(object):
                     pygame.time.delay(300)    
                     while True:
                         screen.blit(self.background, (0, 0))
-                        text = font.render("GAME RESTART REQUIRED",1,(255,255,255))
+                        text = self.font.render("GAME RESTART REQUIRED",1,(255,255,255))
                         screen.blit(text, (200, 200))
                         for event in pygame.event.get():  
                             if event.type == pygame.QUIT: 
