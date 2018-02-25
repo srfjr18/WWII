@@ -2,6 +2,7 @@ import os, pygame, sys, socket, pickle, traceback, platform
 from random import randint
 from Resources.scripts.Guns import *
 from Resources.scripts.Creator import *
+from Resources.scripts.Updater import *
 from uuid import getnode
 from threading import Thread
 
@@ -679,14 +680,14 @@ class Setup(object):
         
         while True:
             #####################################################################
-            build = 'v1.0'
+            build = 'v1.01'
             #####################################################################
         
         
         
         
             if start_at == None or start_at == "start" or choice == "BACK":
-                choice = Menu(words = ["CAMPAIGN", "MULTIPLAYER", "UPDATE", "EXIT"]).GameSetup("","","ENTER WWII IN SINGLE PLAYER MISSIONS", "PLAY AGAINST UP TO 6 BOTS OR 1V1 ONLINE")
+                choice = Menu(words = ["CAMPAIGN", "MULTIPLAYER", "UPDATE", "EXIT"]).GameSetup("","","ENTER WWII IN SINGLE PLAYER MISSIONS", "PLAY AGAINST UP TO 6 BOTS OR 1V1 ONLINE", "CHECK FOR A GAME UPDATE")
             else:
                 if start_at == "campaign":
                     choice = "CAMPAIGN"
@@ -698,14 +699,15 @@ class Setup(object):
                 check = update(build)
                 if check == "up to date":
                     screen.blit(self.background, (0, 0))
-                    text = self.font["medium"].render("ALREADY UP TO DATE",1,(0,0,0))
-                    screen.blit(text, (180, 150))
+                    text = self.font["medium"].render("ALREADY UP TO DATE",1,(255,255,255))
+                    screen.blit(text, (130, 150))
                     pygame.display.flip()
                     pygame.time.delay(2000)
+                    continue
                 else:
                     pygame.time.delay(300)    
                     while True:
-                        screen.blit(background, (0, 0))
+                        screen.blit(self.background, (0, 0))
                         text = font.render("GAME RESTART REQUIRED",1,(255,255,255))
                         screen.blit(text, (200, 200))
                         for event in pygame.event.get():  
