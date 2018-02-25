@@ -453,7 +453,7 @@ while running:
                             titlescreen_menu("multiplayer")
                        
     #images/rendering
-    pygame.display.set_caption("WWII  FPS: " + str(int(clock.get_fps())) + " " + str((player.imagesx + player.mainx, player.imagesy + player.mainy)))
+    pygame.display.set_caption("WWII  FPS: " + str(int(clock.get_fps()))) #+ " " + str((player.imagesx + player.mainx, player.imagesy + player.mainy)))
     screen.blit(background, (0, 0))
     if setup.custom:
         Play_Maps(setup.map_choice).blit_map(player.imagesx, player.imagesy)

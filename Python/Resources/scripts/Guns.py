@@ -327,6 +327,6 @@ class Gun_Types(object):
         return 6, "full-auto", 30.1, 200, 201, 8 #the 30.1 makes this exclusive and easier to identify in the online mode
     def plane(self, angle=None, mainx=295, mainy=215):
         #just for midway
-        return 3, "full-auto", 3, 67, 50, 0 
+        return 3, "full-auto", 8, 67, 50, 0 
           
     
