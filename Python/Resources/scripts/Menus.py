@@ -704,6 +704,13 @@ class Setup(object):
                     pygame.display.flip()
                     pygame.time.delay(2000)
                     continue
+                elif check == "no connection":
+                    screen.blit(self.background, (0, 0))
+                    text = self.font["medium"].render("NO CONNECTION",1,(255,0,0))
+                    screen.blit(text, (180, 150))
+                    pygame.display.flip()
+                    pygame.time.delay(2000)
+                    continue
                 else:
                     pygame.time.delay(300)    
                     while True:

@@ -4,7 +4,10 @@ from zipfile import *
 def update(build):
     files = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'file.zip')
     path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), '')
-    urllib.urlretrieve('https://github.com/srfjr18/WWII-base/archive/master.zip', files)
+    try:
+        urllib.urlretrieve('https://github.com/srfjr18/WWII-base/archive/master.zip', files)
+    except:
+        return "no connection"
     zip = ZipFile(files)
     zip.extractall(path)
     
