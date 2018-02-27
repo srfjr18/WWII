@@ -666,7 +666,8 @@ class Setup(object):
             pickle.dump(data, file, protocol=2) 
         
     def MainMenu(self, start_at=None):
-        pygame.mixer.music.load(soundpath+'music.wav')
+        self.f = open(soundpath+'music.wav', "rb")
+        pygame.mixer.music.load(self.f)
         pygame.mixer.music.play(-1)
     
         go_back_once = False
@@ -695,8 +696,12 @@ class Setup(object):
                     choice = "MULTIPLAYER"
             
             
-            if choice == "UPDATE":                
+            if choice == "UPDATE":
+                pygame.mixer.music.stop()
+                self.f.close()   #closing music so it works on windows             
                 check = update(build)
+                
+                
                 if check == "up to date":
                     screen.blit(self.background, (0, 0))
                     text = self.font["medium"].render("ALREADY UP TO DATE",1,(255,255,255))
@@ -737,6 +742,11 @@ class Setup(object):
                         os.execv(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'game.py'), sys.argv)
                     except OSError: #using embedded python 3 windows version
                         sys.exit()
+            
+            
+                self.f = open(soundpath+'music.wav', "rb")
+                pygame.mixer.music.load(self.f)
+                pygame.mixer.music.play(-1)
                         
                         
                         
