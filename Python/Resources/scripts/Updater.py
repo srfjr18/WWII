@@ -8,7 +8,7 @@ def update(build):
     try:
         urllib.urlretrieve('https://github.com/srfjr18/WWII-base/archive/master.zip', files)
     except AttributeError:
-        os.system("C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe curl https://github.com/srfjr18/WWII-base/archive/master.zip -o "+files) #to fix annoying encoding problem with embedded zip
+        os.system("powershell.exe [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; curl https://github.com/srfjr18/WWII-base/archive/master.zip -O "+str(files)) #to fix annoying encoding problem with embedded zip
     except:
         return "no connection"
     zip = ZipFile(files)
