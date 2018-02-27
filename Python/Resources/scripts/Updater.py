@@ -9,6 +9,8 @@ def update(build):
         urllib.urlretrieve('https://github.com/srfjr18/WWII-base/archive/master.zip', files)
     except LookupError:
         os.system("C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe" ["curl https://github.com/srfjr18/WWII-base/archive/master.zip -0 "+ files]) #to fix annoying encoding problem with embedded zip
+    except:
+        return "no connection"
     zip = ZipFile(files)
     zip.extractall(path)
     
