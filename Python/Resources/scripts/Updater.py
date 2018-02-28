@@ -3,11 +3,12 @@ from zipfile import *
 import urllib, time, pygame, sys, stat
 
 def rm_dir(path_to_file):
-    for root, dirs, files in os.walk(path_to_file):
-        for d in dirs:
-            os.chmod(os.path.join(root,d),stat.S_IWUSR)
-        for f in files:
-            os.chmod(os.path.join(root,f),stat.S_IWUSR)
+    if os.name == "nt":
+        for root, dirs, files in os.walk(path_to_file):
+            for d in dirs:
+                os.chmod(os.path.join(root,d),stat.S_IWUSR)
+            for f in files:
+                os.chmod(os.path.join(root,f),stat.S_IWUSR)
     shutil.rmtree(path_to_file)
 
 def update(build):
