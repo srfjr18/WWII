@@ -681,20 +681,31 @@ class Setup(object):
         
         while True:
             #####################################################################
-            build = 'v1.04'
+            build = 'v1.05'
             #####################################################################
         
         
         
         
             if start_at == None or start_at == "start" or choice == "BACK":
-                choice = Menu(words = ["CAMPAIGN", "MULTIPLAYER", "UPDATE", "EXIT"]).GameSetup("","","ENTER WWII IN SINGLE PLAYER MISSIONS", "PLAY AGAINST UP TO 6 BOTS OR 1V1 ONLINE", "CHECK FOR A GAME UPDATE")
+                choice = Menu(words = ["CAMPAIGN", "MULTIPLAYER", "OPTIONS", "UPDATE", "EXIT"]).GameSetup("","","ENTER WWII IN SINGLE PLAYER MISSIONS", "PLAY AGAINST UP TO 6 BOTS OR 1V1 ONLINE", "GAME OPTIONS", "CHECK FOR A GAME UPDATE")
             else:
                 if start_at == "campaign":
                     choice = "CAMPAIGN"
                 elif start_at == "multiplayer":
                     choice = "MULTIPLAYER"
             
+            if choice == "OPTIONS":
+                while True:
+                    option_choice = Menu(["FULLSCREEN", "WINDOWED", "BACK"]).GameSetup()
+                    if option_choice == "FULLSCREEN": 
+                        pygame.display.set_mode((640,480), pygame.FULLSCREEN)
+                    elif option_choice == "WINDOWED":
+                        pygame.display.set_mode((640,480))
+                    elif option_choice == "BACK":
+                        choice = "BACK"
+                        break
+                    
             
             if choice == "UPDATE":
                 pygame.mixer.music.stop()
@@ -708,6 +719,7 @@ class Setup(object):
                     screen.blit(text, (130, 150))
                     pygame.display.flip()
                     pygame.time.delay(2000)
+                    choice = "BACK"
                     continue
                 elif check == "no connection":
                     screen.blit(self.background, (0, 0))
@@ -715,6 +727,7 @@ class Setup(object):
                     screen.blit(text, (180, 150))
                     pygame.display.flip()
                     pygame.time.delay(2000)
+                    choice = "BACK"
                     continue
                 else:
                     #
