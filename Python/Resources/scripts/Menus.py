@@ -723,7 +723,7 @@ class Setup(object):
                         screen.blit(self.background, (0, 0))
                         text = self.font["medium"].render("GAME RESTART REQUIRED",1,(255,255,255))
                         screen.blit(text, (130, 150))
-                        os.chmod(os.path.realpath(__file__), 777)
+                        #os.chmod(os.path.realpath(__file__), 777)
                         for event in pygame.event.get():  
                             if event.type == pygame.QUIT: 
                                 sys.exit()
