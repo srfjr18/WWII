@@ -20,6 +20,9 @@ class Player(object):
         self.imagesx = 0
         self.imagesy = 0
         self.angle = 0
+        
+        self.health = 100
+        
         self.maincharacter = self.backup = pygame.image.load(path+'character.png')
         self.plane = pygame.image.load(path+'usplane.png')
         self.font = pygame.font.SysFont(None, 25)
@@ -143,20 +146,11 @@ class Player(object):
             text = self.font.render("PLAYING TO "+str(max_kills)+" K/Ds",1,(0,0,0))
             screen.blit(text, (5, 455))
         
-    def red_screen(self, medic, enemy_stk, enemy_hit):
-        if medic:
-            num = 125
-        else:
-            num = 100
+    def red_screen(self):
         overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
-        if enemy_hit != 0:
-            alpha = 255 * ((enemy_stk + enemy_hit) / num)
-            if alpha < 50:
-                alpha = 50
-            if alpha > 125:
-                alpha = 125
-            overlay.fill((255,0,0, alpha))
-            screen.blit(overlay, (0,0))
+        alpha = (100 - self.health) * 1.3
+        overlay.fill((255,0,0, alpha))
+        screen.blit(overlay, (0,0))
         
     def set_angle(self, mousepos, types=None):
     
@@ -200,6 +194,19 @@ class Player(object):
         self.imagesy += self.moveY
         self.imagesx += self.moveX 
         
+        
+        
+        if map_choice == "MIDWAY" or map_choice == "D-DAY":
+            if self.collision(map_collisions_update(self.imagesx, self.imagesy, map_choice)):
+                self.imagesy -= self.moveY
+                self.imagesx -= self.moveX 
+                self.moveX = (mousepos[0] - self.mainx) / 100
+                self.moveY = (mousepos[1] - self.mainy) / 100
+                self.imagesy += self.moveY
+                self.imagesx += self.moveX 
+        
+        
+        
         if self.custom_map == False:
             self.fix_go_thru_corners(map_collisions_update(self.imagesx, self.imagesy, map_choice)) 
         else:
@@ -212,6 +219,7 @@ class Player(object):
             collision = self.custom_map.map_collisions_update(self.imagesx, self.imagesy)
                     
         if self.collision(collision):
+            
             self.imagesy += self.moveY
             self.imagesx -= self.moveX 
             
