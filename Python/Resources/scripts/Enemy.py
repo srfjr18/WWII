@@ -18,6 +18,7 @@ class Enemy(Setup, Gun_Types):
         self.enemy_shot = 0
         
         self.midway = False
+        self.health = 100
         
         self.shoot = False
         self.spawned = False
@@ -62,11 +63,11 @@ class Enemy(Setup, Gun_Types):
     def AI(self, imagesx, imagesy, collision_list, loadout_number, internalclock, pos=None, map_choice=None): #pos will put an enemy at a specific position and make them unable to move
     
         if self.midway or map_choice == "MIDWAY":
-            self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime = 25, "full-auto", 100, 1000000, 0 
+            self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime = 8, "full-auto", 70, 1000000, 0 
             self.shotgun = False
             #sys.exit()
     
-        if self.enemyposX == 100000000 or pos != None and not (840 > pos[0] - imagesx > -200 and 680 > pos[1] - imagesy > -200): #setting pos to this kills the enemy in campaign mode
+        if self.enemyposX == 100000000 or pos != None and not (840 > pos[0] - imagesx > -200 and 680 > pos[1] - imagesy > -200): #setting pos to this kills the enemy in campaign mode BUT THIS REALLY DOESN'T EVEN WORK 
             return
         self.perks(loadout_number)
         #Core of our enemies's AI          
@@ -102,8 +103,14 @@ class Enemy(Setup, Gun_Types):
             #makes enemies kill you faster
             self.enemy_stk *= 0.8
             
-            if pos != None or self.midway:
+            if map_choice == "MIDWAY" or map_choice == "D-DAY":
+                if self.enemy_stk < 7:
+                    self.enemy_stk = 7
+            
+            if self.midway or map_choice == "MIDWAY":
                 self.enemy_stk *= 7
+            if map_choice == "D-DAY":
+                self.enemy_stk *= 5
             
             
             if self.midway:

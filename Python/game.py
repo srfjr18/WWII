@@ -143,7 +143,8 @@ while running:
         except:
             pass
     else:
-        #MY GUESS IS THIS IS HIGHLY UNESSECARRY AND ILL REMOVE IT LATER
+        pass
+        """#MY GUESS IS THIS IS HIGHLY UNESSECARRY AND ILL REMOVE IT LATER
         for i in range(0, setup.enemies):
             if enemy_player[i].titlescreen:
                 Menu([]).end_screen(kills, deaths)
@@ -152,7 +153,7 @@ while running:
     
         for i in range(0, setup.enemies):
             if enemy_player[i].stop_all:
-                continue
+                continue"""
     
     mousepos = pygame.mouse.get_pos()
     clock.tick(FPS)
@@ -172,10 +173,10 @@ while running:
     if setup.online:
         hit_enemy = player_gun.enemy_collide(collision_list, pygame.Rect((enemy_player.enemyposX - player.imagesx, enemy_player.enemyposY - player.imagesy), enemy_player.backup.get_size()))   
         if hit_enemy:
-            hit += 1
-            if hit >= setup.stk:
+            enemy_player.health -= 100 / setup.stk 
+            if enemy_player.health <= 0:
                 player.shotrise_list = player.shotrun_list = player.backup_shotrise = player.backup_shotrun = []
-                hit = 0
+                #hit = 0
                 kills += 1
                 if kills >= setup.max_kills:
                     try:
@@ -194,14 +195,14 @@ while running:
         for i in range(0, setup.enemies):
             hit_enemy[i] = player_gun.enemy_collide(collision_list, pygame.Rect((enemy_player[i].enemyposX - player.imagesx, enemy_player[i].enemyposY - player.imagesy), enemy_player[i].backup.get_size()))   
             if hit_enemy[i]:
-                hit[i] += 1
-                if hit[i] >= setup.stk:
+                enemy_player[i].health -= 100 / setup.stk
+                if enemy_player[i].health <= 0:
                     if setup.campaign:
                         enemy_player[i].enemyposX = 100000000
                     else:
                         enemy_gun[i] = Enemy_Gun()
                         enemy_player[i] = Enemy(maps.spawnX, maps.spawnY, loadout_number, enemy_gun[i])
-                    hit[i] = 0
+                    #hit[i] = 0
                     kills += 1
                     if kills >= setup.max_kills:
                         if setup.campaign:
@@ -217,14 +218,14 @@ while running:
     #enemy gun
     if setup.online:
         if enemy_gun.collide_you(collision_list):
-            enemy_hit += 1
-            if enemy_hit >= enemy_player.enemy_stk:
+            player.health -= 100 / enemy_player.enemy_stk
+            if player.health <= 0:
                 if not enemy_player.online_paused:
                     try:
                         Menu([]).killed(enemy_player.name, enemy_player.c, "client")
                     except:
                         Menu([]).killed(enemy_player.name, enemy_player.s, "server")
-                enemy_hit = 0
+                #enemy_hit = 0
                 if setup.custom:
                     player = Player(setup.map_choice)
                 else:
@@ -262,11 +263,12 @@ while running:
     else:
         for i in range(0, setup.enemies):
             if enemy_gun[i].collide_you(collision_list):
-                enemy_hit[i] += 1
-                for b in range(0, setup.enemies):
+                player.health -= 100 / enemy_player[i].enemy_stk
+                #enemy_hit[i] += 1
+                """for b in range(0, setup.enemies):
                     if enemy_player[b].enemy_stk > enemy_hit[b] + 1 and b != i:
-                        enemy_hit[b] += 1 #shot from anyone causes damage for everyone
-                if enemy_hit[i] >= enemy_player[i].enemy_stk:
+                        enemy_hit[b] += 1 #shot from anyone causes damage for everyone"""
+                if player.health <= 0:
                     if setup.campaign:
                         Menu([]).killed(campaign=True)
                         question = Menu([]).yes_no(" RESTART MISSION?", no="NO,EXIT")
@@ -347,7 +349,8 @@ while running:
         for i in range(0, setup.enemies):
             if setup.campaign:
                 try:
-                    enemy_player[i].AI(player.imagesx, player.imagesy, collision_list, loadout_number, internalclock, enemy_pos_backup[i], setup.map_choice)
+                    if (840 > enemy_pos_backup[i][0] - player.imagesx > -200 and 680 > enemy_pos_backup[i][1] - player.imagesy > -200):
+                        enemy_player[i].AI(player.imagesx, player.imagesy, collision_list, loadout_number, internalclock, enemy_pos_backup[i], setup.map_choice)
                 except:
                     pass
             else:
@@ -513,11 +516,7 @@ while running:
     else:              
         screen.blit(player.maincharacter, (player.mainx, player.mainy))
         setup.guns(loadout_number, player.angle) #blitting our gun  
-    if setup.online:
-        player.red_screen(setup.medic, enemy_player.enemy_stk, enemy_hit)
-    else:
-        if setup.map_choice != "MIDWAY":
-            player.red_screen(setup.medic, 5, enemy_hit[0])
+    player.red_screen()
     if setup.campaign:
         player.ui("campaign", deaths, setup.weapon, setup.mag, shot, reloading, setup.max_kills) 
     else:

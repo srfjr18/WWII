@@ -1,6 +1,10 @@
 import os, shutil
 from zipfile import *
-import urllib, time, pygame, sys, stat
+import time, pygame, sys, stat
+try:
+    import urllib.request as urllib #python 3
+except:
+    import urllib
 
 def rm_dir(path_to_file):
     if os.name == "nt":

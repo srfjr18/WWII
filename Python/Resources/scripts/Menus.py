@@ -681,7 +681,7 @@ class Setup(object):
         
         while True:
             #####################################################################
-            build = 'v1.05'
+            build = 'v1.07'
             #####################################################################
         
         
@@ -736,7 +736,7 @@ class Setup(object):
                         screen.blit(self.background, (0, 0))
                         text = self.font["medium"].render("GAME RESTART REQUIRED",1,(255,255,255))
                         screen.blit(text, (130, 150))
-                        os.chmod(os.path.realpath(__file__), 777)
+                         os.chmod(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'game.py'),stat.S_IWUSR)
                         for event in pygame.event.get():  
                             if event.type == pygame.QUIT: 
                                 sys.exit()
@@ -769,20 +769,28 @@ class Setup(object):
             elif choice == "CAMPAIGN":
                 self.campaign = True
                 while True:
-                    choice = Menu(words = ["MIDWAY", "BACK"]).GameSetup("campaign")
+                    choice = Menu(words = ["MIDWAY", "D-DAY", "BACK"]).GameSetup("campaign")
                     if choice == "BACK":
                         break
                     else:
                         self.map_choice = choice
-                        if self.map_choice == "MIDWAY":
-                            with open(path+"userdata", "rb") as file:
-                                data = pickle.load(file)
+                        
+                        
+                        
+                        with open(path+"userdata", "rb") as file:
+                            data = pickle.load(file)
                             
-                            new = data["LOADOUT 6"]
+                        new = data["LOADOUT 6"]
+                        
+                        if self.map_choice == "MIDWAY":
                             new[0] = "PLANE"
-                            data["LOADOUT 6"] = new
-                            with open(path+"userdata", "wb+") as file:
-                                    pickle.dump(data, file, protocol=2)
+                        elif self.map_choice == "D-DAY":
+                            new[0] = "M1 GARAND"
+                            new[1] = "HOLLOW POINTS"
+                            new[2] = "QUICK HANDS"
+                        data["LOADOUT 6"] = new
+                        with open(path+"userdata", "wb+") as file:
+                            pickle.dump(data, file, protocol=2)
                         return
             elif choice == "EXIT":
                 sys.exit()
