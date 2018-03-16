@@ -123,7 +123,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (60, 23, 0), (70, 14, 8, 31)), (None, (11, 11, 0), (71, 2, 5, 14)), (None, (11, 11, 0), (71, 25, 6, 7))]
         self.shotgun = False
-        return 10, "semi-auto", 7, 8, 180, 6
+        return 10, "semi-auto", 7, 8, 100, 6
         # frames between shots (1 == 0), full/semi-auto, shots to kill, mag size, reload time, recoil
         # shots to kill is more like number of frames bullet collides with enemy
         
@@ -240,7 +240,7 @@ class Gun_Types(object):
     def svt_forty(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
-            pygame.draw.rect(bg, (0, 0, 0), (71, 0, 0, 24))
+            pygame.draw.rect(bg, (0, 0, 0), (67, 0, 7, 24))
             pygame.draw.rect(bg, (141, 68, 0), (62, 19, 19, 22))
             pygame.draw.rect(bg, (141, 68, 0), (65, 12, 12, 14))
             pygame.draw.rect(bg, (141, 68, 0), (67, 30, 7, 17))
@@ -248,9 +248,9 @@ class Gun_Types(object):
             backup_bg = bg
             bg = pygame.transform.rotate(bg, angle)
             screen.blit(bg, (mainx - 25, mainy - 25))
-            return [(None, (0, 0, 0), (71, 0, 0, 24)), (None, (141, 68, 0), (62, 19, 19, 22)), (None, (141, 68, 0), (65, 12, 12, 14)), (None, (141, 68, 0), (67, 30, 7, 17)), (None, (3, 3, 0), (67, 17, 9, 22))]
+            return [(None, (0, 0, 0), (67, 0, 7, 24)), (None, (141, 68, 0), (62, 19, 19, 22)), (None, (141, 68, 0), (65, 12, 12, 14)), (None, (141, 68, 0), (67, 30, 7, 17)), (None, (3, 3, 0), (67, 17, 9, 22))]
         self.shotgun = False
-        return 145, "semi-auto", 1, 10, 140, 0
+        return 20, "semi-auto", 7, 10, 110, 6
     def mosin_nagant(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)

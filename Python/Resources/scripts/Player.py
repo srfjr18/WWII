@@ -191,6 +191,10 @@ class Player(object):
             self.moveX *= 1.25
             self.moveY *= 1.25  
 
+        if map_choice == "MIDWAY":
+            self.moveX *= 1.3
+            self.moveY *= 1.3
+
         self.imagesy += self.moveY
         self.imagesx += self.moveX 
         

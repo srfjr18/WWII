@@ -502,10 +502,15 @@ while running:
     else:
         for i in range(0, setup.enemies):
             try:
-                if setup.map_choice == "MIDWAY":
-                    enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy, types="plane")
+                if setup.campaign:
+                    if (840 > enemy_pos_backup[i][0] - player.imagesx > -200 and 680 > enemy_pos_backup[i][1] - player.imagesy > -200):
+                        if setup.map_choice == "MIDWAY":
+                            enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy, types="plane")
+                        else:
+                            enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy) 
+                        
                 else:
-                    enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy)         
+                    enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy)             
             except:
                 pass
                 

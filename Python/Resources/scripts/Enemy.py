@@ -152,12 +152,25 @@ class Enemy(Setup, Gun_Types):
         if not self.alreadycollided and not self.alpha and pos == None:      
             self.enemyposY += (self.mainy + imagesy - self.enemyposY) / 100
             self.enemyposX += (self.mainx + imagesx - self.enemyposX)/ 100
+           
+            
+            
             #self.enemy = pygame.transform.rotate(self.backup, math.degrees(math.atan((self.enemyposY) / (self.enemyposX)) + 0))
         
         #if alpha is on, move slower
         if not self.alreadycollided and self.alpha and pos == None: 
             self.enemyposY += (self.mainy + imagesy - self.enemyposY) / 150
             self.enemyposX += (self.mainx + imagesx - self.enemyposX)/ 150
+            
+            
+            
+            
+            
+            if self.midway or map_choice == "MIDWAY":
+                self.enemyposY += (self.mainy + imagesy - self.enemyposY) / 100
+                self.enemyposX += (self.mainx + imagesx - self.enemyposX)/ 100
+            
+            
             if self.enemyposX == 0:
                 self.enemyposX = 1
             self.enemy = pygame.transform.rotate(self.backup, math.degrees(math.atan((self.enemyposY) / (self.enemyposX)) + 0))

@@ -681,7 +681,7 @@ class Setup(object):
         
         while True:
             #####################################################################
-            build = 'v1.07'
+            build = 'v1.08'
             #####################################################################
         
         
@@ -985,13 +985,13 @@ class Setup(object):
                             while True:
                                 weapon_type = Menu(["RIFLES", "SMGs", "LMGs", "SNIPERS", "SHOTGUNS", "SPECIAL", "CUSTOM", "BACK"]).GameSetup("rank",[0,0,0,0,0,0,25])                    
                                 if weapon_type == "RIFLES":                    
-                                    weapon = Menu(["M1 GARAND", "GEWEHR 43", "M1A1", "FG42", "STG44", "BACK"]).GameSetup("rank", [1, 5, 10, 16, 18], "SEMI-AUTO, HIGHEST DAMAGE ASSAULT RIFLE", "SEMI-AUTO, MODERATE POWER", "SEMI-AUTO, SHORT DELAY BETWEEN SHOTS", "FULL-AUTO, HIGH FIRERATE", "FULL-AUTO, HIGH POWER")
+                                    weapon = Menu(["M1 GARAND", "GEWEHR 43", "M1A1", "FG42", "STG44", "SVT40", "BACK"]).GameSetup("rank", [1, 5, 10, 16, 18, 20], "SEMI-AUTO, HIGHEST DAMAGE ASSAULT RIFLE", "SEMI-AUTO, MODERATE POWER", "SEMI-AUTO, SHORT DELAY BETWEEN SHOTS", "FULL-AUTO, HIGH FIRERATE", "FULL-AUTO, HIGH POWER", "SEMI-AUTO, HIGH POWER")
                                 elif weapon_type == "SMGs":
                                     weapon = Menu(["THOMPSON", "MP40", "M3", "OWEN GUN", "PPSH41", "BACK"]).GameSetup("rank", [1, 5, 11, 15, 20], "FULL-AUTO, VERY HIGH FIRERATE", "FULL-AUTO, BALANCE BETWEEN POWER AND FIRERATE", "FULL-AUTO, HIGH POWER", "FULL-AUTO, MODERATE FIRERATE", "FULL-AUTO, FASTEST FIRING WEAPON IN WAR")
                                 elif weapon_type == "LMGs":
                                     weapon = Menu(["M1919", "BAR", "TYPE 99", "BACK"]).GameSetup("rank", [1, 5, 13], "FULL-AUTO, 250 ROUND MAG", "FULL-AUTO, MODERATE FIRERATE", "FULL-AUTO, BALANCE BETWEEN POWER AND FIRERATE")
                                 elif weapon_type == "SNIPERS":
-                                    weapon = Menu(["SVT40", "MOSIN NAGANT", "ARIASKA", "SPRINGFIELD", "BACK"]).GameSetup("rank", [1, 6, 7, 12], "BOLT ACTION", "BOLT ACTION", "BOLT ACTION", "BOLT ACTION")
+                                    weapon = Menu(["MOSIN NAGANT", "ARIASKA", "SPRINGFIELD", "BACK"]).GameSetup("rank", [1, 9, 12], "BOLT ACTION", "BOLT ACTION", "BOLT ACTION")
                                 elif weapon_type == "SHOTGUNS":
                                     weapon = Menu(["DB SHOTGUN", "M1987", "BACK"]).GameSetup("rank", [5, 10], "SINGLE SHOT, MODERATE POWER", "PUMP ACTION, HIGH POWER")
                                 elif weapon_type == "SPECIAL":
