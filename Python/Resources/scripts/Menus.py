@@ -1087,7 +1087,7 @@ class Setup(object):
         except:
             return False
                 
-    def guns(self, loadout_number, angle=None):  
+    def guns(self, loadout_number, angle=None, mainx=295, mainy=215):  
         """self.weapon = open(path+loadout_number, 'r').readlines()[0].rstrip()
         #open(path+loadout_number, 'r').close()"""
         with open(path+"userdata", "rb") as file:
@@ -1101,137 +1101,137 @@ class Setup(object):
             self.weapon = loadout_number
         if self.weapon == "M1 GARAND":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_one_garand(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_one_garand(angle, mainx, mainy)
             except (TypeError, ValueError):
-                self.gun = Gun_Types().m_one_garand(angle)
+                self.gun = Gun_Types().m_one_garand(angle, mainx, mainy)
                 return
         elif self.weapon == "MP40":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().mp40(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().mp40(angle, mainx, mainy)
             except (TypeError, ValueError):
-                self.gun = Gun_Types().mp40(angle)
+                self.gun = Gun_Types().mp40(angle, mainx, mainy)
                 return
         elif self.weapon == "THOMPSON":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().thompson(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().thompson(angle, mainx, mainy)
             except (TypeError, ValueError):
-                self.gun = Gun_Types().thompson(angle)
+                self.gun = Gun_Types().thompson(angle, mainx, mainy)
                 return
         elif self.weapon == "STG44":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().stg(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().stg(angle, mainx, mainy)
             except (TypeError, ValueError):
-                self.gun = Gun_Types().stg(angle)
+                self.gun = Gun_Types().stg(angle, mainx, mainy)
                 return
         elif self.weapon == "M1A1":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_one_a_one(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_one_a_one(angle, mainx, mainy)
             except (TypeError, ValueError):
-                self.gun = Gun_Types().m_one_a_one(angle)
+                self.gun = Gun_Types().m_one_a_one(angle, mainx, mainy)
                 return
         elif self.weapon == "FG42":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().fg_forty_two(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().fg_forty_two(angle, mainx, mainy)
             except (TypeError, ValueError):
-                self.gun = Gun_Types().fg_forty_two(angle)
+                self.gun = Gun_Types().fg_forty_two(angle, mainx, mainy)
                 return
         elif self.weapon == "PPSH41":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().ppsh(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().ppsh(angle, mainx, mainy)
             except (TypeError, ValueError):
-                self.gun = Gun_Types().ppsh(angle)
+                self.gun = Gun_Types().ppsh(angle, mainx, mainy)
                 return
         elif self.weapon == "GEWEHR 43":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().gewehr_forty_three(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().gewehr_forty_three(angle, mainx, mainy)
             except (TypeError, ValueError):
-                self.gun = Gun_Types().gewehr_forty_three(angle)
+                self.gun = Gun_Types().gewehr_forty_three(angle, mainx, mainy)
                 return  
         elif self.weapon == "M3":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_three(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_three(angle, mainx, mainy)
             except (TypeError, ValueError):
-                self.gun = Gun_Types().m_three(angle)
+                self.gun = Gun_Types().m_three(angle, mainx, mainy)
                 return
         elif self.weapon == "OWEN GUN":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().owen(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().owen(angle, mainx, mainy)
             except (TypeError, ValueError):
-                self.gun = Gun_Types().owen(angle)
+                self.gun = Gun_Types().owen(angle, mainx, mainy)
                 return
         elif self.weapon == "M1919":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_nineteen_nineteen(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m_nineteen_nineteen(angle, mainx, mainy)
             except (TypeError, ValueError):
-                self.gun = Gun_Types().m_nineteen_nineteen(angle)
+                self.gun = Gun_Types().m_nineteen_nineteen(angle, mainx, mainy)
                 return
         elif self.weapon == "BAR":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().bar(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().bar(angle, mainx, mainy)
             except (TypeError, ValueError):
-                self.gun = Gun_Types().bar(angle)
+                self.gun = Gun_Types().bar(angle, mainx, mainy)
                 return
         elif self.weapon == "TYPE 99":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().type_ninety_nine(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().type_ninety_nine(angle, mainx, mainy)
             except (TypeError, ValueError):
-                self.gun = Gun_Types().type_ninety_nine(angle)
+                self.gun = Gun_Types().type_ninety_nine(angle, mainx, mainy)
                 return
         elif self.weapon == "SVT40":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().svt_forty(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().svt_forty(angle, mainx, mainy)
             except (TypeError, ValueError):
-                self.gun = Gun_Types().svt_forty(angle)
+                self.gun = Gun_Types().svt_forty(angle, mainx, mainy)
                 return
         elif self.weapon == "MOSIN NAGANT":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().mosin_nagant(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().mosin_nagant(angle, mainx, mainy)
             except (TypeError, ValueError):
-                self.gun = Gun_Types().mosin_nagant(angle)
+                self.gun = Gun_Types().mosin_nagant(angle, mainx, mainy)
                 return
         elif self.weapon == "ARIASKA":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().ariaska(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().ariaska(angle, mainx, mainy)
             except (TypeError, ValueError):
-                self.gun = Gun_Types().ariaska(angle)
+                self.gun = Gun_Types().ariaska(angle, mainx, mainy)
                 return
         elif self.weapon == "SPRINGFIELD":
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().springfield(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().springfield(angle, mainx, mainy)
             except ((TypeError, ValueError), ValueError):
-                self.gun = Gun_Types().springfield(angle)
+                self.gun = Gun_Types().springfield(angle, mainx, mainy)
                 return
         elif self.weapon == "DB SHOTGUN":
             self.shotgun = True
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().double_barrel(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().double_barrel(angle, mainx, mainy)
             except ((TypeError, ValueError), ValueError):
-                self.gun = Gun_Types().double_barrel(angle)
+                self.gun = Gun_Types().double_barrel(angle, mainx, mainy)
                 return
         elif self.weapon == "M1987":
             self.shotgun = True
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m1987(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().m1987(angle, mainx, mainy)
             except:
-                self.gun = Gun_Types().m1987(angle)
+                self.gun = Gun_Types().m1987(angle, mainx, mainy)
                 return
         elif self.weapon == "THROWER":
             self.shotgun = True
             self.flame = True
             try:
-                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().thrower(angle)
+                self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().thrower(angle, mainx, mainy)
             except:
-                self.gun = Gun_Types().thrower(angle)
+                self.gun = Gun_Types().thrower(angle, mainx, mainy)
                 return
         elif self.weapon == "PLANE": #just for midway
-            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().plane(angle)
+            self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Gun_Types().plane(angle, mainx, mainy)
         else: #custom gun
             if angle == None:
                 self.firerate, self.action, self.stk, self.mag, self.reloadtime, self.recoil = Custom_Gun(self.weapon).return_gun()
                 self.shotgun = Custom_Gun(self.weapon).shotgun
             else:
                 self.shotgun = Custom_Gun(self.weapon).shotgun
-                self.gun = Custom_Gun(self.weapon).blit_gun(angle)
+                self.gun = Custom_Gun(self.weapon).blit_gun(angle, mainx, mainy)
                 return
                 
         """perk1 = open(path+loadout_number, 'r').readlines()[1].rstrip() """

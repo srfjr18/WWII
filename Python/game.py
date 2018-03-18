@@ -34,11 +34,13 @@ FPS = 60
 def titlescreen_menu(start_at=None):
     global reloading, semiauto
     global enemy_hit, kills, deaths, hit, shot, internalclock, iclockregen
-    global setup, maps, loadouts, player, player_gun
+    global setup, maps, loadouts, player, player_gun, sniper_zoom, pressed
     global enemy_gun, enemy_player, loadout_number, campaign_text_check
     global background, in_between_shots, first_run, enemy_gun_online, enemy_pos_backup
     enemy_pos = None
     first_run = True
+    sniper_zoom = False
+    pressed = False
     reloading = semiauto = False
     campaign_text_check = []
     kills = deaths = shot = internalclock = 0 
@@ -124,7 +126,7 @@ def titlescreen_menu(start_at=None):
 
     player.spawn(maps.spawnX, maps.spawnY, setup.map_choice)
     
-    in_between_shots = False
+    in_between_shots = True
     
     pygame.mixer.music.stop()
     pygame.mixer.music.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Resources', 'sounds', '')+'gamemusic.wav')
@@ -231,8 +233,10 @@ while running:
     player_gun.wall_collide(collision_list)
   
     #enemy gun
+    if sniper_zoom:
+        player.sniper_zoom_initial(player.angle)
     if setup.online:
-        if enemy_gun.collide_you(collision_list):
+        if enemy_gun.collide_you(player.mainx, player.mainy, collision_list):
             player.health -= 100 / enemy_player.enemy_stk
             if player.health <= 0:
                 if not enemy_player.online_paused:
@@ -247,6 +251,7 @@ while running:
                     player = Player()
                 player.spawn(maps.spawnX, maps.spawnY, setup.map_choice)
                 deaths += 1
+                in_between_shots = True
                 if deaths >= setup.max_kills:
                     try:
                         enemy_player.c.close()
@@ -277,7 +282,7 @@ while running:
                 shot = 0
     else:
         for i in range(0, setup.enemies):
-            if enemy_gun[i].collide_you(collision_list):
+            if enemy_gun[i].collide_you(player.mainx, player.mainy, collision_list):
                 player.health -= 100 / enemy_player[i].enemy_stk
                 iclockregen = 1
                 #enemy_hit[i] += 1
@@ -332,6 +337,9 @@ while running:
                         gun = setup.gun
                     except:
                         pass
+                        
+    if sniper_zoom:
+        player.sniper_zoom_initial("revert")
 
     if setup.online:
         #sending gun model to other player if online and on first run
@@ -362,35 +370,43 @@ while running:
             player.update_rank(kills)
             titlescreen_menu("multiplayer")
     else:
+        if sniper_zoom:
+            player.sniper_zoom_initial(player.angle)
         for i in range(0, setup.enemies):
             if setup.campaign:
                 try:
                     if (840 > enemy_pos_backup[i][0] - player.imagesx > -200 and 680 > enemy_pos_backup[i][1] - player.imagesy > -200):
-                        enemy_player[i].AI(player.imagesx, player.imagesy, collision_list, loadout_number, internalclock, enemy_pos_backup[i], setup.map_choice)
+                        enemy_player[i].AI(player.mainx, player.mainy, player.imagesx, player.imagesy, collision_list, loadout_number, internalclock, enemy_pos_backup[i], setup.map_choice)
                 except:
                     pass
             else:
-                enemy_player[i].AI(player.imagesx, player.imagesy, collision_list, loadout_number, internalclock)         
+                enemy_player[i].AI(player.mainx, player.mainy, player.imagesx, player.imagesy, collision_list, loadout_number, internalclock)         
             enemy_gun[i].wall_collide(collision_list)
+        if sniper_zoom:
+            player.sniper_zoom_initial("revert")
 
     #key input
 
     if internalclock % setup.firerate == 0: #this sets up a proper delay between shots
         in_between_shots = True
 
+
     if pygame.mouse.get_pressed()[2] and not semiauto and not reloading and in_between_shots:
         recoil = randint(-1 * setup.recoil, setup.recoil)
-        
-        
+
         if setup.shotgun:
             player_gun.shotgun_create_shot(recoil, player.angle)
         else:
             player_gun.create_shot(recoil, player.angle)
-        
+    
         in_between_shots = False
         if setup.action == "semi-auto":
             semiauto = True
+                
         
+        sniper_zoom = False
+        pressed = False
+                
         #keep track of shots taken in current mag
         #if we've taken enough shots, then reload    
         shot += 1
@@ -399,21 +415,43 @@ while running:
             internalclock = 0
             shot = 0
             
+            
+            
     #if we've waited long enough, stop reloading
     if reloading and internalclock >= setup.reloadtime:
         reloading = False
     if setup.online:
         if enemy_player.online_paused:
             continue
+            
+            
+    if sniper_zoom:
+        player.sniper_zoom_initial(player.angle)
     if setup.map_choice == "MIDWAY":
         player.set_angle(mousepos, "plane")
     else:
         player.set_angle(mousepos)
+        
+    if sniper_zoom:
+        player.sniper_zoom_initial("revert")
                              
-    if pygame.mouse.get_pressed()[1] and shot != 0:
+    if pygame.mouse.get_pressed()[1] and shot != 0 and not (setup.stk == 1 and not setup.shotgun):
         reloading = True
         internalclock = 0
         shot = 0
+        
+    if pygame.mouse.get_pressed()[1] and not pressed:   
+        if setup.stk == 1 and not setup.shotgun:
+            if sniper_zoom:
+                sniper_zoom = False
+            else:
+                sniper_zoom = True
+        pressed = True        
+    elif not pygame.mouse.get_pressed()[1]:
+        pressed = False
+            
+        
+
         
     if not pygame.mouse.get_pressed()[2] and setup.action == "semi-auto":
         semiauto = False 
@@ -470,9 +508,16 @@ while running:
                             Menu([]).end_screen(kills, deaths)
                             player.update_rank(kills)
                             titlescreen_menu("multiplayer")
+    
+    
+    
+    
+    
+    if sniper_zoom:
+        player.sniper_zoom_initial(player.angle)
                        
     #images/rendering
-    pygame.display.set_caption("WWII  FPS: " + str(int(clock.get_fps()))) #+ " " + str((player.imagesx + player.mainx, player.imagesy + player.mainy)))
+    pygame.display.set_caption("WWII  FPS: " + str(int(clock.get_fps())) + " " + str(player.angle))
     screen.blit(background, (0, 0))
     if setup.custom:
         Play_Maps(setup.map_choice).blit_map(player.imagesx, player.imagesy)
@@ -496,7 +541,8 @@ while running:
             campaign_text_check.append(add)
             
             
-            
+    if sniper_zoom:
+        player.sniper_zoom_initial("revert")        
             
     if setup.shotgun and setup.flame:
         player_gun.blit_shot(True)
@@ -513,6 +559,14 @@ while running:
                 enemy_gun[i].blit_shot(True)
             else:
                 enemy_gun[i].blit_shot()
+                
+                
+                
+    if sniper_zoom:
+        player.sniper_zoom_initial(player.angle)
+                
+                
+                
     if setup.online:
         enemy_player.blit_enemy(hit_enemy, player.imagesx, player.imagesy, enemy_player.angle, enemy_player.enemy_gun) 
     else:
@@ -530,19 +584,33 @@ while running:
             except:
                 pass
                 
-                
+                 
+    
                 
     if setup.map_choice == "MIDWAY":
         screen.blit(player.maincharacter, (player.mainx, player.mainy))
     else:              
         screen.blit(player.maincharacter, (player.mainx, player.mainy))
-        setup.guns(loadout_number, player.angle) #blitting our gun  
+        setup.guns(loadout_number, player.angle, player.mainx, player.mainy) #blitting our gun  
     #player.red_screen()
+    
+    
+    if sniper_zoom:
+        player.sniper_zoom_blit(player.angle, mousepos)
+    
+    
     if setup.campaign:
         player.ui("campaign", deaths, setup.weapon, setup.mag, shot, reloading, setup.max_kills) 
     else:
         player.ui(kills, deaths, setup.weapon, setup.mag, shot, reloading, setup.max_kills) 
-    #pygame.draw.circle(screen, (0, 0, 0), (screen.get_size()[0] / 2, screen.get_size()[1] / 2), screen.get_size()[1] / 2, 20)   
+    #pygame.draw.circle(screen, (0, 0, 0), (screen.get_size()[0] / 2, screen.get_size()[1] / 2), screen.get_size()[1] / 2, 20)  
+    
+    
+    if sniper_zoom:
+        player.sniper_zoom_initial("revert")
+    
+    
+     
     pygame.display.flip()
 
 pygame.quit()

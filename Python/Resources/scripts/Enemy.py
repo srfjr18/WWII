@@ -1,4 +1,5 @@
-from Resources.scripts.Menus import *   
+from Resources.scripts.Menus import * 
+from Resources.scripts.Player import *   
 from random import randint
 import math, pygame, sys
 
@@ -90,8 +91,16 @@ class Enemy(Setup, Gun_Types):
 
         
         
-    def AI(self, imagesx, imagesy, collision_list, loadout_number, internalclock, pos=None, map_choice=None): #pos will put an enemy at a specific position and make them unable to move
-    
+    def AI(self, mainx, mainy, imagesx, imagesy, collision_list, loadout_number, internalclock, pos=None, map_choice=None): #pos will put an enemy at a specific position and make them unable to move
+        
+        
+        self.mainx, self.mainy = mainx, mainy
+        
+        if self.mainx != 295:
+            stop = True
+        else:
+            stop = False
+        
         if self.midway or map_choice == "MIDWAY":
             self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime = 8, "full-auto", 70, 1000000, 0 
             self.shotgun = False
@@ -120,8 +129,8 @@ class Enemy(Setup, Gun_Types):
             """if randint(1, 500) != 1:
                  return"""
             
-            
-           
+            if stop:
+                pos = "he"
             
             #choose random gun for enemy
             if not self.midway and map_choice != "MIDWAY":
@@ -179,7 +188,7 @@ class Enemy(Setup, Gun_Types):
                 self.alreadycollided = False
             
         #if enemy hasn't collided with an object and alpha perk is off, then move towards you            
-        if not self.alreadycollided and not self.alpha and pos == None:      
+        if not self.alreadycollided and not self.alpha and pos == None and not stop:      
             self.enemyposY += (self.mainy + imagesy - self.enemyposY) / 100
             self.enemyposX += (self.mainx + imagesx - self.enemyposX)/ 100
            
@@ -188,7 +197,7 @@ class Enemy(Setup, Gun_Types):
             #self.enemy = pygame.transform.rotate(self.backup, math.degrees(math.atan((self.enemyposY) / (self.enemyposX)) + 0))
         
         #if alpha is on, move slower
-        if not self.alreadycollided and self.alpha and pos == None: 
+        if not self.alreadycollided and self.alpha and pos == None and not stop: 
             self.enemyposY += (self.mainy + imagesy - self.enemyposY) / 150
             self.enemyposX += (self.mainx + imagesx - self.enemyposX)/ 150
             
@@ -330,7 +339,8 @@ class Enemy_Gun(object):
                         pass
                         """AGAIN I HAVE NO CLUE WHY THE FUCK THIS HAPPENS"""    
                     
-    def collide_you(self, collision_list):
+    def collide_you(self, mainx, mainy, collision_list):
+        self.mainx, self.mainy = mainx, mainy
         main_collision = pygame.Rect((self.mainx, self.mainy), self.backup.get_size())
         for rise, run, brise, brun in zip(self.enemy_shotrise_list, self.enemy_shotrun_list, self.enemy_backup_shotrise, self.enemy_backup_shotrun):
             for collisions in collision_list[:]:
