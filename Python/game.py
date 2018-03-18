@@ -33,7 +33,7 @@ FPS = 60
 """sorry for using global variables, just call this so much that it makes it easier"""
 def titlescreen_menu(start_at=None):
     global reloading, semiauto
-    global enemy_hit, kills, deaths, hit, shot, internalclock
+    global enemy_hit, kills, deaths, hit, shot, internalclock, iclockregen
     global setup, maps, loadouts, player, player_gun
     global enemy_gun, enemy_player, loadout_number, campaign_text_check
     global background, in_between_shots, first_run, enemy_gun_online, enemy_pos_backup
@@ -42,6 +42,7 @@ def titlescreen_menu(start_at=None):
     reloading = semiauto = False
     campaign_text_check = []
     kills = deaths = shot = internalclock = 0 
+    iclockregen = 0
     try:
         setup = Setup(setup.map_choice, setup.custom)
     except:
@@ -84,7 +85,7 @@ def titlescreen_menu(start_at=None):
             setup.custom = True
         
         if enemy_player.back:
-            titlescreen_menu()
+            titlescreen_menu("multiplayer")
     else:
         hit = []
         enemy_hit = []
@@ -159,6 +160,19 @@ while running:
     clock.tick(FPS)
     internalclock += 1
     
+    if iclockregen > 0 and setup.campaign:
+        iclockregen += 1
+        if iclockregen > 175:
+            if player.health < 100:
+                player.health += 0.2
+                if 81 > player.health > 79:
+                    iclockregen = 0
+                if 56 > player.health > 54:
+                    iclockregen = 0
+
+            else:
+                iclockregen = 0
+    
     
     #player.test(mousepos)
     
@@ -177,6 +191,7 @@ while running:
             if enemy_player.health <= 0:
                 player.shotrise_list = player.shotrun_list = player.backup_shotrise = player.backup_shotrun = []
                 #hit = 0
+                enemy_player.health = 100
                 kills += 1
                 if kills >= setup.max_kills:
                     try:
@@ -264,6 +279,7 @@ while running:
         for i in range(0, setup.enemies):
             if enemy_gun[i].collide_you(collision_list):
                 player.health -= 100 / enemy_player[i].enemy_stk
+                iclockregen = 1
                 #enemy_hit[i] += 1
                 """for b in range(0, setup.enemies):
                     if enemy_player[b].enemy_stk > enemy_hit[b] + 1 and b != i:
@@ -521,7 +537,7 @@ while running:
     else:              
         screen.blit(player.maincharacter, (player.mainx, player.mainy))
         setup.guns(loadout_number, player.angle) #blitting our gun  
-    player.red_screen()
+    #player.red_screen()
     if setup.campaign:
         player.ui("campaign", deaths, setup.weapon, setup.mag, shot, reloading, setup.max_kills) 
     else:

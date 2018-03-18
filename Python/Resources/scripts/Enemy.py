@@ -40,6 +40,8 @@ class Enemy(Setup, Gun_Types):
             self.enemy_firerate = 30
     
     def blit_enemy(self, collision, imagesx, imagesy, angle=None, gun=None, types=None):
+     
+    
         if angle != None and gun != None:
             self.enemy = pygame.transform.rotate(self.backup, angle)
             gun = pygame.transform.rotate(gun, angle)
@@ -57,9 +59,37 @@ class Enemy(Setup, Gun_Types):
             else:
                 screen.blit(self.enemy, (self.enemyposX - imagesx, self.enemyposY - imagesy))
                 self.getrand_gun_or_blit(self.rand_num, self.enemy_angle, self.enemyposX - imagesx, self.enemyposY - imagesy)
+                       
+                
+        
+        
         if collision:
-            screen.blit(self.hitmarker, (self.enemyposX - imagesx + (self.backup.get_size()[0] / 2.5), self.enemyposY - imagesy + (self.backup.get_size()[1] / 2.5)))
-    
+            screen.blit(self.hitmarker, (self.enemyposX - imagesx + (self.backup.get_size()[0] / 2.5), self.enemyposY - imagesy + (self.backup.get_size()[1] / 2.5))) 
+
+        
+        
+        
+        if angle != None:
+            self.enemy_angle = angle
+        
+        bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
+        
+        
+        green = int(self.health * 2.55)
+        red = 255 - green
+        
+        pygame.draw.rect(bg, (0, 0, 0), (0, 20, 8, 25)) 
+        pygame.draw.rect(bg, (red, green, 0), (0, 20, 8, self.health / 4)) 
+        pygame.draw.rect(bg, (0, 0, 0), (0, 20, 8, self.health / 4), 3) 
+        
+        
+        bg = pygame.transform.rotate(bg, self.enemy_angle)
+        screen.blit(bg, (self.enemyposX - imagesx - 25, self.enemyposY - imagesy - 25))
+        
+        
+
+        
+        
     def AI(self, imagesx, imagesy, collision_list, loadout_number, internalclock, pos=None, map_choice=None): #pos will put an enemy at a specific position and make them unable to move
     
         if self.midway or map_choice == "MIDWAY":

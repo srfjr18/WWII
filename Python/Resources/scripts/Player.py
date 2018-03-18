@@ -121,8 +121,33 @@ class Player(object):
             pygame.draw.rect(screen, (0, 0, 0), (540, 0, 100, 30), 3)    
             text = self.font.render("K: " + str(kills) + " D: " + str(deaths),1,(0,0,0))
             screen.blit(text, (550, 5))
+            
+            
+            
+            
+            
         except:
             pass
+        
+        
+        
+        
+        kd_bg = pygame.Surface((190,30), pygame.SRCALPHA)
+        kd_bg.fill((211,211,211,180))
+        screen.blit(kd_bg, (0,0))
+        pygame.draw.rect(screen, (0, 0, 0), (0, 0, 190, 30), 3)  
+        green = int(self.health * 2.55)
+        red = 255 - green
+        
+        pygame.draw.rect(screen, (red, green, 0), (83, 5, self.health, 20)) 
+        pygame.draw.rect(screen, (0, 0, 0), (83, 5, self.health, 20), 3) 
+        text = self.font.render("HEALTH:",1,(0,0,0))
+        screen.blit(text, (5, 7))
+        
+        
+        
+        
+        
             
         gun_bg = pygame.Surface((205,50), pygame.SRCALPHA)
         gun_bg.fill((211,211,211,180))
@@ -145,6 +170,11 @@ class Player(object):
             pygame.draw.rect(screen, (0, 0, 0), (0, 450, 200, 30), 3)    
             text = self.font.render("PLAYING TO "+str(max_kills)+" K/Ds",1,(0,0,0))
             screen.blit(text, (5, 455))
+            
+            
+            
+            
+            
         
     def red_screen(self):
         overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
