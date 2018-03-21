@@ -18,6 +18,7 @@ class Enemy(Setup, Gun_Types):
         self.enemyposY = 10000000
         self.enemy_shot = 0
         
+        self.enemy_angle = 0
         self.midway = False
         self.health = 100
         
@@ -94,12 +95,13 @@ class Enemy(Setup, Gun_Types):
     def AI(self, mainx, mainy, imagesx, imagesy, collision_list, loadout_number, internalclock, pos=None, map_choice=None): #pos will put an enemy at a specific position and make them unable to move
         
         
-        self.mainx, self.mainy = mainx, mainy
+        #self.mainx, self.mainy = mainx, mainy
         
-        if self.mainx != 295:
+        """if self.mainx != 295:
             stop = True
         else:
-            stop = False
+            stop = False"""
+        stop = False
         
         if self.midway or map_choice == "MIDWAY":
             self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime = 8, "full-auto", 70, 1000000, 0 
@@ -237,10 +239,15 @@ class Enemy(Setup, Gun_Types):
             if self.counter > self.before_sees_you and self.counter < self.before_accurate and internalclock % self.enemy_firerate == 0 and self.enemy_shot <= self.enemy_mag:
                 self.enemy_shot += 1
                 
+                
+                
+                
+                
+                self.mainx, self.mainy = mainx, mainy
                 if self.shotgun:
-                    self.gun.shotgun_create_shot(self.enemyposX, self.enemyposY, imagesx, imagesy, self.badaim, self.enemy_angle)
+                    self.gun.shotgun_create_shot(self.mainx, self.mainy, self.enemyposX, self.enemyposY, imagesx, imagesy, self.badaim, self.enemy_angle)
                 else:
-                    self.gun.shoot_you(self.enemyposX, self.enemyposY, imagesx, imagesy, self.badaim, self.enemy_angle)
+                    self.gun.shoot_you(self.mainx, self.mainy, self.enemyposX, self.enemyposY, imagesx, imagesy, self.badaim, self.enemy_angle)
             if self.counter > self.before_accurate and internalclock % self.enemy_firerate == 0:
                 #makes enemy firerate more accurate if the gun is semi-auto
                 if self.enemy_firerate >= 30  and self.enemy_shot <= self.enemy_mag - 1:
@@ -248,30 +255,34 @@ class Enemy(Setup, Gun_Types):
                 
                     # distraction perk making shots slightly less accurate
                     if self.distraction:
+                        self.mainx, self.mainy = mainx, mainy
                         if self.shotgun:
-                            self.gun.shotgun_create_shot(self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-2,2), self.enemy_angle)
+                            self.gun.shotgun_create_shot(self.mainx, self.mainy, self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-2,2), self.enemy_angle)
                         else:
-                            self.gun.shoot_you(self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-2,2), self.enemy_angle)
+                            self.gun.shoot_you(self.mainx, self.mainy, self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-2,2), self.enemy_angle)
                     else:
+                        self.mainx, self.mainy = mainx, mainy
                         if self.shotgun:
-                            self.gun.shotgun_create_shot(self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-1,1), self.enemy_angle)
+                            self.gun.shotgun_create_shot(self.mainx, self.mainy, self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-1,1), self.enemy_angle)
                         else:
-                            self.gun.shoot_you(self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-1,1), self.enemy_angle)
+                            self.gun.shoot_you(self.mainx, self.mainy, self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-1,1), self.enemy_angle)
                     
                 elif not self.enemy_firerate >= 30 and self.enemy_shot <= self.enemy_mag - 1:
                     self.enemy_shot += 1
                 
                     #same for full auto with the distraction perk
                     if self.distraction:
+                        self.mainx, self.mainy = mainx, mainy
                         if self.shotgun:
-                            self.gun.shotgun_create_shot(self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-4,4), self.enemy_angle)
+                            self.gun.shotgun_create_shot(self.mainx, self.mainy, self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-4,4), self.enemy_angle)
                         else:
-                            self.gun.shoot_you(self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-4,4), self.enemy_angle)
+                            self.gun.shoot_you(self.mainx, self.mainy, self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-4,4), self.enemy_angle)
                     else:
+                        self.mainx, self.mainy = mainx, mainy
                         if self.shotgun:
-                            self.gun.shotgun_create_shot(self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-3,3), self.enemy_angle)
+                            self.gun.shotgun_create_shot(self.mainx, self.mainy, self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-3,3), self.enemy_angle)
                         else:
-                            self.gun.shoot_you(self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-3,3), self.enemy_angle)
+                            self.gun.shoot_you(self.mainx, self.mainy, self.enemyposX, self.enemyposY, imagesx, imagesy, randint(-3,3), self.enemy_angle)
                     
                     
         # enemy reloads        
@@ -361,7 +372,7 @@ class Enemy_Gun(object):
     
     
     
-    def shotgun_create_shot(self, enemy_posX, enemy_posY, imagesx, imagesy, badaim, angle):
+    def shotgun_create_shot(self, mainx, mainy, enemy_posX, enemy_posY, imagesx, imagesy, badaim, angle):
         ang = -37
         for i in range(8):
             ang += 7
@@ -374,10 +385,15 @@ class Enemy_Gun(object):
             
             if pos > 360 or pos < 0:
                 continue    
-            self.shoot_you(enemy_posX, enemy_posY, imagesx, imagesy, badaim, pos)
+            self.shoot_you(mainx, mainy, enemy_posX, enemy_posY, imagesx, imagesy, badaim, pos)
     
             
-    def shoot_you(self, enemy_posX, enemy_posY, imagesx, imagesy, badaim, angle):        
+    def shoot_you(self, mainx_new, mainy_new, enemy_posX, enemy_posY, imagesx, imagesy, badaim, angle):       
+        
+        #self.mainx, self.mainy = mainx_new, mainy_new
+        
+        #print(self.mainx, self.mainy)
+        
         sizeX, sizeY = self.backup.get_size()
         gun_pos = 4 - (angle / 90)
         
@@ -1120,16 +1136,26 @@ class Enemy_Gun(object):
         if int(angle) == 319:
             mousepos = (enemy_posX - imagesx - self.mainx + 444, enemy_posY - imagesy - self.mainy +  45)
         
-            
-        mainy = mousepos[1] - blitY
-        mainx = mousepos[0] - blitX
+        
+        if mainx_new != 295:
+            mainx = mainx_new - blitX
+            mainy = mainy_new - blitY
+        else:    
+            mainy = mousepos[1] - blitY
+            mainx = mousepos[0] - blitX
         
         
         enemy_shot_angley = -1 * ((enemy_posY - imagesy - mainy) / 10 + badaim)
         enemy_shot_anglex = -1 * ((enemy_posX - imagesx - mainx) / 10 + badaim)
+        
+        
     
         self.enemy_shotrun_list.append(enemy_shot_anglex + (enemy_posX - imagesx) + blitX)
         self.enemy_shotrise_list.append(enemy_shot_angley + (enemy_posY - imagesy) + blitY)
+        
+            
+        
+        
         self.enemy_backup_shotrun.append(enemy_shot_anglex)
         self.enemy_backup_shotrise.append(enemy_shot_angley) 
         

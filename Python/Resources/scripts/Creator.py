@@ -1043,8 +1043,8 @@ class Custom_Gun(object):
             self.shotgun = False
     def return_gun(self):
         return self.guns.gun()
-    def blit_gun(self, angle):
-        return self.guns.blit_gun(angle)
+    def blit_gun(self, angle, mainx=295, mainy=215):
+        return self.guns.blit_gun(angle, mainx, mainy)
         
            
 class Play_Maps(object):

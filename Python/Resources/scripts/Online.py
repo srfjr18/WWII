@@ -31,8 +31,13 @@ class online_mode(Enemy, Enemy_Gun):
         self.stop_all = False
         self.joins = False
         
+        self.mainx_d = 295
+        self.mainy_d = 215
+        
+        
         self.mainx = 295
         self.mainy = 215
+        
         self.angle = 0 
         self.background = pygame.Surface(screen.get_size())
         self.background.fill((0,0,0))
@@ -460,15 +465,44 @@ class online_mode(Enemy, Enemy_Gun):
             else:
                 screen.blit(self.bullet, (run, rise))
             
-    def collide_you(self, collision_list):
+    def collide_you(self, mainx, mainy, collision_list):
+        self.mainx, self.mainy = mainx, mainy
         main_collision = pygame.Rect((self.mainx, self.mainy), self.backup.get_size())
         for rise, run in zip(self.enemy_shotrise_list, self.enemy_shotrun_list):
             for collisions in collision_list[:]:
                 if pygame.Rect((run,rise), self.bullet.get_size()).colliderect(main_collision):
                     return True
         
-    def send_receive(self, stk, angle, imagesx, imagesy, shotrise_list, shotrun_list, gun=None, enemy_gun=None):
+    def send_receive(self, mainx, mainy, stk, angle, imagesx, imagesy, shotrise_list, shotrun_list, gun=None, enemy_gun=None):
+
+        try:
+            imagesx[1]
+            imagesx_backup = imagesx
+            imagesx = imagesx_backup[0]
+            realimagesx = imagesx_backup[1]
+            
+            
+            imagesy[1]
+            imagesy_backup = imagesy
+            imagesy = imagesy_backup[0]
+            realimagesy = imagesy_backup[1]
+            
+        except:
+            realimagesx = imagesx
+            realimagesy = imagesy
+            
     
+        self.mainx, self.mainy = mainx, mainy
+        
+        
+        
+        if self.mainx != 295:
+            shotrise_list = [i - self.mainy + self.mainy_d for i in shotrise_list]
+            shotrun_list = [i - self.mainx + self.mainx_d for i in shotrun_list]
+        
+        
+        
+        
         """experimental to speed up user side of game on slow server"""
         self.eo += 1
         if self.eo % 4 != 0 and not self.lan:
@@ -560,13 +594,14 @@ class online_mode(Enemy, Enemy_Gun):
                     
                 
                 
-                
+            newX = self.enemyposX + self.mainx
+            newY = self.enemyposY + self.mainy    
             
-            self.enemyposX += self.mainx
-            self.enemyposY += self.mainy
+            self.enemyposX += self.mainx_d
+            self.enemyposY += self.mainy_d
             
-            self.enemy_shotrise_list = [(self.enemyposY - imagesy) + i - self.mainy for i in self.enemy_shotrise_list]
-            self.enemy_shotrun_list = [(self.enemyposX - imagesx) + i - self.mainx for i in self.enemy_shotrun_list]
+            self.enemy_shotrise_list = [(newY - realimagesy) + i - self.mainy for i in self.enemy_shotrise_list]
+            self.enemy_shotrun_list = [(newX - realimagesx) + i - self.mainx for i in self.enemy_shotrun_list]
             
             
             """also for gunshots"""
@@ -607,11 +642,19 @@ class online_mode(Enemy, Enemy_Gun):
                         traceback.print_exc()
                         return True
             
-            self.enemyposX += self.mainx
-            self.enemyposY += self.mainy
             
-            self.enemy_shotrise_list = [(self.enemyposY - imagesy) + i - self.mainy for i in self.enemy_shotrise_list]
-            self.enemy_shotrun_list = [(self.enemyposX - imagesx) + i - self.mainx for i in self.enemy_shotrun_list]
+            newX = self.enemyposX + self.mainx
+            newY = self.enemyposY + self.mainy
+            
+            self.enemyposX += self.mainx_d
+            self.enemyposY += self.mainy_d
+            
+            
+            
+            
+            
+            self.enemy_shotrise_list = [(newY - realimagesy) + i - self.mainy for i in self.enemy_shotrise_list]
+            self.enemy_shotrun_list = [(newX - realimagesx) + i - self.mainx for i in self.enemy_shotrun_list]
             
             data = pickle.dumps([stk, angle, imagesx, imagesy, shotrise_list, shotrun_list], protocol=2)
             try:

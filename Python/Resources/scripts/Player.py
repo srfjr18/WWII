@@ -21,6 +21,25 @@ class Player(object):
         self.imagesy = 0
         self.angle = 0
         
+        self.dontchange = False
+        self.totally_done = False
+        self.count = 0
+        self.count_end = 250
+        self.stay = False
+        
+        
+        bg = pygame.Surface((1500, 1500), pygame.SRCALPHA, 32)
+        box = pygame.Surface((400, 1500), pygame.SRCALPHA, 32)
+        box.fill((0,0,0,255))
+        #box = pygame.transform.rotate(box, angle)
+        bg.blit(box, (800,0))
+        bg.blit(box, (250,0))
+        
+        self.bg_rect = bg.get_rect()
+        
+        self.bg = bg
+        
+        
         self.health = 100
         
         self.maincharacter = self.backup = pygame.image.load(path+'character.png')
@@ -114,42 +133,110 @@ class Player(object):
     
     
     
-    def sniper_zoom_blit(self, angle, mousepos):
-        bg = pygame.Surface((1500, 1500), pygame.SRCALPHA, 32)
-        box = pygame.Surface((400, 1500), pygame.SRCALPHA, 32)
-        box.fill((0,0,0,255))
-        #box = pygame.transform.rotate(box, angle)
-        bg.blit(box, (800,0))
-        bg.blit(box, (250,0))
+    
+    def sniper_zoom_blit_end(self, angle, mousepos):
+        self.dontchange = True
+        self.stay = False
+        black = pygame.Surface(screen.get_size(), pygame.SRCALPHA, 32)
+        if self.count_end < 250 and not self.stay_end:
+            self.dontchange = True
+            self.count_end += 25
+        else:
+            self.imagesx = self.imagesx_backup
+            self.imagesy = self.imagesy_backup
+            self.mainx = 295
+            self.mainy = 215
+            self.dontchange = False
+            self.stay_end = True
+            self.stay = True
+            self.count_end -= 25
+            if self.count_end < 25:
+                self.totally_done = True
+                #self.imagesx_backup = self.imagesx
+                #self.imagesy_backup = self.imagesy
+                return
+                    
+        black.fill((0,0,0,self.count_end))
+        screen.blit(black, (0,0))
+    
         
-        bg_rect = bg.get_rect()
+        bg_rect = self.bg_rect
         
-        
-        bg = pygame.transform.rotate(bg, angle)
-        
+        bg = pygame.transform.rotate(self.bg, angle)        
         bg_rot = bg_rect.copy()
         bg_rot.center = bg.get_rect().center
         bg = bg.subsurface(bg_rot).copy()
         
+        if not self.stay_end:
+            if 270 > angle > 90:
+                screen.blit(bg, (-450,-500))
+            else:
+                screen.blit(bg, (-400,-500))
+    
+    
+    
+    
+    def sniper_zoom_blit(self, angle, mousepos):
+        self.dontchange = False
+        black = pygame.Surface(screen.get_size(), pygame.SRCALPHA, 32)
         
         
-        if 270 > angle > 90:
-            screen.blit(bg, (-450,-500))
-        else:
-            screen.blit(bg, (-400,-500))
+        if not self.ended:
+            if self.count < 250 and not self.stay:
+                self.count += 25
+            else:
+                self.stay = True
+                self.count -= 25
+                if self.count < 25:
+                    self.ended = True
+                    
+                    
+            black.fill((0,0,0,self.count))
+            screen.blit(black, (0,0))
+    
+        
+        bg_rect = self.bg_rect
+        
+        bg = pygame.transform.rotate(self.bg, angle)        
+        bg_rot = bg_rect.copy()
+        bg_rot.center = bg.get_rect().center
+        bg = bg.subsurface(bg_rot).copy()
+        
+        if self.stay:
+            if 270 > angle > 90:
+                screen.blit(bg, (-450,-500))
+            else:
+                screen.blit(bg, (-400,-500))
+                
+          
     
     def sniper_zoom_initial(self, angle):
         if angle == "revert":
             try:
                 self.imagesx = self.imagesx_backup
                 self.imagesy = self.imagesy_backup
-                self.mainx = 295
-                self.mainy = 215
+                if not (not self.stay and not self.stay_end) and not self.dontchange:
+                    self.mainx = 295
+                    self.mainy = 215
+                else:
+                    return
             except:
                 pass
             return 
+        
+        if (not self.stay and not self.stay_end):
+            self.imagesx_backup = self.imagesx
+            self.imagesy_backup = self.imagesy
+            return
         self.imagesx_backup = self.imagesx
         self.imagesy_backup = self.imagesy
+        
+        
+        
+        if self.dontchange:
+            print("hello")
+            return
+        
         if int(angle) == 0:
             mousepos = (170, 19)
         if int(angle) == 32:
@@ -1122,6 +1209,7 @@ class Player(object):
 
 class Gun(object):
     def __init__(self):
+        self.player = Player()
         self.gunshot = pygame.mixer.Sound(soundpath+"gunshot.wav")
         self.mainx = 295
         self.mainy = 215       
@@ -1163,7 +1251,7 @@ class Gun(object):
                     return True
     
     
-    def shotgun_create_shot(self, recoil, angle):
+    def shotgun_create_shot(self, mainx, mainy, recoil, angle):
         ang = -37
         for i in range(8):
             ang += 7
@@ -1176,10 +1264,11 @@ class Gun(object):
             
             if pos > 360 or pos < 0:
                 continue    
-            self.create_shot(recoil, pos)
+            self.create_shot(mainx, mainy, recoil, pos)
 
                    
-    def create_shot(self, recoil, angle):
+    def create_shot(self, mainx, mainy, recoil, angle):
+        self.mainx, self.mainy = mainx, mainy
         """makes gunshot speeds consistent"""
         if int(angle) == 0:
             mousepos = (170, 19)
@@ -1978,7 +2067,11 @@ class Gun(object):
         if int(angle) == 319:
             mousepos = (444, 45)
     
-        sizeX, sizeY = Player().backup.get_size()
+        #sizeX, sizeY = Player().backup.get_size()
+        
+        
+        sizeX, sizeY = 50, 50
+        
         gun_pos = 4 - (angle / 90)
         
         sizeX -= 10
