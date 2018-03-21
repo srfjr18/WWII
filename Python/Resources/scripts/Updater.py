@@ -80,9 +80,17 @@ if __name__ == "__main__":
     background = background.convert()    
     pygame.time.delay(300)    
     while True:
-        screen.blit(background, (0, 0))
-        text = font["medium"].render("GAME RESTART REQUIRED",1,(255,255,255))
+        screen.blit(self.background, (0, 0))
+        text = self.font["medium"].render("GAME RESTART REQUIRED",1,(255,255,255))
         screen.blit(text, (130, 150))
+        
+        
+        text = self.font["small"].render("YOU MAY NEED TO APPLY PERMISSIONS (CHMOD)",1,(255,255,255))
+        screen.blit(text, (17, 250))
+        
+        text = self.font["small"].render("DEPENDING ON YOUR OS",1,(255,255,255))
+        screen.blit(text, (200, 280))
+        
         for event in pygame.event.get():  
             if event.type == pygame.QUIT: 
                 sys.exit()

@@ -263,6 +263,7 @@ class Menu(object):
     
     def TitleScreen(self):
         while True:
+       
             screen.blit(self.background, (0, 0))
             text = self.font["big"].render("WWII",1,(255,255,255))
             screen.blit(text, (250, 225))
@@ -368,7 +369,14 @@ class Menu(object):
                         screen.blit(text, (480 - 50, 15))
                         text = self.font["smallish"].render(str(prestige+1),1,(255,165,0))
                         screen.blit(text, (480 + 85, 17))
-                        text = self.font["small"].render(str(self.rank),1,(255,165,0))
+                        
+                        
+                        """text = self.font["small"].render(str(self.rank),1,(0,0,0))
+                        screen.blit(text, (480 + 115, 15))"""
+                        
+                        pygame.draw.rect(screen, (0, 0, 0), (480 + 115, 15, 35, 25))
+                        
+                        text = self.font["small"].render(str(1),1,(255,165,0))
                         screen.blit(text, (480 + 115, 15))
                         
                         if pygame.mouse.get_pressed()[0]:
@@ -724,7 +732,7 @@ class Setup(object):
         
         while True:
             #####################################################################
-            build = 'v1.12'
+            build = 'v1.13'
             #####################################################################
         
         
@@ -779,6 +787,14 @@ class Setup(object):
                         screen.blit(self.background, (0, 0))
                         text = self.font["medium"].render("GAME RESTART REQUIRED",1,(255,255,255))
                         screen.blit(text, (130, 150))
+                        
+                        
+                        text = self.font["small"].render("YOU MAY NEED TO APPLY PERMISSIONS (CHMOD)",1,(255,255,255))
+                        screen.blit(text, (17, 250))
+                        
+                        text = self.font["small"].render("DEPENDING ON YOUR OS",1,(255,255,255))
+                        screen.blit(text, (200, 280))
+                        
                         #os.chmod(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'game.py'),stat.S_IWUSR)
                         for event in pygame.event.get():  
                             if event.type == pygame.QUIT: 
@@ -852,7 +868,6 @@ class Setup(object):
                         except:
                             pass
                         if go_back_once:
-                            ##### ADD TEST FOR CAMPAIGN TESTING #####
                             self.map_choice = Menu(["CUSTOM", "SHIP", "PACIFIC", "BARREN", "TOWN", "BASE", "SUPPLY", "BACK"]).GameSetup("rank", [25,0,0,0,0,0,0,0,0])
                         else:
                             break
