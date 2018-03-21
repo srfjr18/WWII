@@ -37,6 +37,38 @@ class Menu(object):
         except IOError: #file hasn't been made yet
             pass
     
+    
+    
+    
+    
+    def animations(self, atype):
+        black = pygame.Surface(screen.get_size(), pygame.SRCALPHA, 32)
+        if atype == "reset":
+            try:
+                del(self.acounter)
+                del(self.acounter_end)
+            except:
+                pass
+        
+        try:
+            self.acounter
+        except:
+            self.acounter = 250
+        
+        try:
+            self.acounter_out
+        except:
+            self.acounter_out = 0
+            
+            
+            
+        if atype == "in":
+            if self.acounter >= 25:
+                self.acounter -= 25
+                black.fill((0,0,0,self.acounter))                    
+                screen.blit(black, (0,0))
+
+    
     def end_screen(self, kills, deaths):
         pygame.time.delay(300)
         pressed = True
@@ -257,6 +289,10 @@ class Menu(object):
     def GameSetup(self, *description):
         pygame.time.delay(300)
         long_boxes = False
+        
+        
+        self.animations("reset")
+        
         while True:
             try:
                 if description[0] == "long":
@@ -442,6 +478,9 @@ class Menu(object):
                                     return self.words[num]
                         else:
                             return self.words[num]
+            
+
+            done = self.animations("in")
                         
             pygame.display.flip()
             
@@ -557,6 +596,8 @@ class Loadouts(object):
             setup = Setup()
             Thread(target=setup.send_while_pause, args=(socket,socktype,0,)).start()
         
+        menus = Menu([])
+        menus.animations("reset")
         while True:
             screen.blit(self.background, (0, 0))
 
@@ -622,6 +663,8 @@ class Loadouts(object):
                             pygame.time.delay(300)
                             return self.words[num], setup.enemy_gun
                         return self.words[num]
+            
+            menus.animations("in")
             pygame.display.flip()
 
 class Setup(object):
@@ -681,7 +724,7 @@ class Setup(object):
         
         while True:
             #####################################################################
-            build = 'v1.11'
+            build = 'v1.12'
             #####################################################################
         
         
