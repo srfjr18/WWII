@@ -95,6 +95,8 @@ class Enemy(Setup, Gun_Types):
     def AI(self, mainx, mainy, imagesx, imagesy, collision_list, loadout_number, internalclock, pos=None, map_choice=None): #pos will put an enemy at a specific position and make them unable to move
         
         
+
+        
         #self.mainx, self.mainy = mainx, mainy
         
         """if self.mainx != 295:
@@ -107,7 +109,12 @@ class Enemy(Setup, Gun_Types):
             self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime = 8, "full-auto", 70, 1000000, 0 
             self.shotgun = False
             #sys.exit()
-    
+            
+        if map_choice == "D-DAY" and (pos[0], pos[1]) not in [(-479, -1076),(-511, -1257),(485, -988),(521, -1154), (-366, -1752),(86, -1878),(-41, -2036),(739, -2008),(649, -1042),(646, -1204),(646, -1373),(646, -1529),(646, -1691),(602, -1867),(517, -1958),(641, -2130)]:
+            self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime = 5, "full-auto", 100, randint(25, 100), 200
+            self.shotgun = False
+            
+            
         if self.enemyposX == 100000000 or pos != None and not (840 > pos[0] - imagesx > -200 and 680 > pos[1] - imagesy > -200): #setting pos to this kills the enemy in campaign mode BUT THIS REALLY DOESN'T EVEN WORK 
             return
         self.perks(loadout_number)
@@ -127,6 +134,10 @@ class Enemy(Setup, Gun_Types):
                 self.spawned = True
                 self.enemyposX = pos[0]
                 self.enemyposY = pos[1]
+                
+
+                
+                
             
             """if randint(1, 500) != 1:
                  return"""
@@ -175,10 +186,23 @@ class Enemy(Setup, Gun_Types):
                 self.badaim = randint(2, 6)
             else:
                 self.badaim = randint(0, 5)
+                
+            if map_choice == "D-DAY":
+                self.badaim = 0
+                
             self.before_sees_you = randint(0, 30)
             self.before_accurate = randint(0, 60)
             if self.before_accurate < 30:
                 self.badaim *= -1 # doing this just to switch up the direction half the time without allowing the enemy to be too accurate in the middle with distraction
+        
+        
+        
+        
+        
+        if map_choice == "D-DAY" and (pos[0], pos[1]) not in [(-479, -1076),(-511, -1257),(485, -988),(521, -1154), (-366, -1752),(86, -1878),(-41, -2036),(739, -2008),(649, -1042),(646, -1204),(646, -1373),(646, -1529),(646, -1691),(602, -1867),(517, -1958),(641, -2130)]:
+            self.enemyposX = pos[0]
+            self.enemyposY = pos[1] + imagesy
+        
         
         
         
@@ -217,7 +241,7 @@ class Enemy(Setup, Gun_Types):
             self.enemy = pygame.transform.rotate(self.backup, math.degrees(math.atan((self.enemyposY) / (self.enemyposX)) + 0))
        
         #checks for a collision and kicks the enemy back to a permenant position if it returns True      
-        if self.proper_spawn(self.enemyposX - imagesx, self.enemyposY - imagesy, collision_list) and not self.alreadycollided: 
+        if self.proper_spawn(self.enemyposX - imagesx, self.enemyposY - imagesy, collision_list) and not self.alreadycollided and not map_choice == "D-DAY":
             self.pushed_backY = 10 * ((self.mainy + imagesy - self.enemyposY) / 100)
             self.pushed_backX = 10 * ((self.mainx + imagesx - self.enemyposX) / 100)
                    
@@ -228,7 +252,7 @@ class Enemy(Setup, Gun_Types):
             self.alreadycollided = True
         
         #if the enemy is on our screen or a little outside
-        if 740 > self.enemyposX - imagesx > -100 and 580 > self.enemyposY - imagesy > -100:
+        if (740 > self.enemyposX - imagesx > -100 and 580 > self.enemyposY - imagesy > -100) or (840 > self.enemyposX - imagesx > -100 and 700 > self.enemyposY - imagesy > -200 and map_choice == "D-DAY"):
     
             #count the frames that the enemy is on our screen
             self.counter += 1

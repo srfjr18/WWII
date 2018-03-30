@@ -143,7 +143,7 @@ def titlescreen_menu(start_at=None):
             
 titlescreen_menu("start")
 while running:
-    
+    #player.health = 100
     if setup.online:
         if enemy_player.titlescreen:
             Menu([]).end_screen(kills, deaths)
@@ -248,7 +248,7 @@ while running:
             if hit_enemy[i]:
                 enemy_player[i].health -= 100 / setup.stk
                 if enemy_player[i].health <= 0:
-                    if setup.campaign:
+                    if setup.campaign and not (setup.map_choice == "D-DAY" and (enemy_player[i].enemyposX, enemy_player[i].enemyposY) not in [(-479, -1076),(-511, -1257),(485, -988),(521, -1154), (-366, -1752),(86, -1878),(-41, -2036),(739, -2008),(649, -1042),(646, -1204),(646, -1373),(646, -1529),(646, -1691),(602, -1867),(517, -1958),(641, -2130)]):
                         enemy_player[i].enemyposX = 100000000
                     else:
                         enemy_gun[i] = Enemy_Gun()
@@ -665,6 +665,13 @@ while running:
                 
                  
     
+    if setup.campaign:    
+        player.friendly(setup.map_choice)
+        for i in range(0, setup.enemies):
+            player.friendly(((enemy_gun[i].enemy_shotrise_list, enemy_gun[i].enemy_shotrun_list, enemy_gun[i].enemy_backup_shotrise, enemy_gun[i].enemy_backup_shotrun), setup.map_choice))
+    
+    
+    
                 
     if setup.map_choice == "MIDWAY":
         screen.blit(player.maincharacter, (player.mainx, player.mainy))
@@ -695,6 +702,7 @@ while running:
     else:
         player.ui(kills, deaths, setup.weapon, setup.mag, shot, reloading, setup.max_kills) 
     #pygame.draw.circle(screen, (0, 0, 0), (screen.get_size()[0] / 2, screen.get_size()[1] / 2), screen.get_size()[1] / 2, 20)  
+    
     
     
     

@@ -1,5 +1,6 @@
 import pygame, os, math, sys
 from Resources.scripts.Maps import *
+from Resources.scripts.Guns import *
 from Resources.scripts.Creator import *
 from random import randint
 import pickle
@@ -20,6 +21,14 @@ class Player(object):
         self.imagesx = 0
         self.imagesy = 0
         self.angle = 0
+        
+        
+        self.friendlyposX, self.friendlyposY = [], []
+        self.plusserX, self.plusserY = [], []
+        self.friendly_angle = []
+        self.rand_num = []
+        
+        self.gun = Gun_Types()
         
         self.dontchange = False
         self.totally_done = False
@@ -210,6 +219,92 @@ class Player(object):
                 
           
     
+    
+    def friendly(self, map_choice, num=10):
+    
+        try:
+            map_choice += ""
+        except:
+            for i in range(0, len(self.friendlyposX)):
+
+                s, r, bs, br = map_choice[0]
+                for rise, run, brise, brun in zip(s, r, bs, br):
+                    if pygame.Rect((run,rise), (10, 10)).colliderect(pygame.Rect((self.friendlyposX[i] - self.imagesx, self.friendlyposY[i] - self.imagesy), self.backup.get_size())):
+                        self.friendlyposX[i] = 100000000
+                        self.friendlyposY[i] = 100000000
+                    
+            return
+    
+    
+    
+        """if map_choice == "D-DAY":
+            num /= 2"""
+    
+        def embed_collisions(x, y, collision_list):
+            main_collision = pygame.Rect((x - self.imagesx, y - self.imagesy), self.backup.get_size())
+            for collisions in collision_list[:]:
+                if main_collision.colliderect(collisions):  
+                    return True
+            return False
+            
+    
+        if randint(0, num) == num - 1:
+            if not (randint(1, 2) == 2 and not map_choice == "D-DAY"):
+                self.friendlyposX.append(randint(0, 600) + self.imagesx)
+                self.rand_num.append(randint(0, 20))
+                
+                
+                if map_choice == "D-DAY":
+                    if randint(1, 2) == 2:
+                        self.friendlyposY.append(self.imagesy + 500)
+                    else:
+                        self.friendlyposY.append(self.imagesy - 100)
+                else:
+                    self.friendlyposY.append(self.imagesy)
+            else:
+                self.friendlyposY.append(randint(0, 400) + self.imagesy)
+                self.friendlyposX.append(self.imagesx)
+                
+            if embed_collisions(self.friendlyposX[-1], self.friendlyposY[-1], map_collisions_update(self.imagesx, self.imagesy, map_choice)):
+                self.friendlyposX = self.friendlyposX[:-1]
+                self.friendlyposY = self.friendlyposY[:-1]
+            
+            
+            if map_choice == "MIDWAY":
+                x = randint(-10, 10)
+                y = randint(-10, 10)
+            else:
+                x = randint(-10, 0)
+                y = randint(-10, 0)
+            self.plusserY.append(y)
+            self.plusserX.append(x)
+            
+            self.friendly_angle.append(270 - (math.degrees(math.atan2(y, x))))
+            
+        
+        for i in range(0, len(self.friendlyposX)):
+            if (840 > self.friendlyposX[i] - self.imagesx > -200 and 680 > self.friendlyposY[i] - self.imagesy > -200):
+            
+            
+            
+                if not embed_collisions(self.friendlyposX[i], self.friendlyposY[i], map_collisions_update(self.imagesx, self.imagesy, map_choice)):
+                    self.friendlyposX[i] = self.friendlyposX[i] + self.plusserX[i]
+                    self.friendlyposY[i] = self.friendlyposY[i] + self.plusserY[i]
+         
+         
+                if map_choice == "MIDWAY":
+                    screen.blit(pygame.transform.rotate(self.plane, self.friendly_angle[i]), (self.friendlyposX[i] - self.imagesx, self.friendlyposY[i] - self.imagesy))
+                else:
+                    screen.blit(pygame.transform.rotate(self.backup, self.friendly_angle[i]), (self.friendlyposX[i] - self.imagesx, self.friendlyposY[i] - self.imagesy))
+                    self.gun.getrand_gun_or_blit(self.rand_num[i], self.friendly_angle[i], self.friendlyposX[i] - self.imagesx, self.friendlyposY[i] - self.imagesy)
+                
+            else:
+                self.friendlyposX[i] = 100000000
+                self.friendlyposY[i] = 100000000
+                
+        
+        
+        
     def sniper_zoom_initial(self, angle):
         if angle == "revert":
             try:
