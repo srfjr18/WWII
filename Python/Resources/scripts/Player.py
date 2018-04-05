@@ -241,17 +241,25 @@ class Player(object):
             num /= 2"""
     
         def embed_collisions(x, y, collision_list):
+            if map_choice == "MIDWAY":
+                return False
             main_collision = pygame.Rect((x - self.imagesx, y - self.imagesy), self.backup.get_size())
             for collisions in collision_list[:]:
-                if main_collision.colliderect(collisions):  
-                    return True
+                if main_collision.colliderect(collisions): 
+                    if collisions.height > 5: #so they dont get stuck going onto dday beach
+                        return True
             return False
             
     
         if randint(0, num) == num - 1:
             if not (randint(1, 2) == 2 and not map_choice == "D-DAY"):
                 self.friendlyposX.append(randint(0, 600) + self.imagesx)
-                self.rand_num.append(randint(0, 20))
+                
+                if map_choice == "D-DAY":
+                    self.rand_num.append(5)
+                else:
+                    self.rand_num.append(randint(0, 20))
+                
                 
                 
                 if map_choice == "D-DAY":
@@ -262,7 +270,7 @@ class Player(object):
                 else:
                     self.friendlyposY.append(self.imagesy)
             else:
-                self.friendlyposY.append(randint(0, 400) + self.imagesy)
+                self.friendlyposY.append(400 + self.imagesy)
                 self.friendlyposX.append(self.imagesx)
                 
             if embed_collisions(self.friendlyposX[-1], self.friendlyposY[-1], map_collisions_update(self.imagesx, self.imagesy, map_choice)):
