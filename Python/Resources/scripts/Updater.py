@@ -1,6 +1,7 @@
 import os, shutil
 from zipfile import *
 import time, pygame, sys, stat
+      
 try:
     import urllib.request as urllib #python 3
 except:
@@ -20,6 +21,14 @@ def update(build):
     path = os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), '')
     
     if __name__ != "__main__":
+        screen =  pygame.display.set_mode((640,480))
+        text = pygame.font.SysFont("monospace", 35).render("PLEASE WAIT, CHECKING",1,(255,255,255))
+        screen.blit(text, (110, 150))
+        text = pygame.font.SysFont("monospace", 35).render("FOR UPDATE...",1,(255,255,255))
+        screen.blit(text, (200, 200))
+        
+        pygame.display.flip()
+        
         try:
             urllib.urlretrieve('https://github.com/srfjr18/WWII-base/archive/master.zip', files)
             embed = False
@@ -45,7 +54,13 @@ def update(build):
             rm_dir(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'WWII-base-master'))
             os.remove(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'file.zip'))
             return "up to date"
-                
+        else:
+            from Resources.scripts.Menus import Menu
+            yn = Menu([]).yes_no("   AN UPDATE IS", " AVAILIBLE. CONTINUE?")  
+            if yn == "no":
+                rm_dir(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'WWII-base-master'))
+                os.remove(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'file.zip'))
+                return yn    
                 
         if embed:
             os.system(path+"python.exe "+os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[:-2]), 'Resources', 'scripts', 'Updater.py'))   
@@ -80,15 +95,15 @@ if __name__ == "__main__":
     background = background.convert()    
     pygame.time.delay(300)    
     while True:
-        screen.blit(self.background, (0, 0))
-        text = self.font["medium"].render("GAME RESTART REQUIRED",1,(255,255,255))
+        screen.blit(background, (0, 0))
+        text = font["medium"].render("GAME RESTART REQUIRED",1,(255,255,255))
         screen.blit(text, (130, 150))
         
         
-        text = self.font["small"].render("YOU MAY NEED TO APPLY PERMISSIONS (CHMOD)",1,(255,255,255))
+        text = font["small"].render("YOU MAY NEED TO APPLY PERMISSIONS (CHMOD)",1,(255,255,255))
         screen.blit(text, (17, 250))
         
-        text = self.font["small"].render("DEPENDING ON YOUR OS",1,(255,255,255))
+        text = font["small"].render("DEPENDING ON YOUR OS",1,(255,255,255))
         screen.blit(text, (200, 280))
         
         for event in pygame.event.get():  

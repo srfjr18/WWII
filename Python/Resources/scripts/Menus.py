@@ -732,7 +732,7 @@ class Setup(object):
         
         while True:
             #####################################################################
-            build = 'v1.15'
+            build = 'v1.20'
             #####################################################################
         
         
@@ -779,6 +779,8 @@ class Setup(object):
                     pygame.display.flip()
                     pygame.time.delay(2000)
                     choice = "BACK"
+                    continue
+                elif check == "no":
                     continue
                 else:
                     #
