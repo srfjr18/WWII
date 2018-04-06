@@ -1267,7 +1267,8 @@ class Player(object):
                 main_collision = pygame.Rect((self.mainx + self.moveX, self.mainy + self.moveY), (self.maincharacter.get_size()[0], self.maincharacter.get_size()[1]))
                 for collisionsone in collision_list[:]:
                     if main_collision.colliderect(collisionsone) and collisionsone != collisions:
-                        self.imagesx -= self.moveX #* 2
+                        self.imagesx, self.imagesy = self.b
+                        #self.imagesx -= self.moveX #* 2
                 
                         
     def move(self, mousepos, rations, map_choice):
@@ -1282,10 +1283,12 @@ class Player(object):
         if map_choice == "MIDWAY":
             self.moveX *= 1.3
             self.moveY *= 1.3
-
+        
+        self.b = (self.imagesx, self.imagesy)
+        
         self.imagesy += self.moveY
         self.imagesx += self.moveX 
-        
+       
         
         
         if map_choice == "MIDWAY" or map_choice == "D-DAY":
@@ -1298,11 +1301,12 @@ class Player(object):
                 self.imagesx += self.moveX 
         
         
-        
         if self.custom_map == False:
             self.fix_go_thru_corners(map_collisions_update(self.imagesx, self.imagesy, map_choice)) 
         else:
-            self.fix_go_thru_corners(self.custom_map.map_collisions_update(self.imagesx, self.imagesy))              
+            self.fix_go_thru_corners(self.custom_map.map_collisions_update(self.imagesx, self.imagesy))       
+        
+               
         #updating our collision value after we modified imagesx and y
         
         if self.custom_map == False:
@@ -1323,6 +1327,11 @@ class Player(object):
             if self.collision(collision):
                 self.imagesy -= self.moveY * 2
                 self.imagesx += self.moveX * 2
+                
+        if self.custom_map == False:
+            self.fix_go_thru_corners(map_collisions_update(self.imagesx, self.imagesy, map_choice)) 
+        else:
+            self.fix_go_thru_corners(self.custom_map.map_collisions_update(self.imagesx, self.imagesy))       
                 
 
 class Gun(object):
