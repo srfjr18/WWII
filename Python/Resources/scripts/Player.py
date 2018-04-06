@@ -251,7 +251,7 @@ class Player(object):
             return False
             
     
-        if randint(0, num) == num - 1:
+        if randint(0, num) == num - 1 and len(self.friendlyposX) < 8:
             if not (randint(1, 2) == 2 and not map_choice == "D-DAY"):
                 self.friendlyposX.append(randint(0, 600) + self.imagesx)
                 
@@ -309,8 +309,23 @@ class Player(object):
             else:
                 self.friendlyposX[i] = 100000000
                 self.friendlyposY[i] = 100000000
-                
         
+        done = False        
+        while not done:    
+            for i in range(0, len(self.friendlyposX)):
+                if self.friendlyposX[i] == 100000000:  
+                    self.friendlyposX.remove(self.friendlyposX[i])
+                    self.friendlyposY.remove(self.friendlyposY[i])
+                    self.plusserX.remove(self.plusserX[i])
+                    self.plusserY.remove(self.plusserY[i])
+                    self.friendly_angle.remove(self.friendly_angle[i])
+                    
+                    if map_choice != "MIDWAY":
+                        self.rand_num.remove(self.rand_num[i])
+                    done = False
+                    break
+            done = True
+            
         
         
     def sniper_zoom_initial(self, angle):

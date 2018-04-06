@@ -732,7 +732,7 @@ class Setup(object):
         
         while True:
             #####################################################################
-            build = 'v1.20'
+            build = 'v1.23'
             #####################################################################
         
         
@@ -829,6 +829,7 @@ class Setup(object):
                 self.campaign = False
             elif choice == "CAMPAIGN":
                 self.campaign = True
+                self.online = False
                 while True:
                     choice = Menu(words = ["MIDWAY", "D-DAY", "BACK"]).GameSetup("campaign")
                     if choice == "BACK":

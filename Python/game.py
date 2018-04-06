@@ -156,16 +156,6 @@ while running:
             pass
     else:
         pass
-        """#MY GUESS IS THIS IS HIGHLY UNESSECARRY AND ILL REMOVE IT LATER
-        for i in range(0, setup.enemies):
-            if enemy_player[i].titlescreen:
-                Menu([]).end_screen(kills, deaths)
-                player.update_rank(kills)
-                titlescreen_menu()
-    
-        for i in range(0, setup.enemies):
-            if enemy_player[i].stop_all:
-                continue"""
     
     mousepos = pygame.mouse.get_pos()
     clock.tick(60)
@@ -187,12 +177,7 @@ while running:
     
     #player.test(mousepos)
     
-    
-    
-    
-    
-    
-    
+
     if sniper_zoom:
         player.sniper_zoom_initial("revert")
         player.sniper_zoom_initial(player.angle)
@@ -206,9 +191,47 @@ while running:
         collision_list = maps.map_collisions_update(player.imagesx, player.imagesy) 
     else:
         collision_list = map_collisions_update(player.imagesx, player.imagesy, setup.map_choice)    
+
+
+
+
+
+
+
+    #blitting the map
+    pygame.display.set_caption("WWII  FPS: " + str(int(clock.get_fps())))
+    screen.blit(background, (0, 0))
+    if setup.custom:
+        Play_Maps(setup.map_choice).blit_map(player.imagesx, player.imagesy)
+    else:
+        """when in campaign mode, this system makes it so you can only hit text boxes once"""
+        add = Maps(player.imagesx, player.imagesy, campaign_text_check).blit_map(setup.map_choice)
+        
+        if add == "DONE":
+            Campaign().donescreen(kills, setup.map_choice)
+            with open(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)), 'Data', '')+"userdata", "rb") as file:
+                data = pickle.load(file)
+            if not setup.map_choice in data["campaign"]:
+                new = data["campaign"]
+                new.append(setup.map_choice)
+                data["campaign"] = new
+                with open(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)), 'Data', '')+"userdata", "wb+") as file:
+                    pickle.dump(data, file, protocol=2)
+            titlescreen_menu("campaign")
+        
+        if add != None:
+            campaign_text_check.append(add)
+
   
-    #player gun
+    #dealing with friendly AI in campaign
+    if setup.campaign:    
+        player.friendly(setup.map_choice)
+
+
+    """this section handles all the enemy stuff, both for AI and online, as well as your shots colliding with enemies, and the enemies shots colliding with friendly AI in campaign"""
+############################################################################################################################################
     if setup.online:
+        #player gun
         hit_enemy = player_gun.enemy_collide(collision_list, pygame.Rect((enemy_player.enemyposX - player.imagesx, enemy_player.enemyposY - player.imagesy), enemy_player.backup.get_size()))   
         if hit_enemy:
             enemy_player.health -= 100 / setup.stk 
@@ -238,40 +261,11 @@ while running:
                         pass
                     Menu([]).end_screen(kills, deaths)
                     player.update_rank(kills)
+    
                     titlescreen_menu("multiplayer")
-    else:
-        hit_enemy = []
-        for i in range(0, setup.enemies):
-            hit_enemy.append(False)
-        for i in range(0, setup.enemies):
-            hit_enemy[i] = player_gun.enemy_collide(collision_list, pygame.Rect((enemy_player[i].enemyposX - player.imagesx, enemy_player[i].enemyposY - player.imagesy), enemy_player[i].backup.get_size()))   
-            if hit_enemy[i]:
-                enemy_player[i].health -= 100 / setup.stk
-                if enemy_player[i].health <= 0:
-                    if setup.campaign and not (setup.map_choice == "D-DAY" and (enemy_player[i].enemyposX, enemy_player[i].enemyposY) not in [(-479, -1076),(-511, -1257),(485, -988),(521, -1154), (-366, -1752),(86, -1878),(-41, -2036),(739, -2008),(649, -1042),(646, -1204),(646, -1373),(646, -1529),(646, -1691),(602, -1867),(517, -1958),(641, -2130)]):
-                        enemy_player[i].enemyposX = 100000000
-                    else:
-                        enemy_gun[i] = Enemy_Gun()
-                        enemy_player[i] = Enemy(maps.spawnX, maps.spawnY, loadout_number, enemy_gun[i])
-                    #hit[i] = 0
-                    kills += 1
-                    if kills >= setup.max_kills:
-                        if setup.campaign:
-                            titlescreen_menu("campaign")
-                        else:
-                            Menu([]).end_screen(kills, deaths)
-                            player.update_rank(kills)
-                            titlescreen_menu("multiplayer")
-    
-    #Checking for our shot's collisions with the wall
-    player_gun.wall_collide(collision_list)
-  
-    #enemy gun
-    
-
-    
-    
-    if setup.online:
+                    
+                    
+        #enemy gun            
         if enemy_gun.collide_you(player.mainx, player.mainy, collision_list):
             player.health -= 100 / enemy_player.enemy_stk
             if player.health <= 0:
@@ -324,8 +318,80 @@ while running:
                     pass
                 reloading = False
                 shot = 0
+                
+                
+                
+        #sending gun model to other player if online and on first run
+        if first_run:
+            setup.guns(loadout_number, player.angle)
+            first_run = False
+            gun = setup.gun                       
+            enemy_player.send_receive(player.mainx, player.mainy, setup.stk, player.angle, player.imagesx, player.imagesy,  player_gun.shotrise_list, player_gun.shotrun_list, gun)
+        
+        #sending and receiving positions, shots, etc
+        
+        
+        #if our sniper zoom is on, we send player.imagesx/y (real location you are located at) and just imagesx/y which is the location you are at when zoomed in 
+        if sniper_zoom:
+            imagesx, imagesy = player.imagesx_backup, player.imagesy_backup
+        else:
+            imagesx, imagesy = player.imagesx, player.imagesy
+        
+        try:    
+            endcheck = enemy_player.send_receive(player.mainx, player.mainy, setup.stk, player.angle, [imagesx, player.imagesx], [imagesy, player.imagesy], player_gun.shotrise_list, player_gun.shotrun_list, enemy_gun=enemy_gun_online) #means we are playing online
+            del(enemy_gun_online)
+        except:
+            endcheck = enemy_player.send_receive(player.mainx, player.mainy, setup.stk, player.angle, [imagesx, player.imagesx], [imagesy, player.imagesy],  player_gun.shotrise_list, player_gun.shotrun_list)
+        if endcheck:
+            try:
+                enemy_player.c.close()
+            except:
+                pass
+            try:
+                enemy_player.s.close() 
+            except:
+                pass 
+            endcheck = None
+            while enemy_player.online_paused:
+                pass
+            Menu([]).end_screen(kills, deaths)
+            player.update_rank(kills)
+            titlescreen_menu("multiplayer")    
+
+        #blitting enemy shots
+        if enemy_player.shotgun and enemy_player.flame_thrower:
+            enemy_gun.blit_shot(True)
+        else:
+            enemy_gun.blit_shot()
+         
+        #blitting the enemy    
+        enemy_player.blit_enemy(hit_enemy, player.imagesx, player.imagesy, enemy_player.angle, enemy_player.enemy_gun) 
+        
     else:
-        for i in range(0, setup.enemies):
+        hit_enemy = []
+        for i in range(0, setup.enemies): 
+            hit_enemy.append(False)    
+            hit_enemy[i] = player_gun.enemy_collide(collision_list, pygame.Rect((enemy_player[i].enemyposX - player.imagesx, enemy_player[i].enemyposY - player.imagesy), enemy_player[i].backup.get_size()))   
+            if hit_enemy[i]:
+                enemy_player[i].health -= 100 / setup.stk
+                if enemy_player[i].health <= 0:
+                    if setup.campaign and not (setup.map_choice == "D-DAY" and (enemy_player[i].enemyposX, enemy_player[i].enemyposY) not in [(-479, -1076),(-511, -1257),(485, -988),(521, -1154), (-366, -1752),(86, -1878),(-41, -2036),(739, -2008),(649, -1042),(646, -1204),(646, -1373),(646, -1529),(646, -1691),(602, -1867),(517, -1958),(641, -2130)]):
+                        enemy_player[i].enemyposX = 100000000
+                    else:
+                        enemy_gun[i] = Enemy_Gun()
+                        enemy_player[i] = Enemy(maps.spawnX, maps.spawnY, loadout_number, enemy_gun[i])
+                    #hit[i] = 0
+                    kills += 1
+                    if kills >= setup.max_kills:
+                        if setup.campaign:
+                            titlescreen_menu("campaign")
+                        else:
+                            Menu([]).end_screen(kills, deaths)
+                            player.update_rank(kills)
+                            titlescreen_menu("multiplayer")
+                            
+                            
+            #enemy gun                
             if enemy_gun[i].collide_you(player.mainx, player.mainy, collision_list):
                 player.health -= 100 / enemy_player[i].enemy_stk
                 iclockregen = 1
@@ -391,49 +457,8 @@ while running:
                     except:
                         pass
                         
-    
-    
-    
-    if sniper_zoom:
-        imagesx, imagesy = player.imagesx_backup, player.imagesy_backup
-    else:
-        imagesx, imagesy = player.imagesx, player.imagesy
-    
-    
-    if setup.online:
-        #sending gun model to other player if online and on first run
-        if first_run:
-            setup.guns(loadout_number, player.angle)
-            first_run = False
-            gun = setup.gun                       
-            enemy_player.send_receive(player.mainx, player.mainy, setup.stk, player.angle, player.imagesx, player.imagesy,  player_gun.shotrise_list, player_gun.shotrun_list, gun)
-        
-        
-        
-        
-        
-        try:    
-            endcheck = enemy_player.send_receive(player.mainx, player.mainy, setup.stk, player.angle, [imagesx, player.imagesx], [imagesy, player.imagesy], player_gun.shotrise_list, player_gun.shotrun_list, enemy_gun=enemy_gun_online) #means we are playing online
-            del(enemy_gun_online)
-        except:
-            endcheck = enemy_player.send_receive(player.mainx, player.mainy, setup.stk, player.angle, [imagesx, player.imagesx], [imagesy, player.imagesy],  player_gun.shotrise_list, player_gun.shotrun_list)
-        if endcheck:
-            try:
-                enemy_player.c.close()
-            except:
-                pass
-            try:
-                enemy_player.s.close() 
-            except:
-                pass 
-            endcheck = None
-            while enemy_player.online_paused:
-                pass
-            Menu([]).end_screen(kills, deaths)
-            player.update_rank(kills)
-            titlescreen_menu("multiplayer")
-    else:
-        for i in range(0, setup.enemies):
+            
+            #enemy movements, shot creation, basically just AI            
             if setup.campaign:
                 try:
                     if (840 > enemy_pos_backup[i][0] - player.imagesx > -200 and 680 > enemy_pos_backup[i][1] - player.imagesy > -200):
@@ -443,6 +468,47 @@ while running:
             else:
                 enemy_player[i].AI(player.mainx, player.mainy, player.imagesx, player.imagesy, collision_list, loadout_number, internalclock)         
             enemy_gun[i].wall_collide(collision_list)
+            
+            #blitting enemy shots
+            if enemy_player[i].shotgun and enemy_player[i].flame:
+                enemy_gun[i].blit_shot(True)
+            else:
+                enemy_gun[i].blit_shot()
+
+            #blitting the enemies
+            try:
+                if setup.campaign:
+                    if (840 > enemy_pos_backup[i][0] - player.imagesx > -200 and 680 > enemy_pos_backup[i][1] - player.imagesy > -200):
+                        if setup.map_choice == "MIDWAY":
+                            enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy, types="plane")
+                        else:
+                            enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy) 
+                        
+                else:
+                    enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy)             
+            except:
+                pass
+                
+            
+            #checking for enemy shot collisions with friendly AI    
+            player.friendly(((enemy_gun[i].enemy_shotrise_list, enemy_gun[i].enemy_shotrun_list, enemy_gun[i].enemy_backup_shotrise, enemy_gun[i].enemy_backup_shotrun), setup.map_choice))
+
+
+############################################################################################################################################
+    
+    #Checking for our shot's collisions with the wall
+    player_gun.wall_collide(collision_list)
+  
+
+
+
+
+
+
+
+    
+    
+
 
     #key input
 
@@ -596,30 +662,6 @@ while running:
     
     
     
-                       
-    #images/rendering
-    pygame.display.set_caption("WWII  FPS: " + str(int(clock.get_fps())))
-    screen.blit(background, (0, 0))
-    if setup.custom:
-        Play_Maps(setup.map_choice).blit_map(player.imagesx, player.imagesy)
-    else:
-        """when in campaign mode, this system makes it so you can only hit text boxes once"""
-        add = Maps(player.imagesx, player.imagesy, campaign_text_check).blit_map(setup.map_choice)
-        
-        if add == "DONE":
-            Campaign().donescreen(kills, setup.map_choice)
-            with open(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)), 'Data', '')+"userdata", "rb") as file:
-                data = pickle.load(file)
-            if not setup.map_choice in data["campaign"]:
-                new = data["campaign"]
-                new.append(setup.map_choice)
-                data["campaign"] = new
-                with open(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)), 'Data', '')+"userdata", "wb+") as file:
-                    pickle.dump(data, file, protocol=2)
-            titlescreen_menu("campaign")
-        
-        if add != None:
-            campaign_text_check.append(add)
             
             
             
@@ -628,47 +670,11 @@ while running:
         player_gun.blit_shot(True)
     else:
         player_gun.blit_shot()
-    if setup.online:
-        if enemy_player.shotgun and enemy_player.flame_thrower:
-            enemy_gun.blit_shot(True)
-        else:
-            enemy_gun.blit_shot()
-    else:
-        for i in range(0, setup.enemies):
-            if enemy_player[i].shotgun and enemy_player[i].flame:
-                enemy_gun[i].blit_shot(True)
-            else:
-                enemy_gun[i].blit_shot()
+
+
                 
-                
-                
-    
-                
-                
-                
-    if setup.online:
-        enemy_player.blit_enemy(hit_enemy, player.imagesx, player.imagesy, enemy_player.angle, enemy_player.enemy_gun) 
-    else:
-        for i in range(0, setup.enemies):
-            try:
-                if setup.campaign:
-                    if (840 > enemy_pos_backup[i][0] - player.imagesx > -200 and 680 > enemy_pos_backup[i][1] - player.imagesy > -200):
-                        if setup.map_choice == "MIDWAY":
-                            enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy, types="plane")
-                        else:
-                            enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy) 
-                        
-                else:
-                    enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy)             
-            except:
-                pass
                 
                  
-    
-    if setup.campaign:    
-        player.friendly(setup.map_choice)
-        for i in range(0, setup.enemies):
-            player.friendly(((enemy_gun[i].enemy_shotrise_list, enemy_gun[i].enemy_shotrun_list, enemy_gun[i].enemy_backup_shotrise, enemy_gun[i].enemy_backup_shotrun), setup.map_choice))
     
     
     

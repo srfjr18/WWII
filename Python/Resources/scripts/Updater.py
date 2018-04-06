@@ -34,7 +34,7 @@ def update(build):
             embed = False
             if os.name == "nt":
                 embed = True
-        except AttributeError:
+        except (AttributeError, LookupError):
             embed = True
             os.system("powershell.exe [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; curl https://github.com/srfjr18/WWII-base/archive/master.zip -O "+str(files)) #to fix annoying encoding problem with embedded zip
         except:

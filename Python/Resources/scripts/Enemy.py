@@ -94,7 +94,6 @@ class Enemy(Setup, Gun_Types):
         
     def AI(self, mainx, mainy, imagesx, imagesy, collision_list, loadout_number, internalclock, pos=None, map_choice=None): #pos will put an enemy at a specific position and make them unable to move
         
-        
 
         
         #self.mainx, self.mainy = mainx, mainy
