@@ -140,10 +140,20 @@ def titlescreen_menu(start_at=None):
     pygame.mixer.music.stop()
     pygame.mixer.music.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Resources', 'sounds', '')+'gamemusic.wav')
     pygame.mixer.music.play(-1)
+    
+    
+    if setup.map_choice == "STALINGRAD":
+        player.health = 40
+    
             
 titlescreen_menu("start")
+
 while running:
-    #player.health = 100
+    
+    
+    
+    
+    
     if setup.online:
         if enemy_player.titlescreen:
             Menu([]).end_screen(kills, deaths)

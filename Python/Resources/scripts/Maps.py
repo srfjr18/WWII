@@ -1749,8 +1749,11 @@ class Maps(object):
         if 439 - 6 <= self.mainy + self.imagesy <= 439 + 6 and not (0, 439)in self.campaign_text_check:
             self.campaign.text('BATTLE OF STALINGRAD- EARLY 1943')
             return (0, 439)
-        if 955 - 6 <= self.mainx + self.imagesx <= 955 + 6 and not (0, 955)in self.campaign_text_check:
+        if 755 - 6 <= self.mainx + self.imagesx <= 755 + 6 and not (0, 755)in self.campaign_text_check:
             self.campaign.text('YOU ARE A SNIPER. ELIMINATE NAZIS BEFORE ADVANCING')
+            return (0, 755)
+        if 955 - 6 <= self.mainx + self.imagesx <= 955 + 6 and not (0, 955)in self.campaign_text_check:
+            self.campaign.text('YOU ARE BADLY INJURED. PLAY TACTICALLY  TO SURVIVE')
             return (0, 955)
         if -1968 - 6 <= self.mainy + self.imagesy <= -1968 + 6 and not (0, -1968)in self.campaign_text_check:
             self.campaign.text('OPERATION COMPLETED. GREAT WORK SNIPER')

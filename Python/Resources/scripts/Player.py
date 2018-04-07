@@ -1237,8 +1237,17 @@ class Player(object):
         screen.blit(overlay, (0,0))
         
     def set_angle(self, mousepos, types=None):
+        try:
+            self.mpos_backup
+        except:
+            self.mpos_backup = 10
         
         
+        
+        """if mousepos == self.mpos_backup:
+            return"""
+        
+        self.mpos_backup = mousepos
         
         self.angle = 90 + 360 - (math.degrees(math.atan2(self.mainy - mousepos[1], self.mainx - mousepos[0])))
 

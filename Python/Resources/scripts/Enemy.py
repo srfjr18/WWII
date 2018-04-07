@@ -261,8 +261,10 @@ class Enemy(Setup, Gun_Types):
             self.alreadycollided = True
         
         #if the enemy is on our screen or a little outside
-        if (740 > self.enemyposX - imagesx > -100 and 580 > self.enemyposY - imagesy > -100) or (840 > self.enemyposX - imagesx > -100 and 700 > self.enemyposY - imagesy > -200 and map_choice == "D-DAY"):
-    
+        #also includes a system so the enemy shoots at you when you are sniping as if you were in the mid portion of the screen. To balance this, the enemy will shoot you if they are on your screen no matter if you are in sniper mode or not if you have been shot at already
+        if ((mainx == 295 or self.enemy_shot > 0) and (740 > self.enemyposX - imagesx > -100 and 580 > self.enemyposY - imagesy > -100) or (840 > self.enemyposX - imagesx > -100 and 700 > self.enemyposY - imagesy > -200 and map_choice == "D-DAY")) or (mainx != 295 and self.enemyposX - imagesx - 740 - 295 <= mainx <= self.enemyposX - imagesx + 740 - 295 and self.enemyposY - imagesy - 580 - 215 <= mainy <= self.enemyposY - imagesy + 580 - 215):
+
+            
             #count the frames that the enemy is on our screen
             self.counter += 1
         
