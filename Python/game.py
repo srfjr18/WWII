@@ -224,7 +224,7 @@ while running:
 
   
     #dealing with friendly AI in campaign
-    if setup.campaign:    
+    if setup.campaign and setup.map_choice != "STALINGRAD":    
         player.friendly(setup.map_choice)
 
 
@@ -375,7 +375,7 @@ while running:
             if hit_enemy[i]:
                 enemy_player[i].health -= 100 / setup.stk
                 if enemy_player[i].health <= 0:
-                    if setup.campaign and not (setup.map_choice == "D-DAY" and (enemy_player[i].enemyposX, enemy_player[i].enemyposY) not in [(-479, -1076),(-511, -1257),(485, -988),(521, -1154), (-366, -1752),(86, -1878),(-41, -2036),(739, -2008),(649, -1042),(646, -1204),(646, -1373),(646, -1529),(646, -1691),(602, -1867),(517, -1958),(641, -2130)]):
+                    if setup.campaign and not (setup.map_choice == "D-DAY" and (enemy_player[i].enemyposX, enemy_player[i].enemyposY) not in [(-1093, -2097),(-670, -2093),(-393, -2079),(-4, -2086),(592, -2097),(637, -2438),(63, -2471),(-597, -2729),(-319, -2729),(-860, -2726),(-727, -3086),(-447, -3096),(-195, -2969),(-556, -2908),(-524, -2957),(106, -3095),(240, -3277),(-151, -3549),(-443, -3581),(-635, -3576),(-969, -3558)]):
                         enemy_player[i].enemyposX = 100000000
                     else:
                         enemy_gun[i] = Enemy_Gun()
@@ -461,7 +461,7 @@ while running:
             #enemy movements, shot creation, basically just AI            
             if setup.campaign:
                 try:
-                    if (840 > enemy_pos_backup[i][0] - player.imagesx > -200 and 680 > enemy_pos_backup[i][1] - player.imagesy > -200):
+                    if (840 > enemy_pos_backup[i][0] - player.imagesx > -200 and 680 > enemy_pos_backup[i][1] - player.imagesy > -200) or (setup.map_choice == "D-DAY" and (enemy_pos_backup[i][0], enemy_pos_backup[i][1]) not in [(-1093, -2097),(-670, -2093),(-393, -2079),(-4, -2086),(592, -2097),(637, -2438),(63, -2471),(-597, -2729),(-319, -2729),(-860, -2726),(-727, -3086),(-447, -3096),(-195, -2969),(-556, -2908),(-524, -2957),(106, -3095),(240, -3277),(-151, -3549),(-443, -3581),(-635, -3576),(-969, -3558)]):
                         enemy_player[i].AI(player.mainx, player.mainy, player.imagesx, player.imagesy, collision_list, loadout_number, internalclock, enemy_pos_backup[i], setup.map_choice)
                 except:
                     pass
@@ -481,6 +481,8 @@ while running:
                     if (840 > enemy_pos_backup[i][0] - player.imagesx > -200 and 680 > enemy_pos_backup[i][1] - player.imagesy > -200):
                         if setup.map_choice == "MIDWAY":
                             enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy, types="plane")
+                        elif setup.map_choice == "D-DAY" or setup.map_choice == "STALINGRAD":
+                            enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy, types="nazi")
                         else:
                             enemy_player[i].blit_enemy(hit_enemy[i], player.imagesx, player.imagesy) 
                         
@@ -555,6 +557,10 @@ while running:
     
     if setup.map_choice == "MIDWAY":
         player.set_angle(mousepos, "plane")
+    elif setup.map_choice == "D-DAY":
+        player.set_angle(mousepos, "usa")
+    elif setup.map_choice == "STALINGRAD":
+        player.set_angle(mousepos, "ssr")
     else:
         player.set_angle(mousepos)
         

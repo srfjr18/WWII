@@ -262,7 +262,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (77, 28, 0), (70, 12, 9, 37)), (None, (77, 28, 0), (72, 1, 4, 12)), (None, (8, 1, 0), (68, 19, 12, 16))]
         self.shotgun = False
-        return 1, "semi-auto", 1, 1, 130, 0
+        return 120, "semi-auto", 1, 5, 130, 0
     def ariaska(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)

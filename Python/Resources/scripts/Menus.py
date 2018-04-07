@@ -831,7 +831,7 @@ class Setup(object):
                 self.campaign = True
                 self.online = False
                 while True:
-                    choice = Menu(words = ["MIDWAY", "D-DAY", "BACK"]).GameSetup("campaign")
+                    choice = Menu(words = ["MIDWAY", "D-DAY", "STALINGRAD", "BACK"]).GameSetup("campaign")
                     if choice == "BACK":
                         break
                     else:
@@ -848,6 +848,10 @@ class Setup(object):
                             new[0] = "PLANE"
                         elif self.map_choice == "D-DAY":
                             new[0] = "M1 GARAND"
+                            new[1] = "HOLLOW POINTS"
+                            new[2] = "QUICK HANDS"
+                        elif self.map_choice == "STALINGRAD":
+                            new[0] = "MOSIN NAGANT"
                             new[1] = "HOLLOW POINTS"
                             new[2] = "QUICK HANDS"
                         data["LOADOUT 6"] = new
@@ -1306,7 +1310,8 @@ class Setup(object):
             if self.firerate > 1 and self.stk != 30.1:
                 self.firerate = int(self.firerate * 0.5) 
         elif perk1 == "HOLLOW POINTS":
-            self.stk *= 0.9
+            if self.stk != 1:
+                self.stk *= 0.9
         elif perk1 == "SELECT FIRE":
             if self.stk > 5:
                 if self.action == "semi-auto":

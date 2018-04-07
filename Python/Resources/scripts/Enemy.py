@@ -36,6 +36,7 @@ class Enemy(Setup, Gun_Types):
         Setup.__init__(self)
         self.backup = self.enemy = pygame.image.load(path+'enemy.png')
         self.plane = pygame.image.load(path+'japanplane.png')
+        self.nazi = pygame.image.load(path+'nazi.png')
         self.hitmarker = pygame.image.load(path+'hitmarker.png')
         self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime, recoil = self.getrand_gun_or_blit()
         if self.enemy_action == "semi-auto":
@@ -59,7 +60,11 @@ class Enemy(Setup, Gun_Types):
                 japan = pygame.transform.rotate(self.plane, self.enemy_angle)
                 screen.blit(japan, (self.enemyposX - imagesx, self.enemyposY - imagesy))
             else:
-                screen.blit(self.enemy, (self.enemyposX - imagesx, self.enemyposY - imagesy))
+                if types == "nazi":
+                    nazi = pygame.transform.rotate(self.nazi, self.enemy_angle)
+                    screen.blit(nazi, (self.enemyposX - imagesx, self.enemyposY - imagesy))
+                else:
+                    screen.blit(self.enemy, (self.enemyposX - imagesx, self.enemyposY - imagesy))
                 self.getrand_gun_or_blit(self.rand_num, self.enemy_angle, self.enemyposX - imagesx, self.enemyposY - imagesy)
                        
                 
@@ -109,12 +114,12 @@ class Enemy(Setup, Gun_Types):
             self.shotgun = False
             #sys.exit()
             
-        if map_choice == "D-DAY" and (pos[0], pos[1]) not in [(-479, -1076),(-511, -1257),(485, -988),(521, -1154), (-366, -1752),(86, -1878),(-41, -2036),(739, -2008),(649, -1042),(646, -1204),(646, -1373),(646, -1529),(646, -1691),(602, -1867),(517, -1958),(641, -2130)]:
-            self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime = 5, "full-auto", 100, randint(25, 100), 200
+        if map_choice == "D-DAY" and (pos[0], pos[1]) not in [(-1093, -2097),(-670, -2093),(-393, -2079),(-4, -2086),(592, -2097),(637, -2438),(63, -2471),(-597, -2729),(-319, -2729),(-860, -2726),(-727, -3086),(-447, -3096),(-195, -2969),(-556, -2908),(-524, -2957),(106, -3095),(240, -3277),(-151, -3549),(-443, -3581),(-635, -3576),(-969, -3558)]:
+            self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime = 5, "full-auto", 70, randint(25, 100), 200
             self.shotgun = False
             
             
-        if self.enemyposX == 100000000 or pos != None and not (840 > pos[0] - imagesx > -200 and 680 > pos[1] - imagesy > -200): #setting pos to this kills the enemy in campaign mode BUT THIS REALLY DOESN'T EVEN WORK 
+        if self.enemyposX == 100000000 or (pos != None and not (840 > pos[0] - imagesx > -200 and 680 > pos[1] - imagesy > -200) and not (map_choice == "D-DAY" and (pos[0], pos[1]) not in [(-1093, -2097),(-670, -2093),(-393, -2079),(-4, -2086),(592, -2097),(637, -2438),(63, -2471),(-597, -2729),(-319, -2729),(-860, -2726),(-727, -3086),(-447, -3096),(-195, -2969),(-556, -2908),(-524, -2957),(106, -3095),(240, -3277),(-151, -3549),(-443, -3581),(-635, -3576),(-969, -3558)])): #setting pos to this kills the enemy in campaign mode BUT THIS REALLY DOESN'T EVEN WORK 
             return
         self.perks(loadout_number)
         #Core of our enemies's AI          
@@ -125,7 +130,7 @@ class Enemy(Setup, Gun_Types):
         
                 
         # modify the randint to change speed enemies spawn         
-        if self.midway or (pos != None and 840 > pos[0] - imagesx > -200 and 680 > pos[1] - imagesy > -200 and not self.spawned) or (not 640 > self.enemyposX - imagesx > 0 and not 480 > self.enemyposY - imagesy > 0 and not self.spawned and pos == None) or self.proper_spawn(self.enemyposX - imagesx, self.enemyposY - imagesy, collision_list) and not self.spawned and pos == None:
+        if (self.midway or (pos != None and 840 > pos[0] - imagesx > -200 and 680 > pos[1] - imagesy > -200 and not self.spawned) or (not 640 > self.enemyposX - imagesx > 0 and not 480 > self.enemyposY - imagesy > 0 and not self.spawned and pos == None) or self.proper_spawn(self.enemyposX - imagesx, self.enemyposY - imagesy, collision_list) and not self.spawned and pos == None) or (map_choice == "D-DAY" and (pos[0], pos[1]) not in [(-1093, -2097),(-670, -2093),(-393, -2079),(-4, -2086),(592, -2097),(637, -2438),(63, -2471),(-597, -2729),(-319, -2729),(-860, -2726),(-727, -3086),(-447, -3096),(-195, -2969),(-556, -2908),(-524, -2957),(106, -3095),(240, -3277),(-151, -3549),(-443, -3581),(-635, -3576),(-969, -3558)]): #this if statementis an absolute mess that I should probably clean up but it works so...
             
             if pos != None and not self.midway:
                 if map_choice == "MIDWAY":
@@ -145,7 +150,7 @@ class Enemy(Setup, Gun_Types):
                 pos = "he"
             
             #choose random gun for enemy
-            if not self.midway and map_choice != "MIDWAY":
+            if not self.midway and map_choice != "MIDWAY" and not (map_choice == "D-DAY" and (pos[0], pos[1]) not in [(-1093, -2097),(-670, -2093),(-393, -2079),(-4, -2086),(592, -2097),(637, -2438),(63, -2471),(-597, -2729),(-319, -2729),(-860, -2726),(-727, -3086),(-447, -3096),(-195, -2969),(-556, -2908),(-524, -2957),(106, -3095),(240, -3277),(-151, -3549),(-443, -3581),(-635, -3576),(-969, -3558)]):
                 self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime, recoil = self.getrand_gun_or_blit() #recoil is just neglected because badaim usually makes up for it or more
             
             
@@ -162,6 +167,7 @@ class Enemy(Setup, Gun_Types):
                 self.enemy_stk *= 7
             if map_choice == "D-DAY":
                 self.enemy_stk *= 5
+            #self.enemy_stk *= 10
             
             
             if self.midway:
@@ -198,9 +204,13 @@ class Enemy(Setup, Gun_Types):
         
         
         
-        if map_choice == "D-DAY" and (pos[0], pos[1]) not in [(-479, -1076),(-511, -1257),(485, -988),(521, -1154), (-366, -1752),(86, -1878),(-41, -2036),(739, -2008),(649, -1042),(646, -1204),(646, -1373),(646, -1529),(646, -1691),(602, -1867),(517, -1958),(641, -2130)]:
-            self.enemyposX = pos[0]
-            self.enemyposY = pos[1] + imagesy
+        if map_choice == "D-DAY" and (pos[0], pos[1]) not in [(-1093, -2097),(-670, -2093),(-393, -2079),(-4, -2086),(592, -2097),(637, -2438),(63, -2471),(-597, -2729),(-319, -2729),(-860, -2726),(-727, -3086),(-447, -3096),(-195, -2969),(-556, -2908),(-524, -2957),(106, -3095),(240, -3277),(-151, -3549),(-443, -3581),(-635, -3576),(-969, -3558)]:
+            if imagesy < -1900:
+                self.enemyposX = 100000000
+            else:
+                self.enemyposX = pos[0]
+                self.enemyposY = pos[1] + imagesy
+
         
         
         

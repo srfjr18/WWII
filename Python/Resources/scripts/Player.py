@@ -53,6 +53,8 @@ class Player(object):
         
         self.maincharacter = self.backup = pygame.image.load(path+'character.png')
         self.plane = pygame.image.load(path+'usplane.png')
+        self.usa = pygame.image.load(path+'usa.png')
+        self.ssr = pygame.image.load(path+'ssr.png')
         self.font = pygame.font.SysFont(None, 25)
         self.smallfont = pygame.font.SysFont(None, 20)
         
@@ -303,7 +305,7 @@ class Player(object):
                 if map_choice == "MIDWAY":
                     screen.blit(pygame.transform.rotate(self.plane, self.friendly_angle[i]), (self.friendlyposX[i] - self.imagesx, self.friendlyposY[i] - self.imagesy))
                 else:
-                    screen.blit(pygame.transform.rotate(self.backup, self.friendly_angle[i]), (self.friendlyposX[i] - self.imagesx, self.friendlyposY[i] - self.imagesy))
+                    screen.blit(pygame.transform.rotate(self.usa, self.friendly_angle[i]), (self.friendlyposX[i] - self.imagesx, self.friendlyposY[i] - self.imagesy))
                     self.gun.getrand_gun_or_blit(self.rand_num[i], self.friendly_angle[i], self.friendlyposX[i] - self.imagesx, self.friendlyposY[i] - self.imagesy)
                 
             else:
@@ -1250,6 +1252,10 @@ class Player(object):
             
         if types == "plane":
             self.maincharacter = pygame.transform.rotate(self.plane, self.angle)
+        elif types == "usa":
+            self.maincharacter = pygame.transform.rotate(self.usa, self.angle)
+        elif types == "ssr":
+            self.maincharacter = pygame.transform.rotate(self.ssr, self.angle)
         else:
             self.maincharacter = pygame.transform.rotate(self.backup, self.angle)
         
@@ -1291,7 +1297,7 @@ class Player(object):
        
         
         
-        if map_choice == "MIDWAY" or map_choice == "D-DAY":
+        if map_choice == "MIDWAY" or map_choice == "D-DAY" or map_choice == "STALINGRAD":
             if self.collision(map_collisions_update(self.imagesx, self.imagesy, map_choice)):
                 self.imagesy -= self.moveY
                 self.imagesx -= self.moveX 
