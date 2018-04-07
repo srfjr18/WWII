@@ -209,28 +209,31 @@ while running:
 
 
     #blitting the map
-    pygame.display.set_caption("WWII  FPS: " + str(int(clock.get_fps())))
-    screen.blit(background, (0, 0))
-    if setup.custom:
-        Play_Maps(setup.map_choice).blit_map(player.imagesx, player.imagesy)
-    else:
-        """when in campaign mode, this system makes it so you can only hit text boxes once"""
-        add = Maps(player.imagesx, player.imagesy, campaign_text_check).blit_map(setup.map_choice)
-        
-        if add == "DONE":
-            Campaign().donescreen(kills, setup.map_choice)
-            with open(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)), 'Data', '')+"userdata", "rb") as file:
-                data = pickle.load(file)
-            if not setup.map_choice in data["campaign"]:
-                new = data["campaign"]
-                new.append(setup.map_choice)
-                data["campaign"] = new
-                with open(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)), 'Data', '')+"userdata", "wb+") as file:
-                    pickle.dump(data, file, protocol=2)
-            titlescreen_menu("campaign")
-        
-        if add != None:
-            campaign_text_check.append(add)
+
+    
+    if not setup.online or (setup.online and not enemy_player.online_paused):
+        pygame.display.set_caption("WWII  FPS: " + str(int(clock.get_fps())))
+        screen.blit(background, (0, 0))
+        if setup.custom:
+            Play_Maps(setup.map_choice).blit_map(player.imagesx, player.imagesy)
+        else:
+            """when in campaign mode, this system makes it so you can only hit text boxes once"""
+            add = Maps(player.imagesx, player.imagesy, campaign_text_check).blit_map(setup.map_choice)
+            
+            if add == "DONE":
+                Campaign().donescreen(kills, setup.map_choice)
+                with open(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)), 'Data', '')+"userdata", "rb") as file:
+                    data = pickle.load(file)
+                if not setup.map_choice in data["campaign"]:
+                    new = data["campaign"]
+                    new.append(setup.map_choice)
+                    data["campaign"] = new
+                    with open(os.path.join(os.path.sep.join(os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)), 'Data', '')+"userdata", "wb+") as file:
+                        pickle.dump(data, file, protocol=2)
+                titlescreen_menu("campaign")
+            
+            if add != None:
+                campaign_text_check.append(add)
 
   
     #dealing with friendly AI in campaign
@@ -313,7 +316,8 @@ while running:
             
             #updating our loadout if we changed it at the pause menu
                 try:
-                    new_setup = enemy_player.new_setup
+                    if not setup.fix_online:
+                        new_setup = enemy_player.new_setup
                     online = setup.online
                     custom = setup.custom
                     setup = new_setup
@@ -367,16 +371,18 @@ while running:
             Menu([]).end_screen(kills, deaths)
             player.update_rank(kills)
             titlescreen_menu("multiplayer")    
-
-        #blitting enemy shots
-        if enemy_player.shotgun and enemy_player.flame_thrower:
-            enemy_gun.blit_shot(True)
-        else:
-            enemy_gun.blit_shot()
-         
-        #blitting the enemy    
-        enemy_player.blit_enemy(hit_enemy, player.imagesx, player.imagesy, enemy_player.angle, enemy_player.enemy_gun) 
         
+        
+        if not enemy_player.online_paused:
+            #blitting enemy shots
+            if enemy_player.shotgun and enemy_player.flame_thrower:
+                enemy_gun.blit_shot(True)
+            else:
+                enemy_gun.blit_shot()
+             
+            #blitting the enemy    
+            enemy_player.blit_enemy(hit_enemy, player.imagesx, player.imagesy, enemy_player.angle, enemy_player.enemy_gun) 
+            
     else:
         hit_enemy = []
         for i in range(0, setup.enemies): 

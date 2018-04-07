@@ -18,6 +18,8 @@ class Enemy(Setup, Gun_Types):
         self.enemyposY = 10000000
         self.enemy_shot = 0
         
+        
+        self.online_paused = False
         self.enemy_angle = 0
         self.midway = False
         self.health = 100
