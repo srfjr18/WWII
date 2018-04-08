@@ -24,6 +24,13 @@ class Menu(object):
         self.background.fill((0,0,0))
         self.background = self.background.convert()
         self.words = words
+        
+        
+        
+        
+        self.build = 'v1.27'
+        
+        
         self.font = {"big": pygame.font.SysFont("monospace", 50), "medium": pygame.font.SysFont("monospace", 35), "small": pygame.font.SysFont("monospace", 25), "smallish": pygame.font.SysFont("monospace", 20), "extrasmall": pygame.font.SysFont("monospace", 15)}
         
         """checking if mac matches up with the mac in userdata.
@@ -269,6 +276,8 @@ class Menu(object):
             screen.blit(text, (250, 225))
             text = self.font["small"].render("left click to continue",1,(255,255,255))
             screen.blit(text, (150, 275))
+            text = self.font["smallish"].render("build " + self.build,1,(255,255,255))
+            screen.blit(text, (500, 460))
             pygame.display.flip()
             for event in pygame.event.get():  
                 if event.type == pygame.QUIT: 
@@ -730,13 +739,11 @@ class Setup(object):
             self.map_choice = self.campaign_map_choice
             return
         
+        
+        build = Menu([]).build
         while True:
-            #####################################################################
-            build = 'v1.26'
-            #####################################################################
         
-        
-        
+            
         
             if start_at == None or start_at == "start" or choice == "BACK":
                 choice = Menu(words = ["CAMPAIGN", "MULTIPLAYER", "OPTIONS", "UPDATE", "EXIT"]).GameSetup("","","ENTER WWII IN SINGLE PLAYER MISSIONS", "PLAY AGAINST UP TO 6 BOTS OR 1V1 ONLINE", "GAME OPTIONS", "CHECK FOR A GAME UPDATE")

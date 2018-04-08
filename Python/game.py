@@ -36,7 +36,8 @@ def titlescreen_menu(start_at=None):
     global enemy_hit, kills, deaths, hit, shot, internalclock, iclockregen
     global setup, maps, loadouts, player, player_gun, sniper_zoom, pressed
     global enemy_gun, enemy_player, loadout_number, campaign_text_check
-    global background, in_between_shots, first_run, enemy_gun_online, enemy_pos_backup
+    global background, in_between_shots, first_run, enemy_gun_online, enemy_pos_backup, backup_enemy_pos
+    backup_enemy_pos = 0
     enemy_pos = None
     first_run = True
     sniper_zoom = False
@@ -244,6 +245,13 @@ while running:
     """this section handles all the enemy stuff, both for AI and online, as well as your shots colliding with enemies, and the enemies shots colliding with friendly AI in campaign"""
 ############################################################################################################################################
     if setup.online:
+        
+        #this ensures that when the enemy respawns online, they have the normal amount of health so it lines up
+        if not (enemy_player.enemyposX + enemy_player.enemyposY - 50 <= backup_enemy_pos <= enemy_player.enemyposX + enemy_player.enemyposY + 50):
+            enemy_player.health = 100
+        backup_enemy_pos = enemy_player.enemyposX + enemy_player.enemyposY
+        
+        
         #player gun
         hit_enemy = player_gun.enemy_collide(collision_list, pygame.Rect((enemy_player.enemyposX - player.imagesx, enemy_player.enemyposY - player.imagesy), enemy_player.backup.get_size()))   
         if hit_enemy:

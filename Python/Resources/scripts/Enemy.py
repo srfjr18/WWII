@@ -45,8 +45,8 @@ class Enemy(Setup, Gun_Types):
             self.enemy_firerate = 30
     
     def blit_enemy(self, collision, imagesx, imagesy, angle=None, gun=None, types=None):
-     
-    
+
+        
         if angle != None and gun != None:
             self.enemy = pygame.transform.rotate(self.backup, angle)
             gun = pygame.transform.rotate(gun, angle)
