@@ -117,7 +117,7 @@ class Enemy(Setup, Gun_Types):
             #sys.exit()
             
         if map_choice == "D-DAY" and (pos[0], pos[1]) not in [(-1093, -2097),(-670, -2093),(-393, -2079),(-4, -2086),(592, -2097),(637, -2438),(63, -2471),(-597, -2729),(-319, -2729),(-860, -2726),(-727, -3086),(-447, -3096),(-195, -2969),(-556, -2908),(-524, -2957),(106, -3095),(240, -3277),(-151, -3549),(-443, -3581),(-635, -3576),(-969, -3558)]:
-            self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime = 5, "full-auto", 70, randint(25, 100), 200
+            self.enemy_firerate, self.enemy_action, self.enemy_stk, self.enemy_mag, self.enemy_reloadtime = 5, "full-auto", 40, randint(25, 100), 200
             self.shotgun = False
             
             
@@ -264,7 +264,9 @@ class Enemy(Setup, Gun_Types):
         
         #if the enemy is on our screen or a little outside
         #also includes a system so the enemy shoots at you when you are sniping as if you were in the mid portion of the screen. To balance this, the enemy will shoot you if they are on your screen no matter if you are in sniper mode or not if you have been shot at already
-        if ((mainx == 295 or self.enemy_shot > 0) and (740 > self.enemyposX - imagesx > -100 and 580 > self.enemyposY - imagesy > -100) or (840 > self.enemyposX - imagesx > -100 and 700 > self.enemyposY - imagesy > -200 and map_choice == "D-DAY")) or (mainx != 295 and self.enemyposX - imagesx - 740 - 295 <= mainx <= self.enemyposX - imagesx + 740 - 295 and self.enemyposY - imagesy - 580 - 215 <= mainy <= self.enemyposY - imagesy + 580 - 215):
+        
+        #################or self.enemy_shot > 0
+        if ((mainx == 295) and (740 > self.enemyposX - imagesx > -100 and 580 > self.enemyposY - imagesy > -100) or (840 > self.enemyposX - imagesx > -100 and 700 > self.enemyposY - imagesy > -200 and map_choice == "D-DAY")) or (mainx != 295 and self.enemyposX - imagesx - 740 - 295 <= mainx <= self.enemyposX - imagesx + 740 - 295 and self.enemyposY - imagesy - 580 - 215 <= mainy <= self.enemyposY - imagesy + 580 - 215):
 
             
             #count the frames that the enemy is on our screen

@@ -300,7 +300,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (78, 71, 69), (73, 3, 6, 27)), (None, (160, 56, 27), (71, 27, 9, 21))]
         self.shotgun = True
-        return 1, "semi-auto", 20, 2, 100, 0     
+        return 1, "semi-auto", 7, 2, 100, 0     
     def m1987(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
@@ -311,7 +311,7 @@ class Gun_Types(object):
             screen.blit(bg, (mainx - 25, mainy - 25))
             return [(None, (93, 95, 93), (72, 0, 5, 35)), (None, (145, 58, 1), (70, 17, 9, 32)), (None, (0, 1, 1), (72, 16, 6, 18))]
         self.shotgun = True
-        return 130, "semi-auto", 9, 6, 200, 0   
+        return 130, "semi-auto", 5, 6, 200, 0   
     def thrower(self, angle=None, mainx=295, mainy=215):
         if angle != None:
             bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)

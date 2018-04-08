@@ -437,7 +437,7 @@ while running:
                         Menu([]).killed(campaign=True)
                         question = Menu([]).yes_no(" RESTART MISSION?", no="NO,EXIT")
                         if question == "yes":
-                           titlescreen_menu("campaign_continue")
+                            titlescreen_menu("campaign_continue")
                         else:
                             titlescreen_menu("campaign")
                             break
@@ -480,6 +480,8 @@ while running:
                         gun = setup.gun
                     except:
                         pass
+                    if setup.map_choice == "STALINGRAD":
+                        player.health = 40
                         
             
             #enemy movements, shot creation, basically just AI            
@@ -590,7 +592,7 @@ while running:
         
     
                              
-    if (pygame.mouse.get_pressed()[1] and shot != 0 and setup.stk != 1 and not setup.shotgun) or shot != 0 and pygame.key.get_pressed()[pygame.K_r]:
+    if (pygame.mouse.get_pressed()[1] and shot != 0 and (setup.stk != 1 or setup.shotgun)) or shot != 0 and pygame.key.get_pressed()[pygame.K_r]:
         reloading = True
         internalclock = 0
         shot = 0
