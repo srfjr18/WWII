@@ -84,6 +84,9 @@ class Enemy(Setup, Gun_Types):
         bg = pygame.Surface((100, 100), pygame.SRCALPHA, 32)
         
         
+        if self.health < 0:
+            self.health = 0
+        
         green = int(self.health * 2.55)
         red = 255 - green
         

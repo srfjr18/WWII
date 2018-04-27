@@ -246,17 +246,29 @@ while running:
 ############################################################################################################################################
     if setup.online:
         
-        #this ensures that when the enemy respawns online, they have the normal amount of health so it lines up
+        """#this ensures that when the enemy respawns online, they have the normal amount of health so it lines up
         if not (enemy_player.enemyposX + enemy_player.enemyposY - 50 <= backup_enemy_pos <= enemy_player.enemyposX + enemy_player.enemyposY + 50):
             enemy_player.health = 100
         backup_enemy_pos = enemy_player.enemyposX + enemy_player.enemyposY
         
+        """
+        
+        
+        
+        
+        
+        """this part is mostly for looks. Online, we determine kills by checking for big position changes in one frame (a respawn)"""
         
         #player gun
         hit_enemy = player_gun.enemy_collide(collision_list, pygame.Rect((enemy_player.enemyposX - player.imagesx, enemy_player.enemyposY - player.imagesy), enemy_player.backup.get_size()))   
         if hit_enemy:
             enemy_player.health -= 100 / setup.stk 
-            if enemy_player.health <= 0:
+            """if enemy_player.health <= 0:"""
+        
+        """this is where it actually happens"""    
+        #if the enemies position hgas     
+        if not (enemy_player.enemyposX + enemy_player.enemyposY - 50 <= backup_enemy_pos <= enemy_player.enemyposX + enemy_player.enemyposY + 50): 
+            if enemy_player.health != 100: #prevents getting a kill at initial spawn       
                 player.shotrise_list = player.shotrun_list = player.backup_shotrise = player.backup_shotrun = []
                 #hit = 0
                 enemy_player.health = 100
@@ -284,7 +296,10 @@ while running:
                     player.update_rank(kills)
     
                     titlescreen_menu("multiplayer")
-                    
+        backup_enemy_pos = enemy_player.enemyposX + enemy_player.enemyposY            
+        
+        
+        
                     
         #enemy gun            
         if enemy_gun.collide_you(player.mainx, player.mainy, collision_list):
@@ -308,8 +323,28 @@ while running:
                     player = Player(setup.map_choice)
                 else:
                     player = Player()
+                    
+                    
+                    
+                if setup.medic:
+                    player.health = 125 #makes medic work online
+                    
+                    
                 player.spawn(maps.spawnX, maps.spawnY, setup.map_choice)
                 deaths += 1
+                
+                
+                
+                
+                try: #ensures that kills and deaths line up for both sides, as one if a frame behind
+                    if internalclock - 1 == check:
+                        kills -= 1
+                except:
+                    pass
+                
+                check = internalclock
+                
+                
                 in_between_shots = True
                 if deaths >= setup.max_kills:
                     try:

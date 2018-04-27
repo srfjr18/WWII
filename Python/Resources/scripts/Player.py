@@ -166,7 +166,6 @@ class Player(object):
                 #self.imagesx_backup = self.imagesx
                 #self.imagesy_backup = self.imagesy
                 return
-                    
         black.fill((0,0,0,self.count_end))
         screen.blit(black, (0,0))
     
@@ -1183,8 +1182,9 @@ class Player(object):
         except:
             pass
         
-        
-        
+        backup = self.health
+        if self.health > 100:
+            self.health = 100
         
         kd_bg = pygame.Surface((190,30), pygame.SRCALPHA)
         kd_bg.fill((211,211,211,180))
@@ -1227,7 +1227,7 @@ class Player(object):
             
             
             
-            
+        self.health = backup   
             
         
     def red_screen(self):

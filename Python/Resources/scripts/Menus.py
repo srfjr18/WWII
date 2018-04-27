@@ -28,7 +28,7 @@ class Menu(object):
         
         
         
-        self.build = 'v1.28'
+        self.build = 'v1.29'
         
         
         self.font = {"big": pygame.font.SysFont("monospace", 50), "medium": pygame.font.SysFont("monospace", 35), "small": pygame.font.SysFont("monospace", 25), "smallish": pygame.font.SysFont("monospace", 20), "extrasmall": pygame.font.SysFont("monospace", 15)}
